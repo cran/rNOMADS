@@ -1,0 +1,21 @@
+Package: rNOMADS
+Type: Package
+Title: An interface to the NOAA Operational Model Archive and
+        Distribution System
+Version: 1.0.0
+Date: 2013-07-29
+Authors@R: c(person(given="Daniel C.",family="Bowman", role=c("aut", "cre"),
+        email="daniel.bowman@unc.edu"))
+Depends: R (>= 3.0.0), fields (>= 6.7.6)
+Suggests: GEOmap (>= 2.1)
+Description: Automatically download forecast data from the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) and read it into R.  Currently, the Global Forecast System 0.5 x 0.5 degree model is the only one supported, but future versions of rNOMADS will include an interface to all models on NOMADS. rNOMADS uses an external series of routines called wgrib2 to read the model data; get wgrib2 at http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/. 
+License: GPL (>= 3)
+URL: https://code.google.com/p/r-rgfs/ (subversion repository)
+        http://www.unc.edu/~haksaeng/rNOMADS/rNOMADS_examples.pdf (some
+        examples)
+Packaged: 2013-08-05 11:59:23 UTC; bowman
+Author: Daniel Bowman [aut, cre]
+Maintainer: Daniel Bowman <daniel.bowman@unc.edu>
+NeedsCompilation: no
+Repository: CRAN
+Date/Publication: 2013-08-09 16:47:01
