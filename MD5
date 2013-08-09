@@ -1,0 +1,12 @@
+ad4c8076fcb19ed42c7a667faeda4c6a *DESCRIPTION
+8b54e5a89fbda3af5e077053d40bec76 *NAMESPACE
+93094444ac8b710da4e370a7583c90d7 *R/GetGrib.R
+e206f3d56c2d6b51745c3ca53fd725ac *R/ReadGrib.R
+9a1d5acc515f113ba7fc071fcb1a8373 *data/GFS.RData
+a67943e3d86da1c29ae4b0667c645efe *man/GetModelRunHour.Rd
+9ebfbb3a4dacd741b0fa1aefbd68f997 *man/GribGrab.Rd
+453c3d349fbe6d3ce89f7f4cd138311c *man/ModelGrid.Rd
+0429159336849f94b5f787d80726516c *man/NoModelRun.Rd
+ea2d6abb9b692cfeac91058a22f69f35 *man/ReadGrib.Rd
+2cf0fb8c8a4ebc0388238b347f081344 *man/gfs.model.data.Rd
+e00f975422ae110d7a110bb4fc6a0bb1 *man/rNOMADS-package.Rd
