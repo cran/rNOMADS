@@ -1,10 +1,11 @@
-GribGrab <- function(levels, variables, local.dir = ".", file.name = "fcst.grb", model.date = Sys.time(), fcst.date = Sys.time(), 
+GribGrab <- function(levels, variables, which.fcst = "back", local.dir = ".", file.name = "fcst.grb", model.date = Sys.time(), fcst.date = Sys.time(), 
     model.domain = NULL, tidy = FALSE, verbose = TRUE)
 {
     #Get grib file from the GFS forecast repository
     #INPUTS
     #    LEVELS is the vertical region to return data for,  as vector
     #    VARIABLES is the data to return, as vector
+    #    WHICH.FCST determines if you want the forecast BEFORE the requested time ("back") or AFTER the requested time ("forward"), defaults to "back"
     #    LOCAL.DIR is the directory to save the files in
     #    FILE.NAME is the directory path and file name to save the grib file on disk, defaults to "fcst.grb" in current directory
     #    MODEL.DATE is the date and time of the requested model run, in GMT and POSIXlt format, defaults to current system time
@@ -27,14 +28,34 @@ GribGrab <- function(levels, variables, local.dir = ".", file.name = "fcst.grb",
    levels.str <- paste(gsub(" ", "_", levels), collapse = "=on&lev_")
    variables.str <- paste(variables, collapse = "=on&var_")
 
+   #Convert dates to GMT
+   
+    model.date <- as.POSIXlt(model.date, tz = "GMT")
+    fcst.date <- as.POSIXlt(fcst.date, tz = "GMT")
+
    #Check for latest model run date
    model.params <- GetModelRunHour(model.date = model.date, fcst.date = fcst.date) 
    if(is.na(model.params$model.hour)) {
        stop("Could not find the latest model run date.  Make sure you have a working Internet connection.  If you do and this code is still not working, it may be that the NOMADS website is down.
            Give it a an hour or so, and try again.")
    }
-   grb.name <- paste("gfs.t", sprintf("%02d", model.params$model.hour), "z.mastergrb2f",
+   if(model.params$model.date > fcst.date) {
+      stop("The reqested model date is after the requested forecast date! This means you are trying to access a forecast from a model that has not been run yet.")
+   }
+   if(which.fcst == "back") {
+       fcst.date <- as.POSIXlt(model.params$model.date + 3600 * model.params$fcst.back)
+       grb.name <- paste("gfs.t", sprintf("%02d", model.params$model.hour), "z.mastergrb2f",
        sprintf("%02d", model.params$fcst.back), "&", sep = "")
+   } else if (which.fcst == "forward") { 
+       fcst.date <- as.POSIXlt(model.params$model.date + 3600 * model.params$fcst.fore)
+       grb.name <- paste("gfs.t", sprintf("%02d", model.params$model.hour), "z.mastergrb2f",
+       sprintf("%02d", model.params$fcst.fore), "&", sep = "")
+   } else {
+       stop(paste("Did not recognize the forecast designation ", 
+       which.fcst, 
+       ".  Please use either \"back\" for the nearest forecast time BEFORE the requested time, 
+       or \"forward\" for the nearest forecast time AFTER the requested time.", sep = ""))
+   }
    grb.dir <- paste("dir=", strsplit(model.params$url.tested, split = "dir=")[[1]][2], sep = "")
 
    if(!is.null(model.domain)) {
@@ -61,8 +82,8 @@ GribGrab <- function(levels, variables, local.dir = ".", file.name = "fcst.grb",
       #now write download logic
 
    download.file(grb.url, paste(local.dir,file.name, sep = "/"), mode = "wb", quiet = !verbose)
-
-   return(file.name)
+   
+   return(list(file.name = file.name, model.date = model.params$model.date, fcst.date = fcst.date))
 }
 
 NoModelRun <- function(e) 
@@ -87,7 +108,8 @@ GetModelRunHour <- function(model.date = Sys.time(), fcst.date = Sys.time(),
     #    ATTEMPTS - number of model runs to check for before giving up
     #
     #OUTPUTS as list
-    #    MODEL.RUN.HOUR - The model run hour to download
+    #    MODEL.HOUR - The model run hour to download
+    #    MODEL.DATE - the full date of the model run
     #    URL.TESTED - The url that was tested to determine the model hour
     #    FCST.TDIFF - Time difference between model date and forecast date (i.e. how far in the future the forecast is from the model run that's available) in hours 
     #    FCST.BACK - The model forecast run immediately before the requested forecast date, in hours, in case that grib file is desired
@@ -95,11 +117,10 @@ GetModelRunHour <- function(model.date = Sys.time(), fcst.date = Sys.time(),
     
 
     model.hour <- seq(0, 18, by = 6)
-    fcst.hour <- c(seq(0, 192, by = 3), seq(204, 384, by = 12))
-    attributes(model.date)$tzone <- "GMT" # Convert to GMT time zone
-    attributes(fcst.date)$tzone <- "GMT"
-    model.date <- as.POSIXlt(model.date)
-    fcst.date <- as.POSIXlt(fcst.date)
+    fcst.hour <- seq(0, 192, by = 3)
+    #Convert to GMT
+    model.date <- as.POSIXlt(model.date, tz = "GMT")
+    fcst.date <- as.POSIXlt(fcst.date, tz = "GMT")
     
     c = 1
      
@@ -112,7 +133,7 @@ GetModelRunHour <- function(model.date = Sys.time(), fcst.date = Sys.time(),
        
        hr.diff <- model.hour - hr
        latest.model.run <- model.hour[hr.diff == max(hr.diff[hr.diff <= 0])]
-       
+       model.date <- as.POSIXlt(ISOdatetime(yr, mo, mday, latest.model.run, 0, 0, tz = "GMT"))   
        fcst.url <- paste(url.to.check[1], yr, sprintf("%02d", mo), sprintf("%02d", mday), sprintf("%02d", latest.model.run), url.to.check[2], sep = "")
        test <- suppressWarnings(tryCatch(url(fcst.url, open = "rb"), error = NoModelRun))
        
@@ -125,7 +146,6 @@ GetModelRunHour <- function(model.date = Sys.time(), fcst.date = Sys.time(),
            fcst.hour.diff <- fcst.hour - fcst.tdiff
            fcst.back <- fcst.hour[fcst.hour.diff == max(fcst.hour.diff[fcst.hour.diff <=0])]
            fcst.fore <- fcst.hour[fcst.hour.diff == min(fcst.hour.diff[fcst.hour.diff >=0])]
-           model.hour <- latest.model.run
            break
        }
 
@@ -135,5 +155,6 @@ GetModelRunHour <- function(model.date = Sys.time(), fcst.date = Sys.time(),
       } 
       c <- c + 1
    } 
-   return (list(model.hour = model.hour, url.tested = fcst.url, fcst.tdiff = fcst.tdiff, fcst.back = fcst.back, fcst.fore = fcst.fore))
+   return (list(model.hour = latest.model.run, model.date = as.POSIXlt(ISOdatetime(yr, mo, mday, latest.model.run, 0, 0, tz = "GMT")), 
+        url.tested = fcst.url, fcst.tdiff = fcst.tdiff, fcst.back = fcst.back, fcst.fore = fcst.fore))
 }

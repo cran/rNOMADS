@@ -1,0 +1,8 @@
+NEWS for rNOMADS
+
+1.0-1
+Fixed bug in GetModelRunHour and GribGrab that resulted in the wrong forecast times being returned.
+GribGrab now returns file name, model run date, and forecast date for the GRIB file generated
+GetModelRunHour now returns the model date in addition to the other things it already returned
+You can now specify whether you want the previous forecast or the next forecast in GribGrab
+Any code that worked with rNOMADS 1.0-0 should run with rNOMADS 1.0-1 without any trouble.
