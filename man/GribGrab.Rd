@@ -6,11 +6,13 @@ Download GFS model data from the NOMADS server.
 \description{
 This function interfaces with the programming API at \url{http://nomads.ncep.noaa.gov/} to download GFS model data.
 The data arrives in grib (gridded binary) format that can be read with \code{\link{ReadGrib}}.
+Forecasts are available to 192 hours from the latest model run.
 }
 \usage{
-GribGrab(levels, variables, local.dir = ".", file.name = "fcst.grb", 
-    model.date = Sys.time(), fcst.date = Sys.time(), 
-    model.domain = NULL, tidy = FALSE, verbose = TRUE)
+GribGrab(levels, variables, which.fcst = "back", local.dir = ".", 
+    file.name = "fcst.grb", model.date = Sys.time(), 
+    fcst.date = Sys.time(), model.domain = NULL, 
+    tidy = FALSE, verbose = TRUE)
 }
 \arguments{
   \item{levels}{
@@ -18,6 +20,9 @@ GribGrab(levels, variables, local.dir = ".", file.name = "fcst.grb",
 }
   \item{variables}{
   A list of model variables to download.
+}
+  \item{which.fcst}{
+  Whether to download the nearest forecast before the requested time (\code{"back"}) or the nearest forecast after the requested time (\code{"foreward"}).  Defaults to \code{"back"}.
 }
   \item{local.dir}{
   Where to save the grib file, defaults to the current directory.
@@ -43,7 +48,10 @@ GribGrab(levels, variables, local.dir = ".", file.name = "fcst.grb",
 }
 }
 \value{
-\code{file.name} is the name of the grib file that was downloaded.
+\item{file.name}{the name of the grib file that was downloaded.}
+\item{model.date}{Date at which the model was run}
+\item{fcst.date}{Date which forecast is for}
+
 }
 \details{
 This function requires an Internet connection to work.
@@ -78,8 +86,8 @@ variables <- c("TMP", "RH") #Temperature and relative humidity
 model.domain <- c(-84, -74, 37, 32) #Get the area around North Carolina, USA
 
 #Get the data
-file.name <- GribGrab(levels, variables, model.date = model.date,
-    fcst.date = fcst.date, model.domain = model.domain)
+\dontrun{file.name <- GribGrab(levels, variables, model.date = model.date,
+    fcst.date = fcst.date, model.domain = model.domain)}
 
 }
 \keyword{ connection }

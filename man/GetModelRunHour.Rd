@@ -32,6 +32,7 @@ GetModelRunHour(model.date = Sys.time(), fcst.date = Sys.time(),
 }
 \value{
   \item{model.hour}{What GMT time the latest model run took place for the date specified in \code{model.date}.}
+  \item{model.date}{The GMT date of the latest model run}
   \item{url.tested}{The URL that was checked to determine that the model hour is valid}
   \item{fcst.tdiff}{Time difference between model date and forecast date (i.e. how far in the future the forecast is from the model run that's available) in hours}
   \item{fcst.back}{The model forecast run immediately before the requested forecast date}
