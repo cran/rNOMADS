@@ -1,40 +1,36 @@
 \name{GribGrab}
 \alias{GribGrab}
 \title{
-Download GFS model data from the NOMADS server.
+Download model data from the NOMADS server.
 }
 \description{
-This function interfaces with the programming API at \url{http://nomads.ncep.noaa.gov/} to download GFS model data.
+This function interfaces with the programming API at \url{http://nomads.ncep.noaa.gov/} to download NOMADS model data.
+The available models (54 in total) can be viewed by calling \code{\link{NOMADSList}} without arguments.
 The data arrives in grib (gridded binary) format that can be read with \code{\link{ReadGrib}}.
-Forecasts are available to 192 hours from the latest model run.
 }
 \usage{
-GribGrab(levels, variables, which.fcst = "back", local.dir = ".", 
-    file.name = "fcst.grb", model.date = Sys.time(), 
-    fcst.date = Sys.time(), model.domain = NULL, 
-    tidy = FALSE, verbose = TRUE)
+GribGrab(model.url, pred, levels, variables, 
+    local.dir = ".", file.name = "fcst.grb",
+    model.domain = NULL, tidy = FALSE, verbose = TRUE)
 }
 \arguments{
-  \item{levels}{
-  A list of model levels to download.
+  \item{model.url}{
+      The address of a model download page, probably from \code{\link{CrawlModels}}.
 }
+  \item{pred}{
+      The list of predictions (or model times) determined by the specific model from \code{model.url}
+  }
   \item{variables}{
   A list of model variables to download.
 }
-  \item{which.fcst}{
-  Whether to download the nearest forecast before the requested time (\code{"back"}) or the nearest forecast after the requested time (\code{"foreward"}).  Defaults to \code{"back"}.
+  \item{levels}{
+  A list of model levels to download.
 }
   \item{local.dir}{
   Where to save the grib file, defaults to the current directory.
 }
   \item{file.name}{
   What to name the grib file, defaults to \code{"fcst.grb"}.
-}
-  \item{model.date}{
-  The date and time of the requested model run, in GMT and POSIXlt format, defaults to current system time 
-}
-  \item{fcst.date}{
-  The requested forecast date, defaults to current system time
 }
   \item{model.domain}{
   A vector of latitudes and longitudes that specify the area to return a forecast for.
@@ -49,14 +45,7 @@ GribGrab(levels, variables, which.fcst = "back", local.dir = ".",
 }
 \value{
 \item{file.name}{the name of the grib file that was downloaded.}
-\item{model.date}{Date at which the model was run}
-\item{fcst.date}{Date which forecast is for}
 
-}
-\details{
-This function requires an Internet connection to work.
-Also, the NOMADS web site can go down occasionally, causing \code{GribGrab} to fail.
-In this case, wait an hour or two and try again.
 }
 \references{
 \url{http://nomads.ncep.noaa.gov/}
@@ -66,15 +55,23 @@ Daniel Bowman \email{daniel.bowman@unc.edu}
 }
 
 \seealso{
-\code{\link{GetModelRunHour}}
+\code{\link{CrawlModels}}, \code{\link{ParseModelPage}}, \code{\link{ReadGrib}}
 }
 \examples{
 
-#Get the latest model date
-model.date <- Sys.time()
+#An example for the Global Forecast System 0.5 degree model
 
-#Get the forecast 6 hours from now - addition is defined in seconds
-fcst.date <- model.date + 6 * 3600
+#Get the latest model url
+\dontrun{urls.out <- CrawlModels(abbrev = "gfs0.5", depth = 1)}
+
+#Get a list of forecasts, variables and levels
+\dontrun{model.parameters <- ParseModelPage(urls.out[1])}
+
+#Figure out which one is the 6 hour forecast
+#provided by the latest model run
+#(will be the forecast from 6-12 hours from the current date) 
+
+\dontrun{my.pred <- model.parameters$pred[grep("06$", model.parameters$pred)]}
 
 #What region of the atmosphere to get data for
 levels <- c("2 m above ground", "800 mb") 
@@ -82,12 +79,17 @@ levels <- c("2 m above ground", "800 mb")
 #What data to return
 variables <- c("TMP", "RH") #Temperature and relative humidity
 
-#What region of the world to get data for - omit this and you get the whole planet!
-model.domain <- c(-84, -74, 37, 32) #Get the area around North Carolina, USA
-
 #Get the data
-\dontrun{file.name <- GribGrab(levels, variables, model.date = model.date,
-    fcst.date = fcst.date, model.domain = model.domain)}
+\dontrun{file.name <- GribGrab(urls.out[1], my.pred, levels, variables)}
+
+#Extract the data
+\dontrun{model.data <- ReadGrib(file.name, levels, variables)}
+
+#Reformat it
+\dontrun{model.grid <- ModelGrid(model.data)}
+
+#Show an image of world temperature at ground level
+\dontrun{image(model.grid$z[2, 1,,])}
 
 }
 \keyword{ connection }

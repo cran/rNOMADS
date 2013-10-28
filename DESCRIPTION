@@ -2,20 +2,21 @@ Package: rNOMADS
 Type: Package
 Title: An interface to the NOAA Operational Model Archive and
         Distribution System
-Version: 1.0.1
-Date: 2013-08-23
+Version: 1.2.0
+Date: 2013-10-28
 Authors@R: c(person(given="Daniel C.",family="Bowman", role=c("aut", "cre"),
         email="daniel.bowman@unc.edu"))
-Depends: R (>= 3.0.0), fields (>= 6.7.6)
+Depends: R (>= 3.0.2), scrapeR (>= 0.1.6), stringr (>= 0.6.2), fields
+        (>= 6.7.6)
 Suggests: GEOmap (>= 2.1)
-Description: Automatically download forecast data from the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) and read it into R.  Currently, the Global Forecast System 0.5 x 0.5 degree model is the only one supported, but future versions of rNOMADS will include an interface to all models on NOMADS. rNOMADS uses an external series of routines called wgrib2 to read the model data; get wgrib2 at http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/. 
+Description: An interface to the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) that allows R users to quickly and efficiently download global and regional weather model data for processing.  rNOMADS currently supports 54 models, ranging from global weather data to an altitude of 40 km, to high resolution regional weather models, to wave and sea ice models. rNOMADS uses an external series of routines called wgrib2 to read the model data into R; get wgrib2 at http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/. Future versions of rNOMADS will have a native data reader.
 License: GPL (>= 3)
 URL: http://code.google.com/p/bovine-aerospace/ (subversion repository)
         http://www.unc.edu/~haksaeng/rNOMADS/rNOMADS_examples.pdf (some
         examples)
-Packaged: 2013-08-23 18:29:40 UTC; bowman
-Author: Daniel Bowman [aut, cre]
-Maintainer: Daniel Bowman <daniel.bowman@unc.edu>
+Packaged: 2013-10-28 23:38:13 UTC; dantayaga
+Author: Daniel C. Bowman [aut, cre]
+Maintainer: Daniel C. Bowman <daniel.bowman@unc.edu>
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-08-23 20:59:34
+Date/Publication: 2013-10-29 07:58:07

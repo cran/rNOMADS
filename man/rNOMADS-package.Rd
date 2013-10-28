@@ -7,19 +7,18 @@ An interface to the NOAA Operational Model Archive and Distribution System
 }
 \description{
 Automatically download forecast data from the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) and read it into R.
-Currently, the Global Forecast System 0.5 x 0.5 degree model is the only one supported, but future versions of \code{rNOMADS} will include an interface to all models on NOMADS.
 \code{rNOMADS} uses an external series of routines called \code{wgrib2} to read the model data; get \code{wgrib2} at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}.
 }
 \details{
 \tabular{ll}{
 Package: \tab rNOMADS\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2013-06-13\cr
+Version: \tab 1.2.0\cr
+Date: \tab 2013-10-28\cr
 License: \tab GPL v3\cr
 }}
 \author{
-Daniel Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 \references{
 NOMADS website: \cr
@@ -36,15 +35,23 @@ Ebisuzaki, W, Bokhorst, R., Hyvatti, J., Jovic, D., Nilssen, K,
 \keyword{ package }
 \examples{
 #Getting temperature and relative humidity data for North Carolina, USA, 
-#approximately 6 hours from now.
-#Values at the ground surface and at the 800 mb level
+#6-12 hours from now depending on when the GFS model was last run.
+#Get values at the ground surface and at the 800 mb level
 #Then make a contour plot of the surface temperature.
 
-#Get the latest model date
-model.date <- Sys.time()
+#Using the Global Forecast System 0.5x0.5 model
+#Get the first two models available
+\dontrun{urls.out <- CrawlModels(abbrev = "gfs0.5", depth = 2)}
 
-#Get the forecast 6 hours from now - addition is defined in seconds
-fcst.date <- model.date + 6 * 3600
+#Get predictions, variables, and levels
+#If the first URL fails, try the second
+#(sometimes there's a lag time between the URL appearing
+#and the data becoming available)
+
+\dontrun{model.parameters <- ParseModelPage(urls.out[1])}
+
+#Get the 6 hour prediction
+\dontrun{pred.6 <- model.parameters$pred[grep("06$", model.parameters$pred)]}
 
 #What region of the atmosphere to get data for
 #2 meters above the ground and at 800 mb
@@ -60,21 +67,18 @@ model.domain <- c(-84, -74, 37, 32) #Get the area around North Carolina, USA
 file.name <- "fcst.grb" #Name of file to save downloaded data to
 
 #Get the data
-GribGrab(levels, variables, model.date = model.date,
-    fcst.date = fcst.date, model.domain = model.domain, file.name = file.name)
+\dontrun{GribGrab(urls.out[1], pred.6, levels, variables,
+    model.domain = model.domain, file.name = file.name)}
 
 #Read the data, only capturing temperature at the 2 m above ground level
-\dontrun{model.data <- ReadGrib(file.name, c("TMP"), c("2 m above ground"))}
+\dontrun{model.data <- ReadGrib(file.name, c("2 m above ground"), c("TMP"))}
 
 #Make it into an array
-\dontrun{model.array <- ModelGrid(model.data, 0.5, 0.5)}
+\dontrun{model.array <- ModelGrid(model.data)}
 
 #Make a contour plot of the temperature around North Carolina, USA:
 \dontrun{contour(x = model.array$x, y = model.array$y, 
-    model.array$z[1,1,,] - 273.15, xlab = "Latitude", ylab = "Longitude",
+    model.array$z[1,1,,] - 273.15, xlab = "Longitude", ylab = "Latitude",
    main = paste("North Carolina Temperatures for", 
    model.array$fcst.date, "GMT in Celsius"))}
-
-
-
 }

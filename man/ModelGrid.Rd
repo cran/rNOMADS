@@ -6,26 +6,20 @@ Transform model data into an array
 \description{
 This function takes output from \code{\link{ReadGrib}} and produces an array with dimensions: levels x variables x longitudes x latitudes.
 This greatly reduces the size of the data set as well as makes it easier to manipulate.
+However, it only works for some models (see notes section).
 }
 \usage{
-ModelGrid(model.data, lon.grid, lat.grid, 
-    variables = NULL, levels = NULL, model.domain = NULL)
+ModelGrid(model.data, levels = NULL, variables = NULL, model.domain = NULL)
 }
 \arguments{
   \item{model.data}{
   Output from \code{\link{ReadGrib}}.
 }
-  \item{lon.grid}{
-  The spacing of the longitude grid.
-}
-  \item{lat.grid}{
-  The spacing of the latitude grid.
+  \item{levels}{
+  The model levels to include in the grid, if NULL, include all of them.
 }
   \item{variables}{
-  The model variables to include in the grid, if NULL, include all of them.
-}
-  \item{levels}{
-  The model levels to include in grid, if NULL, include all of them.
+  The model variables to include in grid, if NULL, include all of them.
 }
   \item{model.domain}{
   A vector c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT) of the region to include in output. 
@@ -47,18 +41,25 @@ If you set the spacing of lon.grid and/or lat.grid coarser than the downloaded m
 \author{
 Daniel Bowman \email{daniel.bowman@unc.edu}
 }
+\note{
+The purpose of \code{rNOMADS} is to provide an interface to, and data extraction from, the NOMADS models.
+In general, the manipulation of the returned data is left up to the user.
+However, I did include \code{ModelGrid} in the hopes that it might be useful (or at least a starting point) for data manipulation.
+This function should work well for regularly-spaced lat/lon grids (such as the Global Forecast System).
+It will definitely not work for the North American Mesoscale models, as they are on a 12 kilometer grid (and thus the lat/lon spacing changes over the model).}
 
 \seealso{
 \code{\link{ReadGrib}}
 }
 \examples{
 
-#Get some model data outputted by ReadGrib
+#Get some example data 
+#Global Forecast Model 0.5x0.5 resolution - outputted by ReadGrib)
 #This data is from late July and covers the state of North Carolina and nearby regions
 data(GFS)
 
 #Make it into an array
-gfs.array <- ModelGrid(gfs.model.data, 0.5, 0.5)
+gfs.array <- ModelGrid(gfs.model.data)
 
 #What variables and levels we have
 print(gfs.array$levels)
@@ -86,4 +87,4 @@ sprintf("\%.1f", max.temp) #Brrr!
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{  manip}
+\keyword{ manip}
