@@ -6,3 +6,13 @@ GribGrab now returns file name, model run date, and forecast date for the GRIB f
 GetModelRunHour now returns the model date in addition to the other things it already returned
 You can now specify whether you want the previous forecast or the next forecast in GribGrab
 Any code that worked with rNOMADS 1.0-0 should run with rNOMADS 1.0-1 without any trouble.
+
+1.2-0
+A major update that provides access to all NOMADS models with the "grib filter" option on the NOMADS web site 
+(http://nomads.ncep.noaa.gov/).
+This adds up to 54 models in all.
+rNOMADS now scrapes the model pages to determine the variables, levels and forecasts available for each.
+This has necessitated major changes to some functions.
+See the supplied vignette link on the rNOMADS page on CRAN for examples of how the new rNOMADS code works.
+The lack of a good GRIB file format reader in R is still vexing, and I plan to write a small package to take care of this.
+A future version of rNOMADS will call this package to remove the necessity of installing third party software.

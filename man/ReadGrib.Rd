@@ -10,18 +10,18 @@ It does this by building an argument string, executing a system call to \code{wg
 Note that \code{wgrib2} must be installed for \code{ReadGrib} to work.
 }
 \usage{
-ReadGrib(file.name, variables, levels)
+ReadGrib(file.name, levels, variables)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{file.name}{
 The path and file name of the grib file to read.
 }
-  \item{variables}{
-  The variables to extract.
-}
   \item{levels}{
   The levels to extract.
+}
+  \item{variables}{
+  The variables to extract.
 }
 }
 \details{
@@ -58,40 +58,37 @@ The \code{wgrib2} utility is a very powerful grib file manipulator - the \code{r
 }
 \examples{
 
-#Get the latest model date
-model.date <- Sys.time()
+#An example for the Global Forecast System 0.5 degree model
 
-#Get the forecast 6 hours from now - addition is defined in seconds
-fcst.date <- model.date + 6 * 3600
+#Get the latest model url
+\dontrun{urls.out <- CrawlModels(abbrev = "gfs0.5", depth = 1)}
+
+#Get a list of forecasts, variables and levels
+\dontrun{model.parameters <- ParseModelPage(urls.out[1])}
+
+#Figure out which one is the 6 hour forecast
+#provided by the latest model run
+#(will be the forecast from 6-12 hours from the current date) 
+
+\dontrun{my.pred <- model.parameters$pred[grep("06$", model.parameters$pred)]}
 
 #What region of the atmosphere to get data for
-#2 meters above the ground and at 800 mb pressure
 levels <- c("2 m above ground", "800 mb")
 
 #What data to return
 variables <- c("TMP", "RH") #Temperature and relative humidity
 
-#What region of the world to get data for - omit this and you get the whole planet!
-model.domain <- c(-84, -74, 37, 32) #Get the area around North Carolina, USA
-
-file.name <- "fcst.grb" #Name of file to save downloaded data to
-
 #Get the data
-GribGrab(levels, variables, model.date = model.date,
-    fcst.date = fcst.date, model.domain = model.domain, file.name = file.name)
+\dontrun{file.name <- GribGrab(urls.out[1], my.pred, levels, variables)}
 
-#Read the data, only capturing temperature at the 2 m above ground level
-\dontrun{model.data <- ReadGrib(file.name, c("TMP"), c("2 m above ground"))}
+#Extract the data
+\dontrun{model.data <- ReadGrib(file.name, levels, variables)}
 
-#Make it into an array
-\dontrun{model.array <- ModelGrid(model.data, 0.5, 0.5)}
+#Reformat it
+\dontrun{model.grid <- ModelGrid(model.data)}
 
-#Make a contour plot of the temperature around North Carolina, USA:
-\dontrun{contour(x = model.array$x, y = model.array$y, model.array$z[1,1,,] - 273.15, 
-    xlab = "Latitude", ylab = "Longitude", 
-   main = paste("North Carolina Temperatures for", 
-   model.array$fcst.date, "GMT in Celsius"))}
-
+#Show an image of world temperature at ground level
+\dontrun{image(model.grid$z[2, 1,,])}
 
 }
 \keyword{ interface }
