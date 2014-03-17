@@ -7,14 +7,15 @@ An interface to the NOAA Operational Model Archive and Distribution System
 }
 \description{
 Automatically download forecast data from the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) and read it into R.
-\code{rNOMADS} uses an external series of routines called \code{wgrib2} to read the model data; get \code{wgrib2} at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}.
+\code{rNOMADS} uses an external series of routines called \code{wgrib2} to read operational model data; get \code{wgrib2} at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}.
+The package will also attempt to call another external routine called \code{wgrib} if the user wishes to read GRIB1 files; get \code{wgrib} at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html}.
 }
 \details{
 \tabular{ll}{
 Package: \tab rNOMADS\cr
 Type: \tab Package\cr
 Version: \tab 1.2.0\cr
-Date: \tab 2013-10-28\cr
+Date: \tab 2014-03-14\cr
 License: \tab GPL v3\cr
 }}
 \author{
@@ -29,8 +30,9 @@ wgrib2 reference: \cr
 Ebisuzaki, W, Bokhorst, R., Hyvatti, J., Jovic, D., Nilssen, K,
     Pfeiffer, K.,  Romero, P.,  Schwarb, M., da Silva, A., Sondell, N., and Varlamov, S. (2011).
     wgrib2: read and write GRIB2 files.  \emph{National Weather Service Climate Prediction Center}, \cr
-    \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}
-
+    \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}\cr
+wgrib download page:\cr
+\url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html}\cr
 }
 \keyword{ package }
 \examples{
@@ -74,7 +76,7 @@ file.name <- "fcst.grb" #Name of file to save downloaded data to
 \dontrun{model.data <- ReadGrib(file.name, c("2 m above ground"), c("TMP"))}
 
 #Make it into an array
-\dontrun{model.array <- ModelGrid(model.data)}
+\dontrun{model.array <- ModelGrid(model.data, c(0.5, 0.5))}
 
 #Make a contour plot of the temperature around North Carolina, USA:
 \dontrun{contour(x = model.array$x, y = model.array$y, 

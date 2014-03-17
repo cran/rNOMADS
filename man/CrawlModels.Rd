@@ -12,11 +12,11 @@ CrawlModels(abbrev = NULL, url = NULL, depth = NULL, verbose = TRUE)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{abbrev}{
-   The model abbreviation, see \code{\link{NOMADSList}}.
+   The model abbreviation, see \code{\link{NOMADSRealTimeList}}.
    Defaults to \code{NULL}.
 }
   \item{url}{
-   A URL to use instead of using the abbreviations in \code{\link{NOMADSList}}.
+   A URL to use instead of using the abbreviations in \code{\link{NOMADSRealTimeList}}.
    Defaults to \code{NULL}.
 }
   \item{depth}{
@@ -39,7 +39,7 @@ For the model pages on the NOMADS web site, each dead end is a model instance th
 \item{urls.out}{A list of web page addresses, each of which corresponds to a model instance.}
 }
 \author{
-Daniel Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 \note{
 It is a good idea to set \code{depth} to a small number rather than leave it at the default value.
@@ -49,7 +49,7 @@ In that case,the first URL will contain no data, and the second URL can be used 
 }
 
 \seealso{
-\code{\link{WebCrawler}}, \code{\link{ParseModelPage}}, \code{\link{NOMADSList}}, \code{\link{GribGrab}}
+\code{\link{WebCrawler}}, \code{\link{ParseModelPage}}, \code{\link{NOMADSRealTimeList}}, \code{\link{GribGrab}}
 }
 \examples{
 

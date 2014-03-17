@@ -23,7 +23,7 @@ This is an internal function that helps make sure variable and level names creat
 \item{good.str}{A vector of strings with illegal URL characters replaced by their percent encoding}
 }
 \author{
-Daniel Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 
 \examples{

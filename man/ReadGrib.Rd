@@ -4,13 +4,13 @@
 Extract data from grib file
 }
 \description{
-This function wraps \code{wgrib2}, an external grib file reader provided by the National Weather Service Climate Prediction Center (see \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}).
-\code{ReadGrib} extracts forecast data for the specified variables and levels into R in CSV format.
-It does this by building an argument string, executing a system call to \code{wgrib2}, and extracting the result.
-Note that \code{wgrib2} must be installed for \code{ReadGrib} to work.
+This function wraps \code{wgrib2} and \code{wgrib}, external grib file readers provided by the National Weather Service Climate Prediction Center (see \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/} and \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html}).
+\code{ReadGrib} extracts forecast data into R.
+It does this by building an argument string, executing a system call to the appropriate external grib file reader, and extracting the result.
+Note that \code{wgrib2} must be installed for \code{ReadGrib} to work for current grib files, and \code{wgrib} may need to be installed when looking at archived data.
 }
 \usage{
-ReadGrib(file.name, levels, variables)
+ReadGrib(file.name, levels, variables, file.type = "grib2")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,22 +23,21 @@ The path and file name of the grib file to read.
   \item{variables}{
   The variables to extract.
 }
+  \item{file.type}{
+  Whether the file is in GRIB (\code{"grib1"}) or GRIB2 (\code{"grib2"}) format.
+  Default is \code{"grib2"}.
+}
 }
 \details{
-This function constructs a system call to \code{wgrib2}.
-Therefore, you must have installed \code{wgrib2} and made it available on the system path.
-A description of \code{wgrib2} and installation links are available at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}.
-Note that Windows users will likely have to use a UNIX emulator like Cygwin to install \code{wgrib2}. 
+This function constructs system calls to \code{wgrib} and \code{wgrib2}.
+Therefore, you must have installed these programs and made it available on the system path.
+Unless you are interested in accessing archive data that's more than a few years old, you can \code{install} wgrib2 only.
+A description of \code{wgrib2} and installation links are available at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/} and \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html}.
+Note that Windows users will likely have to use a UNIX emulator like Cygwin to install these programs.
+Also, rNOMADS is focused towards GRIB2 files; I have included GRIB1 format support as a convenience.
 }
 \value{
-An array containing \code{wgrib2} output, with headers:
-\item{model.run.date}{When the model was computed (GMT)}
-\item{forecast.date}{The forecast date (GMT)}
-\item{variable}{The data type}
-\item{level}{What vertical level the data is located in}
-\item{lon}{Longitude value of grid point}
-\item{lat}{The latitude value of grid point}
-\item{value}{The value of the given variable, at the given level, at the location defined by \code{lon} and \code{lat}}
+\item{model.data}{A structure with a series of elements containing data extracted from the grib file.}
 }
 \references{
 Ebisuzaki, W, Bokhorst, R., Hyvatti, J., Jovic, D., Nilssen, K,  
@@ -47,17 +46,16 @@ Ebisuzaki, W, Bokhorst, R., Hyvatti, J., Jovic, D., Nilssen, K,
     \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}
 }
 \author{
-Daniel Bowman \email{daniel.bowman@unc.edu}
-}
-\note{
-The \code{wgrib2} utility is a very powerful grib file manipulator - the \code{rNOMADS} package only scratches the surface of what it can do.
+Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 
 \seealso{
-\code{\link{GribGrab}}, \code{\link{ModelGrid}}
+\code{\link{GribGrab}}, \code{\link{ArchiveGribGrab}}, \code{\link{ModelGrid}}
 }
 \examples{
 
+#Operational Forecast Data Extraction
+#NCEP output is always in GRIB2 format - this makes things easy for us
 #An example for the Global Forecast System 0.5 degree model
 
 #Get the latest model url
@@ -79,17 +77,31 @@ levels <- c("2 m above ground", "800 mb")
 variables <- c("TMP", "RH") #Temperature and relative humidity
 
 #Get the data
-\dontrun{file.name <- GribGrab(urls.out[1], my.pred, levels, variables)}
+\dontrun{model.info <- GribGrab(urls.out[1], my.pred, levels, variables)}
 
 #Extract the data
-\dontrun{model.data <- ReadGrib(file.name, levels, variables)}
+\dontrun{model.data <- ReadGrib(model.info$file.name, levels, variables)}
 
 #Reformat it
-\dontrun{model.grid <- ModelGrid(model.data)}
+\dontrun{model.grid <- ModelGrid(model.data, c(0.5, 0.5))}
 
 #Show an image of world temperature at ground level
 \dontrun{image(model.grid$z[2, 1,,])}
 
+
+#Archived Data Extraction
+#This is sometimes in GRIB1 format
+#This example is in GRIB1
+
+abbrev <- "gfs-anl"
+model.date <- 20040302 #March 2, 2004
+model.run <- 18 #1800 GMT model run
+pred <- 0 #Analysis
+
+\dontrun{grib.info <- ArchiveGribGrab(abbrev, model.date, model.run,
+    pred, file.type = "grib1")}
+
+\dontrun{model.data <- ReadGrib(grib.info$file.name, c("1000 mb"), c("TMP"), 
+    file.type = "grib1")}
 }
-\keyword{ interface }
 \keyword{ file }

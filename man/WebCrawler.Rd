@@ -32,7 +32,7 @@ WebCrawler(url, depth = NULL, verbose = TRUE)
 \item{urls.out}{A list of web page addresses, each of which corresponds to a model instance.}
 }
 \author{
-Daniel Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 \note{
 While it might be fun to try \code{WebCrawler} on a large website such as Google, the results will be unpredictable and perhaps disastrous if \code{depth} is not set.
@@ -48,7 +48,7 @@ This is because there is no protection against infinite recursion.
 #GFS 0.5x0.5 model
 
 \dontrun{urls.out <- WebCrawler(
-"http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_hd.pl", depth = 100)}
+"http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_hd.pl", depth = 10)}
 
 }
 \keyword{ connection }

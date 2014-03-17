@@ -16,3 +16,7 @@ This has necessitated major changes to some functions.
 See the supplied vignette link on the rNOMADS page on CRAN for examples of how the new rNOMADS code works.
 The lack of a good GRIB file format reader in R is still vexing, and I plan to write a small package to take care of this.
 A future version of rNOMADS will call this package to remove the necessity of installing third party software.
+
+1.3-0
+Added support for archived model data, and the ability to read in GRIB1 files using the external "wgrib" series of codes.
+Also added some nice tools to quickly generate atmospheric profiles and so forth.

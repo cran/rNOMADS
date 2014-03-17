@@ -12,7 +12,7 @@ ParseModelPage(model.url)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{model.url}{
-   The URL of the model to extract information from, probably returned by \code{\link{NOMADSList}}.
+   The URL of the model to extract information from, probably returned by \code{\link{NOMADSRealTimeList}}.
 }
 }
 \details{
@@ -27,11 +27,11 @@ Variables are types of data (temperature, for example).
 \item{variables}{Data types}
 }
 \author{
-Daniel Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 \note{
 Many of the names for predictions, levels, and variables are somewhat cryptic.
-Future versions of \code{rNOMADS} may have a reference function similar to \code{\link{NOMADSList}} to help users with this issue.
+Future versions of \code{rNOMADS} may have a reference function similar to \code{\link{NOMADSRealTimeList}} to help users with this issue.
 }
 
 \seealso{

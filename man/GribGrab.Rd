@@ -5,13 +5,14 @@ Download model data from the NOMADS server.
 }
 \description{
 This function interfaces with the programming API at \url{http://nomads.ncep.noaa.gov/} to download NOMADS model data.
-The available models (54 in total) can be viewed by calling \code{\link{NOMADSList}} without arguments.
+The available models (54 in total) can be viewed by calling \code{\link{NOMADSRealTimeList}} without arguments.
 The data arrives in grib (gridded binary) format that can be read with \code{\link{ReadGrib}}.
 }
 \usage{
 GribGrab(model.url, pred, levels, variables, 
     local.dir = ".", file.name = "fcst.grb",
-    model.domain = NULL, tidy = FALSE, verbose = TRUE)
+    model.domain = NULL, tidy = FALSE, verbose = TRUE,
+    check.url = TRUE, download.method = NULL)
 }
 \arguments{
   \item{model.url}{
@@ -19,12 +20,12 @@ GribGrab(model.url, pred, levels, variables,
 }
   \item{pred}{
       The list of predictions (or model times) determined by the specific model from \code{model.url}
-  }
-  \item{variables}{
-  A list of model variables to download.
 }
   \item{levels}{
   A list of model levels to download.
+}
+  \item{variables}{
+  A list of model variables to download.
 }
   \item{local.dir}{
   Where to save the grib file, defaults to the current directory.
@@ -42,16 +43,24 @@ GribGrab(model.url, pred, levels, variables,
   \item{verbose}{
   If \code{TRUE}, give information on connection status.  Default \code{TRUE}
 }
+ \item{check.url}{
+  If \code{TRUE}, verify that the model URL is real and contains data.  Default \code{TRUE}
+}
+ \item{download.method}{
+  Allows the user to set the download method used by \code{download.file}: \code{"internal"}, \code{"wget"} \code{"curl"}, \code{"lynx"}.
+  If \code{NULL} (the default), let R decide.
+}
 }
 \value{
-\item{file.name}{the name of the grib file that was downloaded.}
-
+\item{grib.info$local.dir}{The absolute path to the grib file that was downloaded.}
+\item{grib.info$file.name}{The name of the grib file that was downloaded.}
+\item{grib.info$url}{The URL that the grib file was downloaded from}
 }
 \references{
 \url{http://nomads.ncep.noaa.gov/}
 }
 \author{
-Daniel Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 
 \seealso{
@@ -80,13 +89,13 @@ levels <- c("2 m above ground", "800 mb")
 variables <- c("TMP", "RH") #Temperature and relative humidity
 
 #Get the data
-\dontrun{file.name <- GribGrab(urls.out[1], my.pred, levels, variables)}
+\dontrun{grib.info <- GribGrab(urls.out[1], my.pred, levels, variables)}
 
 #Extract the data
-\dontrun{model.data <- ReadGrib(file.name, levels, variables)}
+\dontrun{model.data <- ReadGrib(grib.info$file.name, levels, variables)}
 
 #Reformat it
-\dontrun{model.grid <- ModelGrid(model.data)}
+\dontrun{model.grid <- ModelGrid(model.data, c(0.5, 0.5))}
 
 #Show an image of world temperature at ground level
 \dontrun{image(model.grid$z[2, 1,,])}
