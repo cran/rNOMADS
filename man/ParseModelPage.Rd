@@ -42,7 +42,7 @@ Future versions of \code{rNOMADS} may have a reference function similar to \code
 #An example for the Global Forecast System 0.5 degree model
 
 #Get the latest model url
-\dontrun{urls.out <- CrawlModels(abbrev = "gfs0.5", depth = 1)}
+\dontrun{urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 1)}
 
 #Get a list of forecasts, variables and levels
 \dontrun{model.parameters <- ParseModelPage(urls.out[1])}

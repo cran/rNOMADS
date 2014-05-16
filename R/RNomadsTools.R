@@ -75,7 +75,7 @@ GetClosestGFSForecasts <- function(forecast.date, model.date = "latest", depth =
        print("Finding model run dates...")
    }
    if(model.date == "latest")  {
-       urls.out <- CrawlModels(abbrev = "gfs0.5", depth = 2, verbose = verbose)
+       urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 2, verbose = verbose)
        model.parameters <- ParseModelPage(urls.out[1])
        if(length(model.parameters$pred) == 0) { #No data in latest model, try next latest
            model.parameters <- ParseModelPage(urls.out[2]) 
@@ -88,7 +88,7 @@ GetClosestGFSForecasts <- function(forecast.date, model.date = "latest", depth =
            url.to.use <- urls.out[1]
        }
     } else {
-         urls.out <- CrawlModels(abbrev = "gfs0.5", depth = depth, verbose = verbose)
+         urls.out <- CrawlModels(abbrev = "gfs_hd", depth = depth, verbose = verbose)
          model.run.dates <- unlist(stringr::str_extract_all(urls.out, "\\d{10}")) 
          if(model.date %in% model.run.dates) {
               url.to.use <- urls.out[which(model.date == model.run.dates)]

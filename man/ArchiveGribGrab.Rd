@@ -68,8 +68,9 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 #Get data for January 1 2014
 #Temperature at 2 m above ground
 #3 hour prediction
+# using GRIB
 
-abbrev <- "gfs-anl"
+abbrev <- "gfsanl"
 model.date <- 20140101
 model.run <- 06
 pred <- 3

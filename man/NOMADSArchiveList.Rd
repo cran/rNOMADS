@@ -8,10 +8,12 @@ A list of abbreviations, names and URLs for the NOMADS models archived on the NC
 Users can refer to this list to find out more information about the available models, and rNOMADS uses the abbreviations to determine how to access the archives.
 }
 \usage{
-NOMADSArchiveList(abbrev = NULL)
+NOMADSArchiveList(url.type, abbrev = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
+   \item{url.type}{
+   Determine whether to return a URL for extracting GRIB files (\code{"grib"}) or for getting ascii format data directly from the server (\code{"dods"}).}
   \item{abbrev}{
    Return information about the model that this abbreviation refers to.
    Defaults to \code{NULL}, in which case information about all the models available through \code{rNOMADS}.
@@ -33,7 +35,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 
 #The archived model list in rNOMADS
 
-archived.model.list <- NOMADSArchiveList()
+archived.model.list <- NOMADSArchiveList("grib")
 
 }
 \keyword{ documentation }

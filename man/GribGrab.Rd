@@ -1,11 +1,11 @@
 \name{GribGrab}
 \alias{GribGrab}
 \title{
-Download model data from the NOMADS server.
+Download grib file from the NOMADS server.
 }
 \description{
 This function interfaces with the programming API at \url{http://nomads.ncep.noaa.gov/} to download NOMADS model data.
-The available models (54 in total) can be viewed by calling \code{\link{NOMADSRealTimeList}} without arguments.
+The available models can be viewed by calling \code{\link{NOMADSRealTimeList}}.
 The data arrives in grib (gridded binary) format that can be read with \code{\link{ReadGrib}}.
 }
 \usage{
@@ -63,6 +63,10 @@ GribGrab(model.url, pred, levels, variables,
 Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 
+\note{
+This requires the external programs \code{wgrib2} and\\or \code{wgrib} to be installed (depending on whether the files are in GRIB2 or GRIB format).
+Currently, these routines are only available on Unix/Linux systems.
+When a native R reader for GRIB is available, it will be integrated with rNOMADS.}
 \seealso{
 \code{\link{CrawlModels}}, \code{\link{ParseModelPage}}, \code{\link{ReadGrib}}
 }
@@ -71,7 +75,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 #An example for the Global Forecast System 0.5 degree model
 
 #Get the latest model url
-\dontrun{urls.out <- CrawlModels(abbrev = "gfs0.5", depth = 1)}
+\dontrun{urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 1)}
 
 #Get a list of forecasts, variables and levels
 \dontrun{model.parameters <- ParseModelPage(urls.out[1])}

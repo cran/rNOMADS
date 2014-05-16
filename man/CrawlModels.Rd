@@ -56,7 +56,7 @@ In that case,the first URL will contain no data, and the second URL can be used 
 #Get the latest 5 instances
 #for the Global Forecast System 0.5 degree model
 
-\dontrun{urls.out <- CrawlModels(abbrev = "gfs0.5", depth = 5)}
+\dontrun{urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 5)}
 
 }
 \keyword{ connection }

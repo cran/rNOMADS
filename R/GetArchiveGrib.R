@@ -41,7 +41,7 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, pred, local.dir = "."
     }
 
     #Get model info and set up URL to archive
-    model.url <- NOMADSArchiveList(abbrev)$url
+    model.url <- NOMADSArchiveList("grib", abbrev=abbrev)$url
     download.url <- paste0(model.url, paste(model.date[1:6], collapse = ""), "/", paste(model.date, collapse = ""), "/") 
     file.part <- paste0(paste(model.date, collapse = ""), "_", sprintf("%02.f", model.run), "00_", sprintf("%03.f", pred), suffix)
 
@@ -101,7 +101,7 @@ CheckNOMADSArchive <- function(abbrev, model.date = NULL) {
     #        $PRED - What predictions are available
     #        $FILE.NAME - The grib file with model data for the date, model run, and prediction
 
-    model.url <- NOMADSArchiveList(abbrev)$url
+    model.url <- NOMADSArchiveList("grib", abbrev=abbrev)$url
     model.list <- c()
     if(is.null(model.date)) { #Check all available dates
         #Find out which months are available
@@ -135,67 +135,3 @@ CheckNOMADSArchive <- function(abbrev, model.date = NULL) {
      invisible(available.models)
         
 }
-NOMADSArchiveList <- function(abbrev = NULL) {
-    #Returns a list of model abbreviations for archived models, a short description, and URL for each model offered by the NOMADS server
-    #If a specific model abbreviation is requested, the abbreviation is checked against the model list.
-    #If a match is found, information is returned about that model; otherwise an error occurs
-    #INPUTS
-    #    ABBREV is the model abbreviation that rNOMADS uses to figure out which model you want.
-    #        If NULL, returns information on all models
-    #OUTPUTS
-    #    MODEL.LIST - a list of model metadata with elements
-    #        $ABBREV - the abbrevation used to call the model in rNOMADS
-    #        $NAME - the name of the model
-    #        $URL - the location of the model on the NOMADS website
-
-    abbrevs <- c(
-       "ruc20",
-       "ruc13",
-       "nam-nrt",
-       "gfs-nrt1.0",
-       "gfs-nrt0.5",
-       "rap-nrt20",
-       "rap-nrt13",
-       "gfs-anl", 
-       "ruc-anl",
-       "nam-anl"
-       )
-
-    names <- c(
-        "Rapid Update Cycle 20 km grid",
-        "Rapid Update Cycle 13 km grid",
-        "North American Mesoscale, Near Real Time",
-        "Global Forecast System, Near Real Time, 1 degree grid",
-        "Global Forecast System, Near Real Time, 0.5 degree grid",
-        "Rapid Refresh Weather Prediction System - Near Real Time, 20 km grid",
-        "Rapid Refresh Weather Prediction System - Near Real Time, 13 km grid",
-        "Global Forecast System, Analysis",
-        "Rapid Update Cycle, Analysis",
-        "North American Mesoscale, Analysis"
-         )
-
-    urls <- c(
-        "http://nomads.ncdc.noaa.gov/data/ruc/",
-        "http://nomads.ncdc.noaa.gov/data/ruc13",
-        "http://nomads.ncdc.noaa.gov/data/meso-eta-hi/",
-        "http://nomads.ncdc.noaa.gov/data/gfs-avn-hi/",
-        "http://nomads.ncdc.noaa.gov/data/gfs4/",
-        "http://nomads.ncdc.noaa.gov/data/rap252/",
-        "http://nomads.ncdc.noaa.gov/data/rap130/", 
-        "http://nomads.ncdc.noaa.gov/data/gfsanl/",
-        "http://nomads.ncdc.noaa.gov/data/rucanl/",
-        "http://nomads.ncdc.noaa.gov/data/namanl/"
-    )
-
-    if(!is.null(abbrev)) {
-        i <- which(abbrevs == abbrev)
-        if(length(i) == 0) {
-            stop(paste("The model you searched for:\"", abbrev, "\"is not included in rNOMADS.  Sorry!"))
-        } else {
-             return(list(abbrev = abbrev, name = names[i], url = urls[i]))
-        }
-    }
-    
-    return(list(abbrevs = abbrevs, names = names, urls = urls))
-}
-

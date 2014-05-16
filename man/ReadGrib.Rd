@@ -59,7 +59,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 #An example for the Global Forecast System 0.5 degree model
 
 #Get the latest model url
-\dontrun{urls.out <- CrawlModels(abbrev = "gfs0.5", depth = 1)}
+\dontrun{urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 1)}
 
 #Get a list of forecasts, variables and levels
 \dontrun{model.parameters <- ParseModelPage(urls.out[1])}
@@ -93,7 +93,7 @@ variables <- c("TMP", "RH") #Temperature and relative humidity
 #This is sometimes in GRIB1 format
 #This example is in GRIB1
 
-abbrev <- "gfs-anl"
+abbrev <- "gfsanl"
 model.date <- 20040302 #March 2, 2004
 model.run <- 18 #1800 GMT model run
 pred <- 0 #Analysis

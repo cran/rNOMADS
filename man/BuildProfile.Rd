@@ -45,7 +45,7 @@ lat <- 35.907562
 
 #Get latest GFS 0.5 model, use analysis forecast
 \dontrun{
-model.url <- CrawlModels(abbrev = "gfs0.5", depth = 1)[1]
+model.url <- CrawlModels(abbrev = "gfs_hd", depth = 1)[1]
 pred <- ParseModelPage(model.url)$pred[1]
 }
 

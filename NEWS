@@ -20,3 +20,10 @@ A future version of rNOMADS will call this package to remove the necessity of in
 1.3-0
 Added support for archived model data, and the ability to read in GRIB1 files using the external "wgrib" series of codes.
 Also added some nice tools to quickly generate atmospheric profiles and so forth.
+
+2.0-0
+Implemented support for the GrADS-DODS data retrieval system.
+rNOMADS can now import data directly into R for all operating systems, not just Linux.
+Since this is a very major change, I have incremented the version accordingly.
+EXISTING USERS SHOULD NOTE THAT MODEL ABBREVIATIONS HAVE CHANGED.
+I am sorry for this necessity but I had to conform with the existing NOMADS URL structure.
