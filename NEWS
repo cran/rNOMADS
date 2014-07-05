@@ -27,3 +27,7 @@ rNOMADS can now import data directly into R for all operating systems, not just 
 Since this is a very major change, I have incremented the version accordingly.
 EXISTING USERS SHOULD NOTE THAT MODEL ABBREVIATIONS HAVE CHANGED.
 I am sorry for this necessity but I had to conform with the existing NOMADS URL structure.
+
+2.0-1
+Fixed some bugs, including a problem with ModelGrid caused by an update in the "fields" package.
+Added two new global models.
