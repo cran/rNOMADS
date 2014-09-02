@@ -75,20 +75,21 @@ model.date <- 20140101
 model.run <- 06
 pred <- 3
 
-\dontrun{model.info <- ArchiveGribGrab(abbrev, model.date, 
-    model.run, pred, file.type = "grib2")}
-\dontrun{model.data <- ReadGrib(model.info$file.name, c("2 m above ground"), c("TMP"))}
+\dontrun{
+model.info <- ArchiveGribGrab(abbrev, model.date, 
+    model.run, pred, file.type = "grib2")
+model.data <- ReadGrib(model.info$file.name, c("2 m above ground"), c("TMP"))
 
 #Transform to grid
-\dontrun{gridded.data <- ModelGrid(model.data, c(0.5, 0.5))}
+gridded.data <- ModelGrid(model.data, c(0.5, 0.5))
 
 #Get surface temperature in Chapel Hill, NC
 lat <- 35.907605
 lon <- -79.052147
 
-\dontrun{profile.data <- BuildProfile(gridded.data, lon, lat, TRUE)}
-\dontrun{print(paste0("The temperature prediction in Chapel Hill was ", 
-    sprintf("\%.0f", profile.data[1,1] - 272.15), " degrees Celsius."))}
-
+profile.data <- BuildProfile(gridded.data, lon, lat, TRUE)
+print(paste0("The temperature prediction in Chapel Hill was ", 
+    sprintf("\%.0f", profile.data[1,1] - 272.15), " degrees Celsius."))
+}
 }
 \keyword{ connection }

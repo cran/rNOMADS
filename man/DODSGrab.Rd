@@ -10,7 +10,7 @@ The data arrives in ascii format, so this function can be used to retrieve data 
 }
 \usage{
 DODSGrab(model.url, model.run, variable, time, lon, lat,
-    levels = NULL, display.url = TRUE)
+    levels = NULL, display.url = TRUE, verbose = FALSE)
 }
 \arguments{
   \item{model.url}{
@@ -37,7 +37,9 @@ DODSGrab(model.url, model.run, variable, time, lon, lat,
   \item{display.url}{
     If \code{TRUE}, print out the URL for the data request.
 } 
-
+  \item{verbose}{
+    If \code{TRUE}, give a very detailed description of the download.  Default \code{FALSE}.
+}
 }
 \value{
 \item{model.data}{A structure with a series of elements containing data extracted from GrADS-DODS system.}

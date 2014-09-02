@@ -1,4 +1,37 @@
-ReadGrib <- function(file.name, levels, variables, file.type = "grib2") {
+GribInfo <- function(grib.file, file.type = "grib2") {
+    #This function returns information about what's contained in a grib file.
+    #INPUTS
+    #    GRIB.FILE - Path and name of file to examine
+    #    FILE.TYPE = Whether it's a grib2 file ("grib2") or a grib file ("grib1")
+    #OUTPUTS
+    #    GRIB.INFO - What the grib file contains
+    #        $INVENTORY - Information on variables, levels, and forecasts
+    #        $GRID - Information on the model grid, only available in grib2 
+ 
+    if(file.type == "grib2") {
+        test <- tryCatch(system('wgrib2', ignore.stdout=TRUE, ignore.stderr = TRUE))
+        if(test != 8) {
+            stop("wgrib2 does not appear to be installed, or it is not on the PATH variable.
+                You can find wgrib2 here: http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/.
+                If the binaries don't work, try compiling from source.")
+        }
+        inv <- system(paste0("wgrib2 ", grib.file, " -inv -"), intern = TRUE)
+        grid <- system(paste0("wgrib2 ", grib.file, " -grid"), intern = TRUE) 
+    } else if (file.type == "grib1") {
+          test <- tryCatch(system('wgrib', ignore.stdout=TRUE, ignore.stderr = TRUE))
+          if(test != 8) {
+              stop("wgrib does not appear to be installed, or it is not on the PATH variable.
+                  You can find wgrib here: http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html.")
+           }
+        inv <- system(paste0("wgrib ", grib.file), " -s", intern = TRUE)
+        grid <- NULL
+    } else {
+        stop(paste0("Did not recognise file type ", file.type, ".  Please use \"grib2\" or \"grib.\""))
+    }
+    return(list(inventory = inv, grid = grid))
+}
+
+ReadGrib <- function(file.name, levels, variables, file.type = "grib2", missing.data = NULL) {
     #This is a function to read forecast data from a Grib file
     #INPUTS
     #    FILE.NAME - Grib file name
@@ -7,6 +40,9 @@ ReadGrib <- function(file.name, levels, variables, file.type = "grib2") {
     #    FILE.TYPE - whether this is a grib1 or a grib2 file
     #        If grib1, you must have the wgrib program installed
     #        If grib2, you must have the wgrib2 program installed
+    #    MISSING.DATA - Replace missing data in grib archive with this value.
+    #        If NULL, leave the data out.  Only works with wgrib2. Default NULL.
+    #        See Trick 19 here: http://www.ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/tricks.wgrib2
     #OUTPUTS
     #    MODEL.DATA - the grib model as an array, with columns for the model run date (when the model was run)
     #       the forecast (when the model was for), the variable (what kind of data), the level (where in the atmosphere or the Earth, vertically)
@@ -19,7 +55,7 @@ ReadGrib <- function(file.name, levels, variables, file.type = "grib2") {
         if(test != 8) {
             stop("wgrib2 does not appear to be installed, or it is not on the PATH variable.
                 You can find wgrib2 here: http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/.
-                In my experience compiling from source (rather than packages or binaries) work best in Ubuntu.")
+                If the binaries don't work, try compiling from source.")
         }
         match.str <- ' -match "('
         for(var in variables) {
@@ -42,9 +78,20 @@ ReadGrib <- function(file.name, levels, variables, file.type = "grib2") {
         match.str <- paste(match.str, '"', sep = "")
         match.str <- paste(match.str.lst[1:(length(match.str.lst) - 1)], collapse = "")
         match.str <- paste(match.str, ")\"", sep = "")
-    
+   
+        if(!is.null(missing.data) & !is.numeric(missing.data)) {
+            warning(paste("Your value", missing.data, " for missing data does not appear to be a number!"))
+        }
+        if(!(is.null(missing.data))) {
+            missing.data.str <- paste0(" -rpn \"sto_1:", missing.data, ":rcl_1:merge\"")
+        } else {
+            missing.data.str <- ""
+        }
+
         wg2.str <- paste('wgrib2 ',     
-            file.name, ' -inv my.inv -csv - -no_header', 
+            file.name, ' -inv my.inv',
+            missing.data.str,
+            ' -csv - -no_header', 
             match.str, sep = "")
         
         #Get the data from the grib file in CSV format

@@ -2,21 +2,25 @@ Package: rNOMADS
 Type: Package
 Title: An interface to the NOAA Operational Model Archive and
         Distribution System
-Version: 2.0.1
-Date: 2014-07-04
+Version: 2.0.2
+Date: 2014-09-02
 Authors@R: c(person(given="Daniel C.",family="Bowman", role=c("aut", "cre"),
         email="daniel.bowman@unc.edu"))
-Depends: R (>= 3.1.0)
+Depends: R (>= 3.1.1)
 Imports: scrapeR (>= 0.1.6), stringr (>= 0.6.2), fields (>= 6.7.6), XML
         (>= 3.98.1.1), GEOmap (>= 2.1), MBA, RCurl (>= 1.95-4.1)
-Description: An interface to the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) that allows R users to quickly and efficiently download global and regional weather model data for processing.  rNOMADS currently supports a variety of models ranging from global weather data to an altitude of 40 km, to high resolution regional weather models, to wave and sea ice models. It can also retrieve archived NOMADS models.  rNOMADS can retrieve binary data in GRIB format as well as import ascii data directly into R by interfacing with the GrADS-DODS system.
+Description: An interface to the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) that allows R users to quickly and efficiently download global and regional weather model data for processing.  rNOMADS currently supports a variety of models ranging from global weather data to an altitude of 40 km, to high resolution regional weather models, to wave and sea ice models. It can also retrieve archived NOMADS models.  rNOMADS can retrieve binary data in grib format as well as import ascii data directly into R by interfacing with the GrADS-DODS system.
 License: GPL (>= 3)
-URL: http://code.google.com/p/bovine-aerospace/ (subversion repository)
+URL: https://r-forge.r-project.org/projects/rnomads/ (subversion
+        repository)
         http://www.unc.edu/~haksaeng/rNOMADS/rNOMADS_dods_examples.pdf
+        (GrADS-DODS examples)
         http://www.unc.edu/~haksaeng/rNOMADS/rNOMADS_grib_examples.pdf
-Packaged: 2014-07-04 20:09:42 UTC; dantayaga
+        (grib examples)
+Packaged: 2014-09-02 16:32:57 UTC; bowman
 Maintainer: Daniel C. Bowman <daniel.bowman@unc.edu>
+MailingList: rnomads-user@lists.r-forge.r-project.org
 Author: Daniel C. Bowman [aut, cre]
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2014-07-05 10:02:01
+Date/Publication: 2014-09-02 19:42:23

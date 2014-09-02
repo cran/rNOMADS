@@ -91,7 +91,7 @@ exact.hgt <- (heights[,1] * abs(forecasts$fore.hr) + heights[,2] * abs(forecasts
 plot(c(min(temps), max(temps)), c(min(heights), max(heights)), type = "n",
     xlab = "Temperature (C)", ylab = "Height (m)")
 points(temps[,1], heights[,1], pch = 1, col = 1)
-points(temps[,1], heights[,2], pch = 2, col = 2)
+points(temps[,2], heights[,2], pch = 2, col = 2)
 lines(exact.temp, exact.hgt, col = 3, lty = 2)
 legend("topleft", pch = c(1, 2, NA), lty = c(NA, NA, 2), col = c(1, 2, 3),
    legend = c(forecasts$back.forecast, forecasts$fore.forecast, as.character(Sys.time())))

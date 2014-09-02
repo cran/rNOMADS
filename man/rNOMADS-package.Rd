@@ -7,7 +7,7 @@ An interface to the NOAA Operational Model Archive and Distribution System
 }
 \description{
 Automatically download forecast data from the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) and read it into R.
-This can be done in two ways: reading ascii data directly from the server using the DODS-GrADS system (all operating systems, just needs an internet connection) or downloading binary files in GRIB format (linux only, or until a native R reader for GRIB is available).
+This can be done in two ways: reading ascii data directly from the server using the DODS-GrADS system (all operating systems, just needs an Internet connection) or downloading binary files in GRIB format (Linux and Mac OS only, or until a native R reader for GRIB is available).
 The grib capability of \code{rNOMADS} uses an external series of routines called \code{wgrib2} to read operational model data; get \code{wgrib2} at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}.
 The package will also attempt to call another external routine called \code{wgrib} if the user wishes to read GRIB1 files; get \code{wgrib} at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html}.
 }
@@ -15,8 +15,8 @@ The package will also attempt to call another external routine called \code{wgri
 \tabular{ll}{
 Package: \tab rNOMADS\cr
 Type: \tab Package\cr
-Version: \tab 2.0.0\cr
-Date: \tab 2014-05-15\cr
+Version: \tab 2.0.2\cr
+Date: \tab 2014-09-02\cr
 License: \tab GPL v3\cr
 }}
 \author{
@@ -44,15 +44,16 @@ wgrib download page:\cr
 #We use GrADS-DODS here for compatibility.
 
 #Using the Global Forecast System 0.5x0.5 model
-\dontrun{urls.out <- GetDODSDates(abbrev = "gfs_hd")
+\dontrun{
+
+urls.out <- GetDODSDates(abbrev = "gfs_hd")
 model.url <- tail(urls.out$url, 1) #Get most recent model date
-}
 
 #Get most recent model run
 
-\dontrun{model.runs <- GetDODSModelRuns(model.url)
+model.runs <- GetDODSModelRuns(model.url)
 model.run <- tail(model.runs$model.run, 1)
-} 
+ 
 
 #Get ground temperature for the 6 hour prediction
 variable <- "tmp2m" #temp at 2 m
@@ -61,20 +62,20 @@ lon.dom <- seq(0, 360, by = 0.5) #domain of longitudes in model
 lat.dom <- seq(-90, 90, by = 0.5) #domain of latitudes in model
 lon <- which((lon.dom >= 360 - 84) & (lon.dom <= 360 - 74)) - 1 #NOMADS indexes start at 0
 lat <- which((lat.dom <= 37) & (lat.dom >= 32)) - 1 #NOMADS indexes start at 0 
-\dontrun{model.data.surface <- DODSGrab(model.url, model.run, variable, time, c(min(lon), max(lon)), 
-   c(min(lat), max(lat)))}
+model.data.surface <- DODSGrab(model.url, model.run, variable, time, c(min(lon), max(lon)), 
+   c(min(lat), max(lat)))
 
 lev <- c(8, 8) #800 mb level
 variable <- "tmpprs"
-\dontrun{model.data.800mb <- DODSGrab(model.url, model.run, variable, time, c(min(lon), max(lon)),
-   c(min(lat), max(lat)), level = lev)}
+model.data.800mb <- DODSGrab(model.url, model.run, variable, time, c(min(lon), max(lon)),
+   c(min(lat), max(lat)), level = lev)
 
 #Make results into arrays
-\dontrun{model.array.surface <- ModelGrid(model.data.surface, c(0.5, 0.5), "latlon")}
-\dontrun{model.array.800mb <- ModelGrid(model.data.800mb, c(0.5, 0.5), "latlon")}
+model.array.surface <- ModelGrid(model.data.surface, c(0.5, 0.5), "latlon")
+model.array.800mb <- ModelGrid(model.data.800mb, c(0.5, 0.5), "latlon")
 
 #Make a contour plot of the temperature around North Carolina, USA:
-\dontrun{contour(x = model.array.surface$x - 360, y = model.array.surface$y, 
+contour(x = model.array.surface$x - 360, y = model.array.surface$y, 
     model.array.surface$z[1,1,,] - 273.15, xlab = "Longitude", ylab = "Latitude",
    main = paste("North Carolina Surface Temperatures for", 
    model.array.surface$fcst.date, "GMT in Celsius"))

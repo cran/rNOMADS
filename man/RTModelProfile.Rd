@@ -5,6 +5,7 @@ Get an atmospheric profile for a list of locations.
 }
 \description{
 This routine simplifies the rapid generation of data for specific points on the Earth's surface.
+It currently requires \code{grib} support, but future versions will have GrADS-DODS support.
 }
 \usage{
 RTModelProfile(model.url, pred, levels, variables, lon, lat, resolution,
@@ -29,9 +30,9 @@ RTModelProfile(model.url, pred, levels, variables, lon, lat, resolution,
   \item{lat}{
   Latitudes of points of interest.
 }
-  \item{resolution}{Resolution of model, in degrees if Lat/Lon, in kilometers if cartesian, as a 2 element vector (ZONAL, MERIDIONAL)
+  \item{resolution}{Resolution of model, in degrees if Lat/Lon, in kilometers if Cartesian, as a 2 element vector (ZONAL, MERIDIONAL)
 }
-  \item{grid.type}{If the model is gridded in Lat/Lon or cartesian units.  Use \code{"latlon"} if Lat/Lon, \code{"cartesian"} if cartesian.
+  \item{grid.type}{If the model is gridded in Lat/Lon or Cartesian units.  Use \code{"latlon"} if Lat/Lon, \code{"cartesian"} if cartesian.
 }
   \item{model.domain}{A four element vector of latitudes and longitudes that defines a rectangular area to get data for.
      If \code{NULL}, the model domain will be 1 degree past the maximum and minimum defined by \code{lon} and \code{lat} arguments.
@@ -90,7 +91,8 @@ resolution <- c(0.5, 0.5)
 grid.type <- "latlon"
 
 #Get data
-\dontrun{profile <- RTModelProfile(model.url, pred, levels, variables,
+\dontrun{
+profile <- RTModelProfile(model.url, pred, levels, variables,
     lon, lat, resolution, grid.type, spatial.average = TRUE)
 
 #Plot it

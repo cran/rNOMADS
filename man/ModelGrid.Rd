@@ -4,12 +4,14 @@
 Transform model data into an array
 }
 \description{
-This function takes output from \code{\link{ReadGrib}} and produces an array with dimensions: levels x variables x longitudes x latitudes.
+This function takes output from \code{\link{ReadGrib}} or \code{\link{DODSGrab}} and produces an array with dimensions: levels x variables x longitudes x latitudes.
 This greatly reduces the size of the data set as well as makes it easier to manipulate.
+The data must be either in a regular latitude/longitude grid (like the GFS model, for example) or projected to a regular Cartesian grid.
 }
 \usage{
 ModelGrid(model.data, resolution, grid.type = "latlon", 
-    levels = NULL, variables = NULL, model.domain = NULL)
+    levels = NULL, variables = NULL, 
+    model.domain = NULL, cartesian.nodes=NULL)
 }
 \arguments{
   \item{model.data}{
@@ -31,6 +33,10 @@ ModelGrid(model.data, resolution, grid.type = "latlon",
   A vector c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT) of the region to include in output. 
   If NULL, include everything.
 }
+  \item{cartesian.nodes}{
+  If \code{grid.type = "cartesian"}, this is a list of the x and y values that define the grid of the model, in kilometers.
+  Define it as a list with elements x and y, e. g. \code{list(x =  my.x.values, y = my.y.values)}.
+}
 }
 \details{
 If you set the spacing of lon.grid and/or lat.grid coarser than the downloaded model grid, you can reduce the resolution of your model, possibly making it easier to handle.
@@ -44,6 +50,17 @@ If you set the spacing of lon.grid and/or lat.grid coarser than the downloaded m
 \item{model.run.date}{When the forecast model was run}
 \item{fcst.date}{The date of the forecast}
 }
+
+\note{
+Only use this function when the model grid is regular.
+For example, the GFS high resolution model is 0.5 x 0.5 degree across its domain.
+Some models may have a regular Cartesian grid, in which case you must first project the data (see \code{GLOB.XY} in the \code{GEOmap} package), 
+then define the Cartesian spacing using \code{cartesian.nodes}.
+I have provided this function as a convenience since I only use it for manipulating GFS model data.
+I am not sure how well it works for other models. 
+Consider yourself warned!
+}
+
 \author{
 Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }

@@ -7,7 +7,7 @@ Find available model run dates for data on the GrADS - DODS system.
 This function checks the GrADS data server to see what dates and model subsets are available for model specified by ABBREV
 }
 \usage{
-GetDODSDates(abbrev, archive=FALSE, request.sleep=0)
+GetDODSDates(abbrev, archive=FALSE, request.sleep=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,7 +18,7 @@ GetDODSDates(abbrev, archive=FALSE, request.sleep=0)
   Whether the model is on the NCEP real time server (\code{FALSE}) or on the NCDC model archive server (\code{TRUE}).
 }
   \item{request.sleep}{
-  Seconds to pause between HTTP requests when scanning model pages.
+  Seconds to pause between HTTP requests when scanning model pages - this prevents timeouts. Default \code{1}.
   }
 }
 \details{
@@ -35,7 +35,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 \note{
 Sometimes, sending lots of HTTP requests in rapid succession can cause errors.
-If messages resembling \code{"Error: failed to load HTTP resource"} appear, try \code{request.sleep = 1}.
+If messages resembling \code{"Error: failed to load HTTP resource"} appear, try increasing \code{request.sleep}.
 The code will take longer to execute but it will be more likely to finish successfully.
 }
 
@@ -48,12 +48,14 @@ The code will take longer to execute but it will be more likely to finish succes
 
 #Get the latest model url and date
 abbrev <- "gfs_hd"
-\dontrun{urls.out <- GetDODSDates(abbrev)}
-\dontrun{print(paste("Most recent model run:",tail(urls.out$date, 1)))}
+\dontrun{
+urls.out <- GetDODSDates(abbrev)
+print(paste("Most recent model run:",tail(urls.out$date, 1)))
 
 #Get model dates from the GFS archive
 abbrev <- "gfs-avn-hi"
-\dontrun{urls.out <- GetDODSDates(abbrev, archive = TRUE, request.sleep = 1)}
+urls.out <- GetDODSDates(abbrev, archive = TRUE, request.sleep = 1)
+}
 
 }
 

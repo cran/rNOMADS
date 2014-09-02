@@ -65,8 +65,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 
 \note{
 This requires the external programs \code{wgrib2} and\\or \code{wgrib} to be installed (depending on whether the files are in GRIB2 or GRIB format).
-Currently, these routines are only available on Unix/Linux systems.
-When a native R reader for GRIB is available, it will be integrated with rNOMADS.}
+Currently, these routines are only available on Unix/Linux and MacOS systems.}
 \seealso{
 \code{\link{CrawlModels}}, \code{\link{ParseModelPage}}, \code{\link{ReadGrib}}
 }
@@ -75,16 +74,17 @@ When a native R reader for GRIB is available, it will be integrated with rNOMADS
 #An example for the Global Forecast System 0.5 degree model
 
 #Get the latest model url
-\dontrun{urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 1)}
+\dontrun{
+urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 1)
 
 #Get a list of forecasts, variables and levels
-\dontrun{model.parameters <- ParseModelPage(urls.out[1])}
+model.parameters <- ParseModelPage(urls.out[1])
 
 #Figure out which one is the 6 hour forecast
 #provided by the latest model run
 #(will be the forecast from 6-12 hours from the current date) 
 
-\dontrun{my.pred <- model.parameters$pred[grep("06$", model.parameters$pred)]}
+my.pred <- model.parameters$pred[grep("06$", model.parameters$pred)]
 
 #What region of the atmosphere to get data for
 levels <- c("2 m above ground", "800 mb") 
@@ -93,16 +93,16 @@ levels <- c("2 m above ground", "800 mb")
 variables <- c("TMP", "RH") #Temperature and relative humidity
 
 #Get the data
-\dontrun{grib.info <- GribGrab(urls.out[1], my.pred, levels, variables)}
+grib.info <- GribGrab(urls.out[1], my.pred, levels, variables)
 
 #Extract the data
-\dontrun{model.data <- ReadGrib(grib.info$file.name, levels, variables)}
+model.data <- ReadGrib(grib.info$file.name, levels, variables)
 
 #Reformat it
-\dontrun{model.grid <- ModelGrid(model.data, c(0.5, 0.5))}
+model.grid <- ModelGrid(model.data, c(0.5, 0.5))
 
 #Show an image of world temperature at ground level
-\dontrun{image(model.grid$z[2, 1,,])}
-
+image(model.grid$z[2, 1,,])
+}
 }
 \keyword{ connection }

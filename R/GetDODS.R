@@ -1,6 +1,6 @@
 #use the GrADS-DODS capability of NOMADS to get ascii data
 
-GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 0) {
+GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1) {
     #Checks the GrADS data server to see what dates and model subsets are available for model specified by ABBREV.
     #INPUTS
     #    ABBREV - Model abbreviation
@@ -129,7 +129,7 @@ GetDODSModelRunInfo <- function(model.url, model.run) {
    return(model.info)
 }
 
-DODSGrab <- function(model.url, model.run, variable, time, lon, lat, levels = NULL, display.url = TRUE) {
+DODSGrab <- function(model.url, model.run, variable, time, lon, lat, levels = NULL, display.url = TRUE, verbose = FALSE) {
    #Get data from DODS.  Note that this is slower than GribGrab but will work on all operating systems.
    #Also, we can only do one variable at a time.
    #The output of this function will be the same as the output of ReadGrib in order to maintain consistency across rNOMADS.
@@ -145,6 +145,7 @@ DODSGrab <- function(model.url, model.run, variable, time, lon, lat, levels = NU
    #         if not NULL, try to request the variable at a certain level.  Will fail if the variable does not have associated levels.
    #    DISPLAY.URL asks whether to display the URL request for debugging purposes.
    #        You can paste it into your browser to check to make sure things are working correctly
+   #    VERBOSE gives a very talkative description of the download process
    #OUTPUTS
    #    MODEL.DATA - the model as an array, with columns for the model run date (when the model was run)
    #       the forecast (when the model was for), the variable (what kind of data), the level (where in the atmosphere or the Earth, vertically)
@@ -171,7 +172,7 @@ DODSGrab <- function(model.url, model.run, variable, time, lon, lat, levels = NU
 
    #RCurl needs to be loaded for this to work I think
    #data.txt <- readLines(data.url)
-   data.txt.raw <- RCurl::getURL(data.url)
+   data.txt.raw <- RCurl::getURL(data.url, .opts = list(verbose = verbose))
    if(grepl("[eE][rR][rR][oO][rR]", data.txt.raw)) {
        warning(paste0("There may have been an error retrieving data from the NOMADS server.  HTML text is as follows\n", data.txt.raw
        ))
