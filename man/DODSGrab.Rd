@@ -9,8 +9,8 @@ The available models can be viewed by calling \code{\link{NOMADSRealTimeList}} a
 The data arrives in ascii format, so this function can be used to retrieve data on any operating system.
 }
 \usage{
-DODSGrab(model.url, model.run, variable, time, lon, lat,
-    levels = NULL, display.url = TRUE, verbose = FALSE)
+DODSGrab(model.url, model.run, variables, time, lon, lat,
+    levels = NULL, display.url = TRUE, verbose = FALSE, request.sleep = 1)
 }
 \arguments{
   \item{model.url}{
@@ -19,8 +19,8 @@ DODSGrab(model.url, model.run, variable, time, lon, lat,
   \item{model.run}{
       A specific model run to get, probably from \code{\link{GetDODSModelRuns}}.
 }
-  \item{variable}{
-  The data type to get.
+  \item{variables}{
+  A list of the data types to get.
 }
   \item{time}{
   An two component vector denoting which time indices to get.
@@ -39,6 +39,10 @@ DODSGrab(model.url, model.run, variable, time, lon, lat,
 } 
   \item{verbose}{
     If \code{TRUE}, give a very detailed description of the download.  Default \code{FALSE}.
+}
+  \item{request.sleep}{
+   If multiple requests are to be sent to the server, pause by this many seconds between them.
+   This is courteous and also helps prevent timeouts.
 }
 }
 \value{

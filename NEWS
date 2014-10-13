@@ -39,3 +39,8 @@ Added PlotWindProfile, a function to make altitude/azimuth/magnitude wind plots.
 Added GribInfo, a function that returns the inventory of a grib file.
 Modified ModelGrid to explicitly require an xy grid definition for the "cartesian" option.
 This is still experimental and may not work well.
+
+2.0.3
+Added the High Resolution Rapid Refresh model.
+Fixed some model abbreviation and title mismatches in existing models, removed models no longer on NCEP.
+Made it possible for GetDODS to accept multiple variables

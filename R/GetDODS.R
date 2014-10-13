@@ -129,7 +129,7 @@ GetDODSModelRunInfo <- function(model.url, model.run) {
    return(model.info)
 }
 
-DODSGrab <- function(model.url, model.run, variable, time, lon, lat, levels = NULL, display.url = TRUE, verbose = FALSE) {
+DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = NULL, display.url = TRUE, verbose = FALSE, request.sleep = 1) {
    #Get data from DODS.  Note that this is slower than GribGrab but will work on all operating systems.
    #Also, we can only do one variable at a time.
    #The output of this function will be the same as the output of ReadGrib in order to maintain consistency across rNOMADS.
@@ -137,7 +137,7 @@ DODSGrab <- function(model.url, model.run, variable, time, lon, lat, levels = NU
    #INPUTS
    #    MODEL.URL is a URL pointing to a certain model date, probably from GetDODSDates. 
    #    MODEL.RUN is a specified model run, probably from GetDODSModelRuns.
-   #    VARIABLE is a variable from the list returned by GetDODSModelRunInfo
+   #    VARIABLES is a list of variables from the list returned by GetDODSModelRunInfo
    #    TIME is an **index list** of times per info from GetDODSModelRunInfo, "c(x,y)"
    #    LON is an **index list** of longitudes per info from GetDODSModelRunInfo "c(x,y)"
    #    LAT is an **index list** of latitudes per info from GetDODSModelRunInfo "c(x,y)"
@@ -146,89 +146,97 @@ DODSGrab <- function(model.url, model.run, variable, time, lon, lat, levels = NU
    #    DISPLAY.URL asks whether to display the URL request for debugging purposes.
    #        You can paste it into your browser to check to make sure things are working correctly
    #    VERBOSE gives a very talkative description of the download process
+   #   REQUEST.SLEEP says how many seconds to pause between data requests to avoid server timeouts
    #OUTPUTS
    #    MODEL.DATA - the model as an array, with columns for the model run date (when the model was run)
    #       the forecast (when the model was for), the variable (what kind of data), the level (where in the atmosphere or the Earth, vertically)
    #       the longitude, the latitude, and the value of the variable.
 
-   preamble <- paste0(model.url, "/", model.run, ".ascii?", variable)
-   time.str <- paste0("[", paste0(time, collapse = ":"), "]")
-
-   l.ind <- !is.null(levels)
-
-   if(l.ind) {
-       level.str <- paste0("[", paste0(levels, collapse = ":"), "]")
-   } else {
-       level.str <- ""
-   }
-   lat.str <- paste0("[", paste0(lat, collapse = ":"), "]")
-   lon.str <- paste0("[", paste0(lon, collapse = ":"), "]")
-  
-   data.url <- paste0(preamble, time.str, level.str, lat.str, lon.str)  
-   
-   if(display.url) {
-       print(data.url)
-   }
-
-   #RCurl needs to be loaded for this to work I think
-   #data.txt <- readLines(data.url)
-   data.txt.raw <- RCurl::getURL(data.url, .opts = list(verbose = verbose))
-   if(grepl("[eE][rR][rR][oO][rR]", data.txt.raw)) {
-       warning(paste0("There may have been an error retrieving data from the NOMADS server.  HTML text is as follows\n", data.txt.raw
-       ))
-   }
-   data.txt <- unlist(strsplit(data.txt.raw, split = "\\n"))
-   lats <- as.numeric(unlist(strsplit(data.txt[grep("^lat,", data.txt) + 1], split = ",")))
-   lons <- as.numeric(unlist(strsplit(data.txt[grep("^lon,", data.txt) + 1], split = ",")))
- 
-   if(l.ind) {
-       levels <- as.numeric(unlist(strsplit(data.txt[grep("^lev,", data.txt) + 1], split = ",")))
-   }
-   t.ind <- grep("^time,", data.txt)
-   times <- as.numeric(unlist(strsplit(data.txt[t.ind + 1], split = ",")))
-
-   #Extract data values 
-
-   val.txt <- data.txt[2:(t.ind - 1)]    
-   val.txt <- val.txt[val.txt !=""] 
-   val.txt <- stringr::str_replace_all(val.txt, "\\]\\[", ",")
-   val.txt <- stringr::str_replace_all(val.txt, c("\\]|\\["), "")
-
-   model.run.date <- paste0(stringr::str_extract(model.url, "[1-2]\\d{3}[0-1]\\d{1}[0-3]\\d{1}$"), model.run)
-   
-   row.num <- (stringr::str_count(val.txt[1], ",") - 3 + l.ind) * length(val.txt)
-   model.data.tmp <- array(rep("", row.num), dim = c(row.num, 7))
-
    model.data <- list(
-       model.run.date = NULL, 
+       model.run.date = NULL,
        forecast.date  = NULL,
        variables      = NULL,
        levels         = NULL,
        lon            = NULL,
        lat            = NULL,
-       value          = NULL)
-   
-   r.start <- 3 + l.ind #What row to start at
-   for(k in seq_len(length(val.txt))) {
-       val.tmp <- sapply(strsplit(val.txt[k], split = ","), as.numeric)
-       r.end <- length(val.tmp)
-       get.rows <- r.end - r.start + 1
-       model.data$model.run.date <- append(model.data$model.run.date, rep(model.run.date, get.rows))
-       model.data$forecast.date  <- append(model.data$forecast.date, rep(times[val.tmp[1] + 1], get.rows))
-       model.data$variables      <- append(model.data$variables, rep(variable, get.rows))
+       value          = NULL,
+       request.url    = NULL)
+       
+   for(variable in variables) { 
+       preamble <- paste0(model.url, "/", model.run, ".ascii?", variable)
+       time.str <- paste0("[", paste0(time, collapse = ":"), "]")
+    
+       l.ind <- !is.null(levels)
+    
        if(l.ind) {
-           model.data$levels <- append(model.data$levels, rep(levels[val.tmp[2] + 1], get.rows))
+           level.str <- paste0("[", paste0(levels, collapse = ":"), "]")
+       } else {
+           level.str <- ""
        }
-       model.data$lon            <- append(model.data$lon, lons) 
-       model.data$lat            <- append(model.data$lat, rep(lats[val.tmp[2 + l.ind] + 1], get.rows))
-       model.data$value          <- append(model.data$value, val.tmp[r.start:r.end])
-   }
-   
-   if(!l.ind) {
-       model.data$levels <- rep("level not defined", length(model.data$value))
-   }
-
-   model.data$request.url <- data.url
+       lat.str <- paste0("[", paste0(lat, collapse = ":"), "]")
+       lon.str <- paste0("[", paste0(lon, collapse = ":"), "]")
+      
+       data.url <- paste0(preamble, time.str, level.str, lat.str, lon.str)  
+       
+       if(display.url) {
+           print(data.url)
+       }
+    
+       #RCurl needs to be loaded for this to work I think
+       #data.txt <- readLines(data.url)
+       data.txt.raw <- RCurl::getURL(data.url, .opts = list(verbose = verbose))
+       if(grepl("[eE][rR][rR][oO][rR]", data.txt.raw)) {
+           warning(paste0("There may have been an error retrieving data from the NOMADS server.  HTML text is as follows\n", data.txt.raw
+           ))
+       }
+       data.txt <- unlist(strsplit(data.txt.raw, split = "\\n"))
+       lats <- as.numeric(unlist(strsplit(data.txt[grep("^lat,", data.txt) + 1], split = ",")))
+       lons <- as.numeric(unlist(strsplit(data.txt[grep("^lon,", data.txt) + 1], split = ",")))
+     
+       if(l.ind) {
+           levels.out <- as.numeric(unlist(strsplit(data.txt[grep("^lev,", data.txt) + 1], split = ",")))
+       }
+       t.ind <- grep("^time,", data.txt)
+       times <- as.numeric(unlist(strsplit(data.txt[t.ind + 1], split = ",")))
+    
+       #Extract data values 
+    
+       val.txt <- data.txt[2:(t.ind - 1)]    
+       val.txt <- val.txt[val.txt !=""] 
+       val.txt <- stringr::str_replace_all(val.txt, "\\]\\[", ",")
+       val.txt <- stringr::str_replace_all(val.txt, c("\\]|\\["), "")
+    
+       model.run.date <- paste0(stringr::str_extract(model.url, "[1-2]\\d{3}[0-1]\\d{1}[0-3]\\d{1}$"), model.run)
+       
+       row.num <- (stringr::str_count(val.txt[1], ",") - 3 + l.ind) * length(val.txt)
+       model.data.tmp <- array(rep("", row.num), dim = c(row.num, 7))
+    
+       r.start <- 3 + l.ind #What row to start at
+       for(k in seq_len(length(val.txt))) {
+           val.tmp <- sapply(strsplit(val.txt[k], split = ","), as.numeric)
+           r.end <- length(val.tmp)
+           get.rows <- r.end - r.start + 1
+           model.data$model.run.date <- append(model.data$model.run.date, rep(model.run.date, get.rows))
+           model.data$forecast.date  <- append(model.data$forecast.date, rep(times[val.tmp[1] + 1], get.rows))
+           model.data$variables      <- append(model.data$variables, rep(variable, get.rows))
+           if(l.ind) {
+               model.data$levels <- append(model.data$levels, rep(levels.out[val.tmp[2] + 1], get.rows))
+           }
+           model.data$lon            <- append(model.data$lon, lons) 
+           model.data$lat            <- append(model.data$lat, rep(lats[val.tmp[2 + l.ind] + 1], get.rows))
+           model.data$value          <- append(model.data$value, val.tmp[r.start:r.end])
+       }
+       
+       if(!l.ind) {
+           model.data$levels <- rep("level not defined", length(model.data$value))
+       }
+    
+       model.data$request.url <- append(model.data$request.url, data.url)
+    
+       if(length(variables) > 1) {
+           Sys.sleep(request.sleep)
+       }
+}
    return(model.data)
 }
 

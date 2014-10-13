@@ -4,7 +4,7 @@
 Get model coverage and data information for models on GrADS-DODS system.
 }
 \description{
-Given a URL from \code{\link{GetDODSDates}}, find which model runs are available for download on the GrADS - DODS system.
+Given a URL from \code{\link{GetDODSDates}} and a model run from \code{\link{GetDODSModelRuns}}, get information on the model domain, levels, and variables.
 }
 \usage{
 GetDODSModelRunInfo(model.url, model.run)
@@ -15,7 +15,7 @@ GetDODSModelRunInfo(model.url, model.run)
   A URL for a model on the GrADS - DODS system, probably returned by \code{\link{GetDODSDates}}.
 }
   \item{model.run}{
-   A specific model run, probably returned by \code{link{GetDODSModelRuns}}
+   A specific model run, probably returned by \code{\link{GetDODSModelRuns}}
 }
 }
 \details{
@@ -29,7 +29,9 @@ The user can refer to this information to construct calls to the DODS system via
 \author{
 Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
-
+\note{
+This function is very helpful in figuring out what's inside poorly documented models.
+}
 \seealso{
 \code{\link{GetDODSDates}}, \code{\link{GetDODSModelRuns}}, \code{\link{DODSGrab}}
 }

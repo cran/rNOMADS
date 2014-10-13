@@ -17,7 +17,7 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
         stop("URL type must be either \"grib\" or \"dods\"!")
     }
 
-    abbrevs <- c(
+abbrevs <- c(
     "fnl",
     "gfs",
     "gfs_hd",
@@ -36,11 +36,10 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     "aqm_daily",
     "aqm_ozone_1hr",
     "hiresak",
-    "hireseast",
+    "hiresconus",
     "hiresguam",
     "hireshi",
     "hirespr",
-    "hireswest",
     "nam_ak",
     "nam",
     "nam_na",
@@ -51,11 +50,11 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     "nam_hawaiinest",
     "nam_priconest",
     "akrtma",
-    "rtma",
     "rtma2p5",
     "gurtma",
     "hirtma",
     "prrtma",
+    "hrrr_2d",
     "rap",
     "rap32",
     "narre",
@@ -65,6 +64,7 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     "sref_132",
     "ofs",
     "rtofs_hires",
+    "rtofs",
     "seaice",
     "wave",
     "glw",
@@ -90,16 +90,15 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     "NOAA Environmental Modeling System Global Forecast System Aerosol Component 2D",
     "NOAA Environmental Modeling System Global Forecast System Aerosol Component 3D",
     "NOAA Environmental Modeling System Global Forecast System Aerosol Optical Depth",
-    "Air Quality Daily Maximum",
-    "Air Quality Hourly Surface Ozone",
     "Climate Forecast System Flux Products",
     "Climate Forecast System 3D Pressure Products",
+    "Air Quality Daily Maximum",
+    "Air Quality Hourly Surface Ozone",
     "High Res Window Alaska",
-    "High Res Window - East Continental United States",
+    "High Res Window - Continental United States",
     "High Res Window - Guam",
     "High Res Window - Hawaii",
     "High Res Window - Puerto Rico",
-    "High Res Window - West Continental United States", 
     "North American Mesoscale 12 km - Alaska",
     "North American Mesoscale 12 km - Continental United States",
     "North American Mesoscale 12 km - North America",
@@ -110,11 +109,11 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     "North American Mesoscale Nest - Hawaii",
     "North American Mesoscale Nest - Puerto Rico",
     "Real-Time Mesoscale Analysis - Alaska",
-    "Real Time Mesoscale Analysis - Continental United States",
     "Real Time Mesoscale Analysis - Continental United States 2.5 km Resolution",
     "Real Time Mesoscale Analysis - Guam",
     "Real Time Mesoscale Analysis - Hawaii",
     "Real Time Mesoscale Analysis - Puerto Rico",
+    "High Resolution Rapid Refresh",
     "Rapid Refresh Weather Prediction System",
     "Rapid Refresh Weather Prediction System - 32 km Resolution",
     "North American Rapid Refresh Ensemble",
@@ -124,6 +123,7 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     "Short Range Ensemble Forecast - Continental United States 16 km",
     "Real Time Ocean Forecast System - Atlantic",
     "Real Time Ocean Forecast System - Atlantic High Resolution",
+    "Real Time Ocean Forecast System - Global",
     "Sea Ice",
     "Operational Ocean Wave Predictions",
     "Operational Ocean Wave Predictions - Great Lakes",
@@ -135,6 +135,7 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     "Fleet Numerical Meteorology and Oceanography Ensemble Forecast System",
     "U.S. Navy Operational Global Ocean Model") 
 
+
     if(!is.null(abbrev)) {
         i <- which(abbrevs == abbrev)
         if(length(i) == 0) {
@@ -145,14 +146,19 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
             } else {
                 url <- paste0("http://nomads.ncep.noaa.gov:9090/dods/", abbrev, "/")
             }
-             return(list(abbrev = abbrev, name = names[i], url = url))
         }
-    }
-    
-    if(url.type == "grib") {
-        url <- paste0("http://nomads.ncep.noaa.gov/cgi-bin/filter_", abbrevs, ".pl") 
     } else {
-        url <- paste0("http://nomads.ncep.noaa.gov:9090/dods/", abbrevs, "/")
+        if(url.type == "grib") {
+           url <- paste0("http://nomads.ncep.noaa.gov/cgi-bin/filter_", abbrevs, ".pl") 
+        } else {
+           url <- paste0("http://nomads.ncep.noaa.gov:9090/dods/", abbrevs, "/")
+        }
+ 
+   }
+
+    #Handle known exceptions
+    if(url.type == "dods") {
+        url <- stringr::str_replace(url, "hrrr_2d", "hrrr")
     }
 
     return(list(abbrevs = abbrevs, names = names, url = url))
