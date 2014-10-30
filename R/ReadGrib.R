@@ -9,8 +9,11 @@ GribInfo <- function(grib.file, file.type = "grib2") {
     #        $GRID - Information on the model grid, only available in grib2 
  
     if(file.type == "grib2") {
-        test <- tryCatch(system('wgrib2', ignore.stdout=TRUE, ignore.stderr = TRUE))
-        if(test != 8) {
+        op <- options("warn")
+        options(warn = -1)
+        test <- tryCatch(system('wgrib2', intern = TRUE))
+        options(op)
+        if(attr(test, "status") != 8) {
             stop("wgrib2 does not appear to be installed, or it is not on the PATH variable.
                 You can find wgrib2 here: http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/.
                 If the binaries don't work, try compiling from source.")
@@ -18,8 +21,11 @@ GribInfo <- function(grib.file, file.type = "grib2") {
         inv <- system(paste0("wgrib2 ", grib.file, " -inv -"), intern = TRUE)
         grid <- system(paste0("wgrib2 ", grib.file, " -grid"), intern = TRUE) 
     } else if (file.type == "grib1") {
-          test <- tryCatch(system('wgrib', ignore.stdout=TRUE, ignore.stderr = TRUE))
-          if(test != 8) {
+         op <- options("warn")
+         options(warn = -1)
+         test <- tryCatch(system('wgrib', intern = TRUE))
+         options(op)
+          if(attr(test, "status") != 8) {
               stop("wgrib does not appear to be installed, or it is not on the PATH variable.
                   You can find wgrib here: http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html.")
            }
@@ -51,8 +57,11 @@ ReadGrib <- function(file.name, levels, variables, file.type = "grib2", missing.
     #Get specified data from grib file
 
     if(file.type == "grib2") {
-        test <- tryCatch(system('wgrib2', ignore.stdout=TRUE, ignore.stderr = TRUE))
-        if(test != 8) {
+        op <- options("warn")
+        options(warn = -1)
+        test <- tryCatch(system('wgrib2', intern = TRUE))
+        options(op)
+        if(attr(test, "status") != 8) {
             stop("wgrib2 does not appear to be installed, or it is not on the PATH variable.
                 You can find wgrib2 here: http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/.
                 If the binaries don't work, try compiling from source.")
@@ -111,8 +120,11 @@ ReadGrib <- function(file.name, levels, variables, file.type = "grib2", missing.
             grib.type = file.type
             )
       } else if (file.type == "grib1") {
-          test <- tryCatch(system('wgrib', ignore.stdout=TRUE, ignore.stderr = TRUE))
-          if(test != 8) {
+         op <- options("warn")
+         options(warn = -1)
+         test <- tryCatch(system('wgrib', intern = TRUE))
+         options(op)
+          if(attr(test, "status") != 8) {
               stop("wgrib does not appear to be installed, or it is not on the PATH variable.
                   You can find wgrib here: http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html.
                   It is also available as an Ubuntu package.")

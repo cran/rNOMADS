@@ -88,19 +88,20 @@ BuildProfile <- function(gridded.data, lon, lat, spatial.average) {
         dim = c(length(gridded.data$levels), length(gridded.data$variables)))
     #Project to Cartesian grid
     lons <- t(array(rep(gridded.data$x, length(gridded.data$y)), dim = dim(gridded.data$z)[3:4]))
-    lats <- array(rep(rev(gridded.data$y), length(gridded.data$x)), dim = dim(gridded.data$z)[3:4])
+    lats <- array(rep(rev(gridded.data$y), length(gridded.data$x)), dim = rev(dim(gridded.data$z)[3:4]))
+    #lats <- array(rep(gridded.data$y, length(gridded.data$x)), dim = dim(gridded.data$z)[3:4])
     proj <- GEOmap::setPROJ(type = 2, LAT0 = lat, LON0 = lon)
-    cart.pts <- GEOmap::GLOB.XY(as.vector(lats), as.vector(lons), proj)
-    cart.dist <- array(sqrt(cart.pts$x^2 + cart.pts$y^2), dim = c(length(gridded.data$x), length(gridded.data$y)))
+    cart.pts <- GEOmap::GLOB.XY(lats, lons, proj)
     if(spatial.average) {  #Average of 4 nearest points
         for(k in seq_len(length(gridded.data$levels))) {
             for(j in seq_len(length(gridded.data$variables))) {
-                layer.img <- cbind(cart.pts$x, cart.pts$y, as.vector(gridded.data$z[k,j,,]))
+                layer.img <- t(rbind(as.vector(cart.pts$x), as.vector(cart.pts$y[nrow(cart.pts$y):1,]), as.vector(t(gridded.data$z[k,j,,]))))
                 profile.data[k, j] <- MBA::mba.points(layer.img, cbind(0, 0))[[1]][3]
             }
         }
      } else { #Nearest grid node
-         node.ind <- which(cart.dist == min(cart.dist), arr.ind = TRUE)
+         cart.dist <- sqrt(cart.pts$x^2 + cart.pts$y^2)
+         node.ind <- which(cart.dist[nrow(cart.dist):1,] == min(cart.dist), arr.ind = TRUE)
          profile.data <- gridded.data$z[,,node.ind[1], node.ind[2]]
          spatial.average.method <- "Nearest Node"
 
@@ -152,7 +153,7 @@ ModelGrid <- function(model.data, resolution, grid.type = "latlon", levels = NUL
         warning("There appears to be more than one model run date in your model grid!")
     }
 
-    fcst.date <- unique(model.data$forecast.date)
+    fcst.date <- as.POSIXlt(unique(model.data$forecast.date), tz = "GMT")
 
     if(length(fcst.date) > 1) {
         warning("There appears to be more than one model run date in your model grid!")

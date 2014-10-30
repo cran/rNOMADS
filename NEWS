@@ -44,3 +44,8 @@ This is still experimental and may not work well.
 Added the High Resolution Rapid Refresh model.
 Fixed some model abbreviation and title mismatches in existing models, removed models no longer on NCEP.
 Made it possible for GetDODS to accept multiple variables
+
+2.0.4
+Fixed date handing in DODSGrab.
+It now returns actual forecast dates instead of numbers.
+Fixed an insidious bug in BuildProfile that constructed profiles located over places not specified by the user.

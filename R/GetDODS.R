@@ -152,6 +152,9 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
    #       the forecast (when the model was for), the variable (what kind of data), the level (where in the atmosphere or the Earth, vertically)
    #       the longitude, the latitude, and the value of the variable.
 
+   prev.digits <- options("digits")
+   options("digits" = 8)
+
    model.data <- list(
        model.run.date = NULL,
        forecast.date  = NULL,
@@ -197,8 +200,13 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
            levels.out <- as.numeric(unlist(strsplit(data.txt[grep("^lev,", data.txt) + 1], split = ",")))
        }
        t.ind <- grep("^time,", data.txt)
-       times <- as.numeric(unlist(strsplit(data.txt[t.ind + 1], split = ",")))
-    
+
+       prev.digits <- options("digits")
+       options("digits" = 15)
+       num.times <- as.numeric(unlist(strsplit(data.txt[t.ind + 1], split = ",")))
+       options("digits" = prev.digits$digits)
+       times <- as.POSIXlt(as.Date(num.times - 2, origin = "1-1-1"), tz = "GMT") + 3600 * 24 * (num.times - floor(num.times))
+
        #Extract data values 
     
        val.txt <- data.txt[2:(t.ind - 1)]    

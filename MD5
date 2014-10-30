@@ -1,12 +1,12 @@
-71de9873f46079ae0bacaced8f924f8c *DESCRIPTION
+5c62a403e3b02eb7d9a0f87392f8f7fb *DESCRIPTION
 8b54e5a89fbda3af5e077053d40bec76 *NAMESPACE
-1ea11698dd31813d2a7c591c6021c631 *NEWS
+8abbabb4c5e982216309d093bd0d635e *NEWS
 7c5fca27d886b469d97698afa0a9ffe5 *R/GetArchiveGrib.R
-5a643620d3c671f016d3b037106877d7 *R/GetDODS.R
+8020a4b69d6501b25feac2416f654dc4 *R/GetDODS.R
 cfb79120a31c49156f63e668f7c80428 *R/GetRealTimeGrib.R
 19eb65157610abefb202413aed4d0ce8 *R/Models.R
-1942ca1b3a124a616e620b75fe734d26 *R/RNomadsTools.R
-cff8d18f447cb30b4ca79718d8134fc8 *R/ReadGrib.R
+b6964c6927a28e96302311336685d4d0 *R/RNomadsTools.R
+987f1ef4e08f89fee97ad6946fa9b218 *R/ReadGrib.R
 655d7615473825378142c4b6aac9cedd *man/ArchiveGribGrab.Rd
 ca122cdc954c5e0fa0977d46cc3c2cbe *man/BuildProfile.Rd
 0bdff541e2fbd21d7b2e205fca3e8656 *man/CheckNOMADSArchive.Rd
@@ -28,4 +28,4 @@ fac12ae053b5a476a7e12b4a8fe10043 *man/RTModelProfile.Rd
 b4dd595a80d66cc9be93e53a3a4da0c1 *man/ReadGrib.Rd
 6a2249cbb7db7acd1dcfad27a924b3cd *man/SanitizeURL.Rd
 d0f6d0412e8764aa61fa837812c61d28 *man/WebCrawler.Rd
-2f406397a9de22966fb85f056c172340 *man/rNOMADS-package.Rd
+f2cf64980e5e2f11bc86c33646d5dbe3 *man/rNOMADS-package.Rd

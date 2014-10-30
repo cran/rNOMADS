@@ -15,8 +15,8 @@ The package will also attempt to call another external routine called \code{wgri
 \tabular{ll}{
 Package: \tab rNOMADS\cr
 Type: \tab Package\cr
-Version: \tab 2.0.2\cr
-Date: \tab 2014-09-02\cr
+Version: \tab 2.0.4\cr
+Date: \tab 2014-10-30\cr
 License: \tab GPL v3\cr
 }}
 \author{
