@@ -49,3 +49,8 @@ Made it possible for GetDODS to accept multiple variables
 Fixed date handing in DODSGrab.
 It now returns actual forecast dates instead of numbers.
 Fixed an insidious bug in BuildProfile that constructed profiles located over places not specified by the user.
+
+2.1.0
+Changed NOMADSRealTimeList() so that it scans the NOMADS Real Time model repository web site instead of depending on a hard-coded model list.
+This means the rNOMADS real time model list will always be up to date.
+I have not yet made the change for NOMADSArchiveList(); that will come in a future version.

@@ -43,7 +43,9 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, pred, local.dir = "."
     #Get model info and set up URL to archive
     model.url <- NOMADSArchiveList("grib", abbrev=abbrev)$url
     download.url <- paste0(model.url, paste(model.date[1:6], collapse = ""), "/", paste(model.date, collapse = ""), "/") 
-    file.part <- paste0(paste(model.date, collapse = ""), "_", sprintf("%02.f", model.run), "00_", sprintf("%03.f", pred), suffix)
+    file.part <- paste0(paste(model.date, collapse = ""), "_", 
+    sprintf("%02.f", as.numeric(model.run)), 
+    "00_", sprintf("%03.f", as.numeric(pred)), suffix)
 
     #Find out which grib files are in the archive
     doc <- XML::htmlParse(download.url)

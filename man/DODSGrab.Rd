@@ -1,7 +1,7 @@
 \name{DODSGrab}
 \alias{DODSGrab}
 \title{
-Download model data from the NOMADS server using the DODS - GrADS system.
+Download model data from the NOMADS server using the GrADS-DODS system.
 }
 \description{
 This function interfaces with the NOMADS server to download weather, ocean, and sea ice data.

@@ -55,7 +55,10 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 
 #Figure out which forecasts to use
 forecast.date <- as.POSIXlt(Sys.time(), tz = "GMT")
-\dontrun{forecasts <- GetClosestGFSForecasts(forecast.date)}
+
+\dontrun{
+forecasts <- GetClosestGFSForecasts(forecast.date)
+}
 
 #Get levels
 pressure <- c(1, 2, 3, 5, 7,

@@ -4,7 +4,7 @@
 Models available for download through rNOMADS
 }
 \description{
-A list of abbreviations, names and URLs for the NOMADS models.
+Scans the NOMADS Real Time web site to generate a list of available model products.
 Users can refer to this list to find out more information about the available models, and rNOMADS uses the abbreviations to determine which URLs to scan and download.
 }
 \usage{
@@ -28,14 +28,20 @@ NOMADSRealTimeList(url.type, abbrev = NULL)
 Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 
+\note{
+A big thanks to user hrbrmstr at Stack Overflow for helping with the NCEP web site parsing code.
+}
 \seealso{
 \code{\link{WebCrawler}}, \code{\link{ParseModelPage}}, \code{\link{NOMADSArchiveList}}, \code{\link{GribGrab}}, \code{\link{DODSGrab}}
 }
 \examples{
 
-#The full model list in rNOMADS
+\dontrun{
+#Grib filter
+model.list <- NOMADSRealTimeList("grib")
 
+#DODS interface
 model.list <- NOMADSRealTimeList("dods")
-
+}
 }
 \keyword{ documentation }
