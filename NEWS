@@ -54,3 +54,6 @@ Fixed an insidious bug in BuildProfile that constructed profiles located over pl
 Changed NOMADSRealTimeList() so that it scans the NOMADS Real Time model repository web site instead of depending on a hard-coded model list.
 This means the rNOMADS real time model list will always be up to date.
 I have not yet made the change for NOMADSArchiveList(); that will come in a future version.
+
+2.1.1
+Fixed an issue where the previous release broke North American Mesoscale model retrieval using DODS.  Also fixed warnings during CRAN checks because of rvest/XML collisions.

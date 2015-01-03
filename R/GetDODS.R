@@ -16,7 +16,7 @@ GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1) {
     date.pattern <- "[1-2]\\d{3}[0-1]\\d{1}[0-3]\\d{1}$"
     
     if(!archive) {
-        top.url <- NOMADSRealTimeList("dods", abbrev)$url
+        top.url <- unique(NOMADSRealTimeList("dods", abbrev)$url)
     } else {
         if(grepl("anl$", abbrev)) {
             stop(paste("Archived analysis models are not stored by date.",
@@ -25,7 +25,7 @@ GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1) {
                   "and the second is the model run from GetDODSModelRuns.")
                   )
         } else {
-            top.url <- NOMADSArchiveList("dods",abbrev)$url
+            top.url <- unique(NOMADSArchiveList("dods",abbrev)$url)
             if(top.url == "NONE") {
                 stop("The archived model you requested is not available on the NCEP DODS system.")
             }
