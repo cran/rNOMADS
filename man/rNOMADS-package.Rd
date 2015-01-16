@@ -46,7 +46,7 @@ wgrib download page:\cr
 #Using the Global Forecast System 0.5x0.5 model
 \dontrun{
 
-urls.out <- GetDODSDates(abbrev = "gfs_hd")
+urls.out <- GetDODSDates(abbrev = "gfs_0p50")
 model.url <- tail(urls.out$url, 1) #Get most recent model date
 
 #Get most recent model run

@@ -43,7 +43,7 @@ You can find these here: \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib
 #An example for the Global Forecast System 0.5 degree model
 
 #Get the second latest model url, for stability
-urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 2)
+urls.out <- CrawlModels(abbrev = "gfs_0p50", depth = 2)
 
 #Get a list of forecasts, variables and levels
 model.parameters <- ParseModelPage(urls.out[2])

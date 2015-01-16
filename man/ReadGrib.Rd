@@ -64,7 +64,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 
 #Get the latest model url
 \dontrun{
-urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 1)
+urls.out <- CrawlModels(abbrev = "gfs_0p50", depth = 1)
 
 #Get a list of forecasts, variables and levels
 model.parameters <- ParseModelPage(urls.out[1])

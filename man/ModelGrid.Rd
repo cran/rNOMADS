@@ -71,7 +71,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 \examples{
 \dontrun{
 #Get some example data 
-urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 1)
+urls.out <- CrawlModels(abbrev = "gfs_0p50", depth = 1)
 model.parameters <- ParseModelPage(urls.out[1])
 levels <- c("2 m above ground", "100 mb")
 variables <- c("TMP", "RH") #Temperature and relative humidity

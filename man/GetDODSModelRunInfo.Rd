@@ -40,7 +40,7 @@ This function is very helpful in figuring out what's inside poorly documented mo
 #An example for the Global Forecast System 0.5 degree model
 
 #Get some information about the latest model url and date, real time server
-abbrev <- "gfs_hd"
+abbrev <- "gfs_0p50"
 \dontrun{
 urls.out <- GetDODSDates(abbrev)
 model.url <- tail(urls.out$url, 1)

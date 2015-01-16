@@ -1,18 +1,20 @@
-\name{GetClosestGFSForecasts}
-\alias{GetClosestGFSForecasts}
+\name{GetClosestForecasts}
+\alias{GetClosestForecasts}
 \title{
-Get the GFS forecast time closest to a given date
+Get the forecast time closest to a given date for a given model
 }
 \description{
-This function determines which GFS forecast is closest to a given date.
-It returns which forecast precedes the date, and which forecast follows the date.
+This function returns which forecast precedes the date and which forecast follows the date for a given model product.
 Thus a user can average the two forecasts together to provide a precise forecast for a given date.
 }
 \usage{
-GetClosestGFSForecasts(forecast.date, model.date = "latest",
+GetClosestForecasts(abbrev, forecast.date, model.date = "latest",
    depth = NULL, verbose = TRUE)
 }
 \arguments{
+  \item{abbrev}{
+  The requested model product
+}
   \item{forecast.date}{
    What date you want a forecast for, as a date/time object.
    It must be in the GMT time zone.
@@ -57,7 +59,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 forecast.date <- as.POSIXlt(Sys.time(), tz = "GMT")
 
 \dontrun{
-forecasts <- GetClosestGFSForecasts(forecast.date)
+forecasts <- GetClosestForecasts(abbrev = "gfs_0p50", forecast.date)
 }
 
 #Get levels

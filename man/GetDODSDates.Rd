@@ -47,7 +47,7 @@ The code will take longer to execute but it will be more likely to finish succes
 #An example for the Global Forecast System 0.5 degree model
 
 #Get the latest model url and date
-abbrev <- "gfs_hd"
+abbrev <- "gfs_0p50"
 \dontrun{
 urls.out <- GetDODSDates(abbrev)
 print(paste("Most recent model run:",tail(urls.out$date, 1)))

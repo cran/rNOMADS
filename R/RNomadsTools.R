@@ -1,8 +1,9 @@
 #Functions for doing specific useful tasks with rNOMADS
 
-GetClosestGFSForecasts <- function(forecast.date, model.date = "latest", depth = NULL, verbose = TRUE) {
- #Figure out the closest GFS forecasts to a given date, returns both the closest forecast behind and the closest forecast ahead, as well as how far beind and how far ahead
+GetClosestForecasts <- function(abbrev, forecast.date, model.date = "latest", depth = NULL, verbose = TRUE) {
+ #Figure out the closest forecast to a given date, returns both the closest forecast behind and the closest forecast ahead, as well as how far behind and how far ahead
    #INPUTS
+   #    ABBREV - Which model product you want
    #    FORECAST.DATE - What date you want a forecast for, as a date/time object, in GMT
    #    MODEL.DATE - Which model run to use, in YYYYMMDDHH, where HH is 00, 06, 12, 18.  Defaults to "latest", which means get the latest model available.
    #    DEPTH - How many model URLS to exame.  This is only taken into account when model.date!="latest".
@@ -21,12 +22,12 @@ GetClosestGFSForecasts <- function(forecast.date, model.date = "latest", depth =
        print("Finding model run dates...")
    }
    if(model.date == "latest")  {
-       urls.out <- CrawlModels(abbrev = "gfs_hd", depth = 2, verbose = verbose)
+       urls.out <- CrawlModels(abbrev = abbrev, depth = 2, verbose = verbose)
        model.parameters <- ParseModelPage(urls.out[1])
        if(length(model.parameters$pred) == 0) { #No data in latest model, try next latest
            model.parameters <- ParseModelPage(urls.out[2]) 
            if(length(model.parameters$pred) == 0) { #Nothing here either, maybe the server is down?
-               stop("No data found for most recent GFS model run.  Perhaps the NOMADS server is down?")
+               stop("No data found for most recent model run.  Perhaps the NOMADS server is down?")
            } else {
                url.to.use <- urls.out[2]
            }
@@ -34,7 +35,7 @@ GetClosestGFSForecasts <- function(forecast.date, model.date = "latest", depth =
            url.to.use <- urls.out[1]
        }
     } else {
-         urls.out <- CrawlModels(abbrev = "gfs_hd", depth = depth, verbose = verbose)
+         urls.out <- CrawlModels(abbrev = abbrev, depth = depth, verbose = verbose)
          model.run.dates <- unlist(stringr::str_extract_all(urls.out, "\\d{10}")) 
          if(model.date %in% model.run.dates) {
               url.to.use <- urls.out[which(model.date == model.run.dates)]

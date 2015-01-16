@@ -96,7 +96,7 @@ download.file("http://www.unc.edu/~haksaeng/rNOMADS/myTA.RDATA",
    destfile = "myTA.RDATA")
 load("myTA.RDATA")
 #Find the latest Global Forecast System model run
-model.urls <- GetDODSDates("gfs_hd")
+model.urls <- GetDODSDates("gfs_0p50")
 latest.model <- tail(model.urls$url, 1)
 model.runs <- GetDODSModelRuns(latest.model)
 latest.model.run <- tail(model.runs$model.run, 1)

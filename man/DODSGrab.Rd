@@ -65,7 +65,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 
 \dontrun{
 #Figure out which model is most recent
-model.urls <- GetDODSDates("gfs_hd")
+model.urls <- GetDODSDates("gfs_0p50")
 latest.model <- tail(model.urls$url, 1)
 model.runs <- GetDODSModelRuns(latest.model)
 latest.model.run <- tail(model.runs$model.run, 1)
