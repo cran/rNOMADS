@@ -187,7 +187,7 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
     
        #RCurl needs to be loaded for this to work I think
        #data.txt <- readLines(data.url)
-       data.txt.raw <- RCurl::getURL(data.url, .opts = list(verbose = verbose))
+       data.txt.raw <- RCurl::getURL(data.url, .opts = list(verbose = verbose)) #Read in data
        if(grepl("[eE][rR][rR][oO][rR]", data.txt.raw)) {
            warning(paste0("There may have been an error retrieving data from the NOMADS server.  HTML text is as follows\n", data.txt.raw
            ))

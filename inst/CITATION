@@ -1,0 +1,10 @@
+citHeader("To cite the rNOMADS package in publications use:")
+bibentry(bibtype = "Article",
+title = "Near real time weather and ocean model data access with {rNOMADS}",
+author = c(person(given = "Daniel C.", family = "Bowman"),
+   person(given = "Jonathan M.", family = "Lees")),
+journal = {"Computers & Geosciences"},
+year = {"2015"},
+pages = {"88-95"},
+volume = {"78"},
+doi = {"10.1016/j.cageo.2015.02.013"})
