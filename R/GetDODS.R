@@ -122,16 +122,13 @@ GetDODSModelRunInfo <- function(model.url, model.run) {
        as.vector(info.table[,3]))
 
    info.arr[which(is.na(info.arr), arr.ind=TRUE)] <- ""
-   #Get rid of non ascii characters
-   Encoding(info.arr) <- "bytes"
-   model.info <- apply(stringr::str_replace_all(info.arr, "\\xc3\\x82", ""), 1, paste, collapse = " ")
-   Encoding(info.arr) <- "UTF-8"
+   #Get rid of bad characters
+   model.info <- stringr::str_replace_all(apply(info.arr, 1, paste, collapse = " "), "\\N{LATIN CAPITAL LETTER A WITH CIRCUMFLEX}", "")
    return(model.info)
 }
 
 DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = NULL, display.url = TRUE, verbose = FALSE, request.sleep = 1) {
    #Get data from DODS.  Note that this is slower than GribGrab but will work on all operating systems.
-   #Also, we can only do one variable at a time.
    #The output of this function will be the same as the output of ReadGrib in order to maintain consistency across rNOMADS.
    #ALL INDICES START FROM ZERO 
    #INPUTS

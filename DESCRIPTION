@@ -2,8 +2,8 @@ Package: rNOMADS
 Type: Package
 Title: An Interface to the NOAA Operational Model Archive and
         Distribution System
-Version: 2.1.3
-Date: 2015-03-04
+Version: 2.1.4
+Date: 2015-06-03
 Authors@R: c(person(given="Daniel C.",family="Bowman", role=c("aut", "cre"),
         email="daniel.bowman@unc.edu"))
 Depends: R (>= 3.1.1), rvest (>= 0.1.0)
@@ -17,10 +17,10 @@ URL: https://r-forge.r-project.org/projects/rnomads/ (subversion
         (GrADS-DODS examples)
         http://www.unc.edu/~haksaeng/rNOMADS/rNOMADS_grib_examples.pdf
         (grib examples)
-Packaged: 2015-03-04 13:37:23 UTC; bowman
+Packaged: 2015-06-03 14:58:16 UTC; bowman
 Maintainer: Daniel C. Bowman <daniel.bowman@unc.edu>
 MailingList: rnomads-user@lists.r-forge.r-project.org
-Author: Daniel C. Bowman [aut, cre]
 NeedsCompilation: no
+Author: Daniel C. Bowman [aut, cre]
 Repository: CRAN
-Date/Publication: 2015-03-04 16:08:25
+Date/Publication: 2015-06-03 19:00:30
