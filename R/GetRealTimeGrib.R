@@ -163,10 +163,8 @@ WebCrawler <- function(url, depth = NULL, verbose = TRUE) {
 #    OUTPUTS
 #        URLS.OUT are the URLs at the end of the road
 
-    doc <- XML::htmlParse(url)
-    links <- XML::xpathSApply(doc, "//a/@href")
-    XML::free(doc)
-    if(is.null(links)) {
+    links <- LinkExtractor(url)
+    if(length(links) == 0) {
         if(verbose) {
             print(url)
         }

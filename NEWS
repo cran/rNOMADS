@@ -63,3 +63,6 @@ Changed the function "GetClosestGFSForecasts" to "GetClosestForecasts," and adde
 
 2.1.4
 Quick fix to bring rNOMADS in compliance with Hadley Wickham's new version of stringr
+
+2-1.5
+Updated HTML/XML parsing code to comply with new rvest APIA

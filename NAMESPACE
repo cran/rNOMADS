@@ -1,3 +1,6 @@
 exportPattern("^[[:alpha:]]+")
 import(rvest)
-importFrom(XML, xpathApply)
+importFrom("grDevices", "rainbow")
+importFrom("graphics", "image", "plot", "segments", "text")
+importFrom("utils", "download.file", "tail")
+importFrom("stats", "median")

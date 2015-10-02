@@ -102,7 +102,7 @@ BuildProfile <- function(gridded.data, lon, lat, spatial.average) {
         }
      } else { #Nearest grid node
          cart.dist <- sqrt(cart.pts$x^2 + cart.pts$y^2)
-         node.ind <- which(cart.dist[nrow(cart.dist):1,] == min(cart.dist), arr.ind = TRUE)
+         node.ind <- rev(which(cart.dist[nrow(cart.dist):1,] == min(cart.dist), arr.ind = TRUE))
          profile.data <- gridded.data$z[,,node.ind[1], node.ind[2]]
          spatial.average.method <- "Nearest Node"
 
@@ -139,6 +139,16 @@ ModelGrid <- function(model.data, resolution, grid.type = "latlon", levels = NUL
     }
  
     if(grid.type == "latlon") {
+
+        #Check to make sure the grid is not too fine
+        data.lat <- round(diff(model.data$lat), 11)
+        data.lon <- round(diff(model.data$lon), 11)
+        if(median(data.lon[data.lon != 0]) > resolution[1]) {
+             warning(paste("The resolution you've chosen appears to be finer than the resolution of the model.  You chose", resolution[1], "but the model longitude list suggests that", median(data.lon[data.lon != 0]), "is the actual resolution.  This could cause unexpected behavior."))
+        } 
+        if(median(data.lat[data.lat != 0]) > resolution[2]) {
+             warning(paste("The resolution you've chosen appears to be greater than the resolution of the model.  You chose", resolution[2], "but the model latitude list suggests that", median(data.lat[data.lat != 0]), "is the actual resolution.  This could cause unexpected behavior."))
+        } 
         nodes.xy <- cbind(model.data$lon, model.data$lat)
     } else if(grid.type == "cartesian") {
         if(is.null(cartesian.nodes) | !(("x" %in% names(cartesian.nodes)) & ("y" %in% names(cartesian.nodes)))) {
@@ -226,6 +236,19 @@ MagnitudeAzimuth <- function(zonal.wind, meridional.wind) {
    az <- tmp.az
    az[tmp.az < 0] <- 360 + tmp.az[tmp.az < 0]
    return(list(magnitude = mag, azimuth = az))
+}
+
+LinkExtractor <- function(url) {
+    #Extracts links from a web page
+    #INPUTS
+    #    URL - Address of web page
+    #OUTPUTS
+    #    LINKS - A list of all the links on the page
+
+    html.tmp <- xml2::read_html(url)
+    links <-  html.tmp %>% html_nodes("a") %>% html_attr("href")
+
+    return(links)
 }
 
 PlotWindProfile <- function(zonal.wind, meridional.wind, height, magnitude = NULL, magnitude.range = c(0, 50), 

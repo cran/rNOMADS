@@ -37,12 +37,10 @@ GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1) {
           "Details:  Attempted to access ", top.url, " but did not succeed..."))
    }
 
-    html.tmp <- XML::htmlParse(top.url)
-    top.links <- XML::xpathSApply(html.tmp, "//a/@href")
-    XML::free(html.tmp)
- 
+    top.links <-  LinkExtractor(top.url)
+
     #List entries in html.tmp, see if they are dates or not
-    date.links.lind <- grepl(date.pattern, top.links)
+    date.links.lind <- grepl(date.pattern, as.character(top.links))
     if(sum(date.links.lind) == 0) { #If there do not appear to be dates here, go down one more directory level
         urls.tmp <- c()
         for(k in seq(4, length(top.links) - 3)) {
@@ -50,9 +48,7 @@ GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1) {
                    stop(paste0("The specified URL does not exist!  Make sure your model information is correct.  It is also possible the NOMADS server is down.\n",
                        "Details:  Attempted to access ", top.links[k], " but did not succeed..."))
                 }
-            html.tmp.low <- XML::htmlParse(top.links[k])
-            links.low <- XML::xpathSApply(html.tmp.low, "//a/@href")
-            XML::free(html.tmp.low)
+            links.low <- LinkExtractor(top.links[k])
             urls.tmp <- append(urls.tmp, links.low[grepl(date.pattern, links.low)])
             if(request.sleep > 0) {
                 Sys.sleep(request.sleep)
@@ -61,8 +57,6 @@ GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1) {
     } else {
         urls.tmp <- top.links[date.links.lind]
     }
-
-    urls.tmp <- as.character(urls.tmp)
 
     return(list(model = abbrev, date = stringr::str_extract(urls.tmp, date.pattern), url = urls.tmp)) 
 }

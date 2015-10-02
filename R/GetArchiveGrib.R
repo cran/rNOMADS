@@ -48,10 +48,7 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, pred, local.dir = "."
     "00_", sprintf("%03.f", as.numeric(pred)), suffix)
 
     #Find out which grib files are in the archive
-    doc <- XML::htmlParse(download.url)
-    link.list <- unique(XML::xpathSApply(doc, "//a/@href"))
-    XML::free(doc)
-
+    link.list <- unique(LinkExtractor(download.url))
 
     #Check if the requested file is where we think it is
     if(sum(grepl(paste0(".*", file.part, "$"), link.list)) < 1) {
@@ -107,24 +104,20 @@ CheckNOMADSArchive <- function(abbrev, model.date = NULL) {
     model.list <- c()
     if(is.null(model.date)) { #Check all available dates
         #Find out which months are available
-        doc <- XML::htmlParse(model.url)
-        month.list <- grep("\\d{6}/", XML::xpathSApply(doc, "//a/@href"), value = TRUE)
-        XML::free(doc)
+        month.list <- grep("\\d{6}/", LinkExtractor(model.url), value = TRUE)
         for(month in month.list) {
-            doc <- XML::htmlParse(paste0(model.url, month))
-            date.list <- grep("\\d{8}/", XML::xpathSApply(doc, "//a/@href"), value = TRUE)
-            XML::free(doc) 
+            date.list <- grep("\\d{8}/", LinkExtractor(paste0(model.url, month)), value = TRUE)
             for(day in date.list) {
-                doc <- XML::htmlParse(paste0(model.url, month, day))
-                model.list <- append(model.list, grep("grb\\d?$", XML::xpathSApply(doc, "//a/@href"), value = TRUE))
-                XML::free(doc)
+                model.list <- append(model.list, grep("grb\\d?$", LinkExtractor(paste0(model.url, month, day)), value = TRUE))
              }
          }
      } else {
             model.date <- as.numeric(strsplit(as.character(model.date), split = "")[[1]])
-            doc <- XML::htmlParse(paste0(model.url, paste(model.date[1:6], collapse = ""), "/", paste(model.date, collapse = ""), "/"))
-            model.list <- append(model.list, grep("grb\\d?$", XML::xpathSApply(doc, "//a/@href"), value = TRUE))
-            XML::free(doc)
+            model.list <- append(
+                model.list, 
+                grep("grb\\d?$", 
+                LinkExtractor(paste0(model.url, paste(model.date[1:6], collapse = ""), "/", paste(model.date, collapse = ""), "/")),
+                value = TRUE))       
      }
 
      model.list <- as.vector(model.list)

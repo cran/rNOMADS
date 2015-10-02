@@ -26,20 +26,16 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     base.url <- "http://nomads.ncep.noaa.gov/"
     trim <- function(x) gsub("^[[:space:]]+|[[:space:]]+$", "", x)
 
-    # neither rvest::html nor rvest::html_session liked it, hence using XML::htmlParse
-    doc <- XML::htmlParse(base.url)
-
+    doc <- xml2::read_html(base.url)
     ds <- doc %>% html_nodes(xpath="//table/descendant::th[@class='nomads'][1]/../../
                                             descendant::td[contains(., 'http')]/
                                             preceding-sibling::td[3]")
     data.set <- ds %>% html_text() %>% trim()
 
-#    html_text() %>% trim()
-
     grib.filter <- doc %>% html_nodes(xpath="//table/descendant::th[@class='nomads'][1]/../../
                                   descendant::td[contains(., 'http')]/preceding-sibling::td[1]") %>%
    sapply(function(x) {
-     ifelse(x %>% xpathApply("boolean(./a)"),
+     ifelse(grepl("href", as.character(x)),
            x %>% html_node("a") %>% html_attr("href"),
            NA)
     })
@@ -49,10 +45,11 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
    gds.alt <- doc %>% html_nodes(xpath="//table/descendant::th[@class='nomads'][1]/../../
                               descendant::td[contains(., 'http')]/following-sibling::td[1]") %>%
    sapply(function(x) {
-    ifelse(x %>% xpathApply("boolean(./a)"),
+     ifelse(grepl("href", as.character(x)),
            x %>% html_node("a") %>% html_attr("href"),
            NA)
-   })
+    })
+
  
    grib.abbrevs <- stringr::str_replace(stringr::str_replace(basename(grib.filter), "filter_", ""), ".pl", "")
    dods.abbrevs <- basename(gds.alt)
