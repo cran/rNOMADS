@@ -146,7 +146,7 @@ for(k in 1:length(myTA$lon)) {
 
 #Plot them all
 PlotWindProfile(zonal.wind, meridional.wind, height, lines = TRUE, 
-    points = FALSE, elev.circles = c(0, 25000, 50000), elev.tick.labels = c(0, 25, 50), 
+    points = FALSE, elev.circles = c(0, 25000, 50000), elev.labels = c(0, 25, 50), 
     radial.lines = seq(45, 360, by = 45), colorbar = TRUE, invert = FALSE, 
     point.cex = 2, pch = 19, lty = 1, lwd = 1, 
     height.range = c(0, 50000), colorbar.label = "Wind Speed (m/s)")

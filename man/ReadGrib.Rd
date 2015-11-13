@@ -10,7 +10,8 @@ It does this by building an argument string, executing a system call to the appr
 Note that \code{wgrib2} must be installed for \code{ReadGrib} to work for current grib files, and \code{wgrib} may need to be installed when looking at archived data.
 }
 \usage{
-ReadGrib(file.name, levels, variables, file.type = "grib2", missing.data=NULL)
+ReadGrib(file.name, levels, variables, 
+    domain = NULL, file.type = "grib2", missing.data = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,6 +23,11 @@ The path and file name of the grib file to read.
 }
   \item{variables}{
   The variables to extract.
+}
+  \item{domain}{
+  Include model nodes in the specified region: \code{c(LEFT LON, RIGHT LON, NORTH LAT, SOUTH LAT)}.
+  If \code{NULL}, include everything.
+  This argument works for GRIB2 only.
 }
   \item{file.type}{
   Whether the file is in GRIB (\code{"grib1"}) or GRIB2 (\code{"grib2"}) format.
@@ -37,7 +43,6 @@ This function constructs system calls to \code{wgrib} and \code{wgrib2}.
 Therefore, you must have installed these programs and made it available on the system path.
 Unless you are interested in accessing archive data that's more than a few years old, you can \code{install} wgrib2 only.
 A description of \code{wgrib2} and installation links are available at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/} and \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html}.
-Note that Windows users will likely have to use a UNIX emulator like Cygwin to install these programs.
 Also, rNOMADS is focused towards GRIB2 files; I have included GRIB1 format support as a convenience.
 }
 \value{

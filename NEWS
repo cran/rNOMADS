@@ -66,3 +66,6 @@ Quick fix to bring rNOMADS in compliance with Hadley Wickham's new version of st
 
 2-1.5
 Updated HTML/XML parsing code to comply with new rvest APIA
+
+2-1.6 
+Added ability to subset large grib2 files in ReadGrib, this can speed up archived data processing by orders of magnitude.

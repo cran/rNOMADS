@@ -37,12 +37,13 @@ GribInfo <- function(grib.file, file.type = "grib2") {
     return(list(inventory = inv, grid = grid))
 }
 
-ReadGrib <- function(file.name, levels, variables, file.type = "grib2", missing.data = NULL) {
+ReadGrib <- function(file.name, levels, variables, domain = NULL, file.type = "grib2", missing.data = NULL) {
     #This is a function to read forecast data from a Grib file
     #INPUTS
     #    FILE.NAME - Grib file name
     #    VARIABLES - data to extract
     #    LEVELS - which levels to extract data from
+    #    DOMAIN - Region to extract data from, in c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT), west negative
     #    FILE.TYPE - whether this is a grib1 or a grib2 file
     #        If grib1, you must have the wgrib program installed
     #        If grib2, you must have the wgrib2 program installed
@@ -97,8 +98,24 @@ ReadGrib <- function(file.name, levels, variables, file.type = "grib2", missing.
             missing.data.str <- ""
         }
 
-        wg2.str <- paste('wgrib2 ',     
-            file.name, ' -inv my.inv',
+        #Write out a grib file with a smaller domain, then read it in
+        if(!is.null(domain)) {
+           if(!length(domain) == 4 | any(!is.numeric(domain))) {
+              stop("Input \"domain\" is the wrong length and/or consists of something other than numbers.
+                  It should be a 4 element vector: c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT)")
+           } else {
+               wg2.pre <- paste0('wgrib2 ',
+                   file.name,
+                   " -small_grib ", 
+                   domain[1], ":", domain[2], " ", domain[4], ":", domain[3],
+                   " - | wgrib2 - ")
+           }
+        } else {
+           wg2.pre <- paste0('wgrib2 ',  file.name)
+        }
+        
+        wg2.str <- paste(wg2.pre,
+            ' -inv my.inv',
             missing.data.str,
             ' -csv - -no_header', 
             match.str, sep = "")
