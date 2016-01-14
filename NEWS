@@ -69,3 +69,7 @@ Updated HTML/XML parsing code to comply with new rvest APIA
 
 2-1.6 
 Added ability to subset large grib2 files in ReadGrib, this can speed up archived data processing by orders of magnitude.
+
+2-1.7
+Fixed bug in which Windows users were unable to subset grib files without error.
+THank you to Panos for noticing the problem and proposing a solution.
