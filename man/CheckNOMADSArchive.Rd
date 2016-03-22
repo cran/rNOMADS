@@ -40,11 +40,7 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 #See what is available for January 1 2014
 
 abbrev <- "gfs4"
-model.date <- 20140101
+model.date <- 20150101
 \dontrun{gfs.available.models <- CheckNOMADSArchive(abbrev, model.date)}
-
-#Determine all available North American Mesoscale models in the archive
-#This will take some time
-\dontrun{nam.available.models <- CheckNOMADSArchive("namanl")}
 }
 \keyword{ utilities }

@@ -105,43 +105,38 @@ latest.model.run <- tail(model.runs$model.run, 1)
 
 lons <- seq(0, 359.5, by = 0.5)
 lats <- seq(-90, 90, by = 0.5)
-lon.ind <- which(lons <= max(myTA$lon + 360) & lons >= min(myTA$lon + 360)) - 1
-lat.ind <- which(lats <= max(myTA$lat) & lats >= min(myTA$lat)) - 1
+lon.ind <- which(lons <= (max(myTA$lon + 360) + 1) & lons >= (min(myTA$lon + 360) - 1))
+lat.ind <- which(lats <= (max(myTA$lat) + 1) & lats >= (min(myTA$lat) - 1))
 levels <- c(0, 46)
 time <- c(0, 0)
 
 #Get data 
-hgt.data <- DODSGrab(latest.model, latest.model.run, "hgtprs",
-   time, c(min(lon.ind), max(lon.ind)), c(min(lat.ind), max(lat.ind)), levels)
-ugrd.data <- DODSGrab(latest.model, latest.model.run, "ugrdprs",
-   time, c(min(lon.ind), max(lon.ind)), c(min(lat.ind), max(lat.ind)), levels)
-vgrd.data <- DODSGrab(latest.model, latest.model.run, "vgrdprs",
-   time, c(min(lon.ind), max(lon.ind)), c(min(lat.ind), max(lat.ind)), levels)
-
-#Reformat the data
-hgt.grid <- ModelGrid(hgt.data, c(0.5, 0.5))
-ugrd.grid <- ModelGrid(ugrd.data, c(0.5, 0.5))
-vgrd.grid <- ModelGrid(vgrd.data, c(0.5, 0.5))
+variables <- c("hgtprs", "ugrdprs", "vgrdprs")
+model.data <- DODSGrab(latest.model, latest.model.run,
+   variables, time, c(min(lon.ind), max(lon.ind)), 
+   c(min(lat.ind), max(lat.ind)), levels)
 
 #Build profiles
-zonal.wind <- c()
-meridional.wind <- c()
-height <- c()
-for(k in 1:length(myTA$lon)) {
-   hgt.profile <- BuildProfile(hgt.grid, 
-       myTA$lon[k], myTA$lat[k], spatial.average = TRUE)
-   ugrd.profile <- BuildProfile(ugrd.grid, 
-      myTA$lon[k], myTA$lat[k], spatial.average = TRUE)
-   vgrd.profile <- BuildProfile(vgrd.grid, 
-      myTA$lon[k], myTA$lat[k], spatial.average = TRUE)
-   synth.hgt <- seq(min(hgt.profile),
-       max(hgt.profile), length.out = 1000)
-   ugrd.spline <- splinefun(hgt.profile, ugrd.profile, method = "natural")
-   vgrd.spline <- splinefun(hgt.profile, vgrd.profile, method = "natural")
+profile <- BuildProfile(model.data, myTA$lon, myTA$lat, 
+    spatial.average = FALSE)
+
+#Build profiles
+zonal.wind      <- NULL
+meridional.wind <- NULL 
+height          <- NULL
+
+for(k in 1:length(profile)) {
+   hgt  <- profile[[k]]$profile.data[, which(profile[[k]]$variables == "hgtprs"),]
+   ugrd <- profile[[k]]$profile.data[, which(profile[[k]]$variables == "ugrdprs"),]
+   vgrd <- profile[[k]]$profile.data[, which(profile[[k]]$variables == "vgrdprs"),]
+
+   synth.hgt <- seq(min(hgt),
+       max(hgt), length.out = 1000)
+   ugrd.spline <- splinefun(hgt, ugrd, method = "natural")
+   vgrd.spline <- splinefun(hgt, vgrd, method = "natural")
    zonal.wind[[k]] <- ugrd.spline(synth.hgt)
    meridional.wind[[k]] <- vgrd.spline(synth.hgt)
    height[[k]] <- synth.hgt
-   print(paste("Finished", k, "of", length(myTA$lon), "profiles!"))
 }
 
 #Plot them all

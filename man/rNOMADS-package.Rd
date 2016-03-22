@@ -7,7 +7,7 @@ An interface to the NOAA Operational Model Archive and Distribution System
 }
 \description{
 Automatically download forecast data from the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) and read it into R.
-This can be done in two ways: reading ascii data directly from the server using the DODS-GrADS system (all operating systems, just needs an Internet connection) or downloading binary files in GRIB format (Linux and Mac OS only, or until a native R reader for GRIB is available).
+This can be done in two ways: reading ascii data directly from the server using the DODS-GrADS system or downloading binary files in GRIB1 or GRIB2 format.
 The grib capability of \code{rNOMADS} uses an external series of routines called \code{wgrib2} to read operational model data; get \code{wgrib2} at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}.
 The package will also attempt to call another external routine called \code{wgrib} if the user wishes to read GRIB1 files; get \code{wgrib} at \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html}.
 }
@@ -15,14 +15,17 @@ The package will also attempt to call another external routine called \code{wgri
 \tabular{ll}{
 Package: \tab rNOMADS\cr
 Type: \tab Package\cr
-Version: \tab 2.0.4\cr
-Date: \tab 2014-10-30\cr
+Version: \tab 2.2.0\cr
+Date: \tab 2016-03-21\cr
 License: \tab GPL v3\cr
 }}
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \references{
+Bowman, D. C. and Lees, J. M. (2015).
+Near real time weather and ocean model data access with rNOMADS.
+\emph{Computers \& Geosciences} 78, pp. 88-95.\cr 
 NOMADS website: \cr
 \url{http://nomads.ncep.noaa.gov/} \cr
 wgrib2 download page:\cr
@@ -71,19 +74,19 @@ model.data.800mb <- DODSGrab(model.url, model.run, variable, time, c(min(lon), m
    c(min(lat), max(lat)), level = lev)
 
 #Make results into arrays
-model.array.surface <- ModelGrid(model.data.surface, c(0.5, 0.5), "latlon")
-model.array.800mb <- ModelGrid(model.data.800mb, c(0.5, 0.5), "latlon")
+model.array.surface <- ModelGrid(model.data.surface, c(0.5, 0.5))
+model.array.800mb <- ModelGrid(model.data.800mb, c(0.5, 0.5))
 
 #Make a contour plot of the temperature around North Carolina, USA:
 contour(x = model.array.surface$x - 360, y = model.array.surface$y, 
     model.array.surface$z[1,1,,] - 273.15, xlab = "Longitude", ylab = "Latitude",
    main = paste("North Carolina Surface Temperatures for", 
-   model.array.surface$fcst.date, "GMT in Celsius"))
+   model.array.surface$fcst.date, "UTC in Celsius"))
 
 dev.new()
 contour(x = model.array.800mb$x - 360, y = model.array.800mb$y,
     model.array.800mb$z[1,1,,] - 273.15, xlab = "Longitude", ylab = "Latitude",
    main = paste("North Carolina Temperatures at 800 mb for",
-   model.array.surface$fcst.date, "GMT in Celsius"))
+   model.array.surface$fcst.date, "UTC in Celsius"))
 }
 }

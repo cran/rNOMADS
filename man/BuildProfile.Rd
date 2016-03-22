@@ -4,36 +4,44 @@
 Get model data at a specific point.
 }
 \description{
-Takes the output of \code{\link{ModelGrid}} and extracts data at a specific point, performing interpolation if required.
+Takes the output of \code{\link{ReadGrib}} or \code{\link{DODSGrab}} and extracts data at a specific point, performing interpolation if required.
 }
 \usage{
-BuildProfile(gridded.data, lon, lat, spatial.average)
+BuildProfile(model.data, lon, lat, spatial.average, points = 4)
 }
 \arguments{
-  \item{gridded.data}{
-      Data structure returned by \code{\link{ModelGrid}}.
+  \item{model.data}{
+      Data structure returned by \code{\link{ReadGrib}} or \code{\link{DODSGrab}}.
 }
   \item{lon}{
-     Longitude of point of interest.
+     Longitudes of points of interest.
 }
   \item{lat}{
-     Latitude of point of interest.
+     Latitudes of points of interest.
 }
   \item{spatial.average}{
      Whether to interpolate data using b-splines to obtain value at the requested point (\code{spatial.average = TRUE}) or use the nearest model node (\code{spatial.average = FALSE}).
+}
+   \item{points}{
+       How many points to include in the interpolation, will be ignored if \code{spatial.average = FALSE}.
 }
 }
 \details{
 It is much more efficient to download a large chunk of data and extract profile points from that as opposed to downloading individual small model chunks in the vicinity of each point of interest.
 }
 \value{
-\item{profile.data}{A levels x variables matrix with data for a given point.}
+\item{profile}{A list with as many elements as profile points, with fields:}
+\item{profile$profile.data}{A levels x variables x time matrix with data at a specific point}
+\item{profile$location}{The location for which the profile is generated}
+\item{profile$forecast.date}{What dates and times the profile contains}
+\item{profile$variables}{The variables the profile contains}
+\item{profile$levels}{The levels the profile contains}
 }
 \author{
 Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 \seealso{
-\code{\link{ModelGrid}}, \code{\link{BuildProfile}}
+\code{\link{ReadGrib}}, \code{\link{DODSGrab}}
 }
 \examples{
 
@@ -62,10 +70,10 @@ variables <- c("TMP", "HGT")
 grib.info <- GribGrab(model.url, pred, levels, variables,
    model.domain = c(-85, -75, 37, 32))
 grib.data <- ReadGrib(grib.info$file.name, levels, variables)
-gridded.data <- ModelGrid(grib.data, c(0.5, 0.5))
 
-profile <- BuildProfile(gridded.data, lon, lat, TRUE)
-plot(profile[,2] - 273.15, profile[,1], xlab = "Temperature (C)",
+profile <- BuildProfile(grib.data, lon, lat, TRUE, points = 8)
+plot(profile[[1]]$profile.data[,2, 1] - 272.15, 
+   profile[[1]]$profile.data[,1, 1], xlab = "Temperature (C)",
    ylab = "Height (m)", main = "Temperature Profile above Chapel Hill, NC")
 }
 }

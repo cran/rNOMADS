@@ -79,7 +79,7 @@ model.data <- DODSGrab(latest.model, latest.model.run,
    variable, time, lon, lat)
 
 #Make it into a nice array and plot it
-model.grid <- ModelGrid(model.data, c(0.5, 0.5), "latlon")
+model.grid <- ModelGrid(model.data, c(0.5, 0.5))
 image(model.grid$z[1,1,,])
 }
 }

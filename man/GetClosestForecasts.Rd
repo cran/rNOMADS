@@ -6,6 +6,7 @@ Get the forecast time closest to a given date for a given model
 \description{
 This function returns which forecast precedes the date and which forecast follows the date for a given model product.
 Thus a user can average the two forecasts together to provide a precise forecast for a given date.
+It is optimized for grib file retrieval.
 }
 \usage{
 GetClosestForecasts(abbrev, forecast.date, model.date = "latest",
@@ -48,7 +49,7 @@ GetClosestForecasts(abbrev, forecast.date, model.date = "latest",
 Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 \seealso{
-\code{\link{RTModelProfile}}, \code{\link{BuildProfile}}, \code{\link{GribGrab}}
+\code{\link{BuildProfile}}, \code{\link{GribGrab}}
 }
 \examples{
 
@@ -56,10 +57,11 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 #by performing a weighted average of GFS model forecasts.
 
 #Figure out which forecasts to use
-forecast.date <- as.POSIXlt(Sys.time(), tz = "GMT")
+forecast.date <- as.POSIXlt(Sys.time(), tz = "UTC")
+abbrev <- "gfs_0p50"
 
 \dontrun{
-forecasts <- GetClosestForecasts(abbrev = "gfs_0p50", forecast.date)
+forecasts <- GetClosestForecasts(abbrev = abbrev, forecast.date)
 }
 
 #Get levels
@@ -74,20 +76,33 @@ variables <- c("TMP", "HGT")
 #Location
 lon <- c(-79.052083)
 lat <- c(35.907492)
-
-#Get the data for each
-resolution <- c(0.5, 0.5)
-grid.type <- "latlon"
+model.domain <- c(lon - 1, lon + 1, lat + 1, lat - 1)
 
 \dontrun{
-back.profile <- RTModelProfile(forecasts$model.url, forecasts$back.forecast,
-   levels, variables, lon, lat, resolution = resolution, grid.type = grid.type)
+#Get the data for each
+grb.info <- GribGrab(forecasts$model.url, 
+   forecasts$back.forecast, levels, variables, 
+   model.domain = model.domain)
+back.data <- ReadGrib(grb.info$file.name, levels, variables)
 
-fore.profile <- RTModelProfile(forecasts$model.url, forecasts$fore.forecast,
-   levels, variables, lon, lat, resolution = resolution, grid.type = grid.type)
+grb.info <- GribGrab(forecasts$model.url,        
+   forecasts$fore.forecast, levels, variables,
+   model.domain = model.domain)
+fore.data <- ReadGrib(grb.info$file.name, levels, variables) 
 
-temps <- cbind(back.profile$profile[[1]][,2], fore.profile$profile[[1]][,2]) - 273.15
-heights <- cbind(back.profile$profile[[1]][,1], fore.profile$profile[[1]][,1])
+back.profile <- BuildProfile(back.data, lon, lat,
+   spatial.average = TRUE, points = 8)
+
+fore.profile <- BuildProfile(fore.data, lon, lat,
+   spatial.average = TRUE, points = 8)
+
+temps <- cbind(back.profile[[1]]$profile.data[, which(back.profile[[1]]$variables == "TMP"),],
+    fore.profile[[1]]$profile.data[, which(fore.profile[[1]]$variables == "TMP"),])
+ 
+heights <-  cbind(back.profile[[1]]$profile.data[, which(back.profile[[1]]$variables == "HGT"),],
+    fore.profile[[1]]$profile.data[, which(fore.profile[[1]]$variables == "HGT"),])
+
+
 time.gap <- forecasts$fore.hr - forecasts$back.hr
 exact.temp <- (temps[,1] * abs(forecasts$fore.hr) + temps[,2] * abs(forecasts$back.hr))/time.gap
 exact.hgt <- (heights[,1] * abs(forecasts$fore.hr) + heights[,2] * abs(forecasts$back.hr))/time.gap
@@ -97,8 +112,8 @@ plot(c(min(temps), max(temps)), c(min(heights), max(heights)), type = "n",
     xlab = "Temperature (C)", ylab = "Height (m)")
 points(temps[,1], heights[,1], pch = 1, col = 1)
 points(temps[,2], heights[,2], pch = 2, col = 2)
-lines(exact.temp, exact.hgt, col = 3, lty = 2)
-legend("topleft", pch = c(1, 2, NA), lty = c(NA, NA, 2), col = c(1, 2, 3),
+points(exact.temp, exact.hgt, col = 3, lty = 2, pch = 3)
+legend("topleft", pch = c(1, 2, 3), col = c(1, 2, 3),
    legend = c(forecasts$back.forecast, forecasts$fore.forecast, as.character(Sys.time())))
 }
 }

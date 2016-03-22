@@ -72,4 +72,11 @@ Added ability to subset large grib2 files in ReadGrib, this can speed up archive
 
 2-1.7
 Fixed bug in which Windows users were unable to subset grib files without error.
-THank you to Panos for noticing the problem and proposing a solution.
+Thank you to Panos for noticing the problem and proposing a solution.
+
+2-2.0
+Made it so that BuildProfile does not require ModelGrid to be run first.
+Removed RTModelProfile, since new improvements to BuildProfile make it obsolete.
+Removed the ability to construct non-regular grids using ModelGrid.
+These changes were made to preserve rNOMADS' purpose as a gateway to NOMADS rather than a geospatial analysis package (of which there are plenty in R)
+Thank you to Adam Simkowski and Ruben Kertesz for testing and bug reports.

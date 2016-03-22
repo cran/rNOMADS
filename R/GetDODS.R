@@ -199,7 +199,8 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
        times <- as.POSIXlt(as.Date(num.times - 2, origin = "1-1-1"), tz = "GMT") + 3600 * 24 * (num.times - floor(num.times))
 
        #Extract data values 
-    
+       
+       val.dim <- unlist(stringr::str_extract_all(unlist(strsplit(data.txt[1], ","))[2], "\\d"))
        val.txt <- data.txt[2:(t.ind - 1)]    
        val.txt <- val.txt[val.txt !=""] 
        val.txt <- stringr::str_replace_all(val.txt, "\\]\\[", ",")
@@ -207,8 +208,8 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
     
        model.run.date <- paste0(stringr::str_extract(model.url, "[1-2]\\d{3}[0-1]\\d{1}[0-3]\\d{1}$"), model.run)
        
-       row.num <- (stringr::str_count(val.txt[1], ",") - 3 + l.ind) * length(val.txt)
-       model.data.tmp <- array(rep("", row.num), dim = c(row.num, 7))
+       row.num <- (as.numeric(val.dim[2]) + l.ind) * length(val.txt)
+       model.data.tmp <- array("", dim = c(row.num, 7))
     
        r.start <- 3 + l.ind #What row to start at
        for(k in seq_len(length(val.txt))) {

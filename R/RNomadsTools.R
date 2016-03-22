@@ -75,55 +75,81 @@ GetClosestForecasts <- function(abbrev, forecast.date, model.date = "latest", de
    return(list(model.url = url.to.use, model.run.date = nice.run.date, back.forecast = back.forecast, fore.forecast = fore.forecast, back.hr = back.hr, fore.hr = fore.hr))
 }
 
-BuildProfile <- function(gridded.data, lon, lat, spatial.average) {
+BuildProfile <- function(model.data, lon, lat, spatial.average = FALSE, points = 4) {
     #This function builds an atmospheric profile, performing spatial interpolation if requested
     #INPUTS
-    #    GRIDDED.DATA - Data structure returned by ModelGrid
-    #    LON - Longitude of point of interest
-    #    LAT - Latitude of point of interest
+    #    MODEL.DATA - Data structure returned from ReadGrib or DODSGrab
+    #    LON - Longitude of points of interest
+    #    LAT - Latitude of points of interest
     #    SPATIAL.AVERAGE - Boolean determining whether to get nearest node value (FALSE) or interpolate using b-splines (TRUE)
+    #    POINTS - If SPATIAL.AVERAGE = TRUE, use this many points proximal to the point of interest to interpolate
     #OUTPUTS
-    #    PROFILE.DATA - A levels x variables matrix with atmospheric data for given point
-    
-    profile.data <- array(rep(0, length(gridded.data$variables) * length(gridded.data$levels)),
-        dim = c(length(gridded.data$levels), length(gridded.data$variables)))
-    #Project to Cartesian grid
-    lons <- t(array(rep(gridded.data$x, length(gridded.data$y)), dim = dim(gridded.data$z)[3:4]))
-    lats <- array(rep(rev(gridded.data$y), length(gridded.data$x)), dim = rev(dim(gridded.data$z)[3:4]))
-    #lats <- array(rep(gridded.data$y, length(gridded.data$x)), dim = dim(gridded.data$z)[3:4])
-    proj <- GEOmap::setPROJ(type = 2, LAT0 = lat, LON0 = lon)
-    cart.pts <- GEOmap::GLOB.XY(lats, lons, proj)
-    if(spatial.average) {  #Average of 4 nearest points
-        for(k in seq_len(length(gridded.data$levels))) {
-            for(j in seq_len(length(gridded.data$variables))) {
-                layer.img <- t(rbind(as.vector(cart.pts$x), as.vector(cart.pts$y[nrow(cart.pts$y):1,]), as.vector(t(gridded.data$z[k,j,,]))))
-                profile.data[k, j] <- MBA::mba.points(layer.img, cbind(0, 0))[[1]][3]
-            }
-        }
-     } else { #Nearest grid node
-         cart.dist <- sqrt(cart.pts$x^2 + cart.pts$y^2)
-         node.ind <- rev(which(cart.dist[nrow(cart.dist):1,] == min(cart.dist), arr.ind = TRUE))
-         profile.data <- gridded.data$z[,,node.ind[1], node.ind[2]]
-         spatial.average.method <- "Nearest Node"
+    #    PROFILE-A list with as many elements as there are points to draw profiles for
+    #       $PROFILE.DATA - A date x levels x variables matrix with atmospheric data for given point
+    #       $LOCATION - A two element vector the lat/lon coordinates of the locations
+    #       $FORECAST.DATE - Date and time of forecast
+ 
+    profile   <- NULL
+ 
+    variables <- unique(model.data$variables)
+    levels    <- unique(model.data$levels)
+    times     <- unique(model.data$forecast.date)
 
-     }
-   return(profile.data)
+    #Calculate distance from point of interest to each point on grid
+    ll.all <- paste(model.data$lat, model.data$lon)
+    ll.u  <- unique(ll.all)
+    ll.tmp <- as.numeric(unlist(strsplit(ll.u, " ")))
+    ll.arr <- t(array(ll.tmp, dim = c(2, length(ll.tmp)/2)))[, 2:1]
+
+    for(k in 1:length(lon)) { 
+        dist <- fields::rdist.earth(ll.arr, cbind(lon[k], lat[k]))
+        profile.data <- array(NA,
+            dim = c(length(levels), length(variables), length(times)))
+    
+        for(j in 1:length(times)) {
+            if(spatial.average) {  
+                s.i <- sort(dist, index = TRUE)$ix[1:points]
+                sa.tmp <- as.numeric(unlist(strsplit(ll.u[s.i], " ")))
+                sa.arr <- t(array(sa.tmp, dim = c(2, length(sa.tmp)/2)))[, 2:1]
+                proj <- GEOmap::setPROJ(type = 2, LAT0 = lat[k], LON0 = lon[k])
+                cart.pts <- GEOmap::GLOB.XY(sa.arr[, 2], sa.arr[, 1], proj)
+        
+                for(l in seq_len(length(levels))) {
+                    for(m in seq_len(length(variables))) {
+                        vl.i   <- which(model.data$levels == levels[l] & model.data$variables == variables[m] & model.data$forecast.date == times[j])
+                        ll.vl  <- ll.all[vl.i]
+                        val.vl <- model.data$value[vl.i]
+                        d.i <- match(ll.u[s.i], ll.vl)             
+                        layer.img <- cbind(cart.pts$x, cart.pts$y, val.vl[d.i])
+                        profile.data[l, m, j] <- MBA::mba.points(layer.img, cbind(0, 0))[[1]][3]
+                    }
+                }
+             } else { #Nearest grid node
+                 d.i  <- which(ll.all == ll.u[which(dist == min(dist))] & model.data$forecast.date == times[j])
+                 var.tmp <- model.data$variables[d.i]
+                 lev.tmp <- model.data$levels[d.i]
+                 val.tmp <- model.data$value[d.i]
+                 for(l in 1:length(variables)) {
+                     v.i <- which(var.tmp == variables[l])
+                     profile.data[match(lev.tmp[v.i], levels), l, j]  <- val.tmp[v.i]
+                 }
+             }
+         }
+         profile[[k]] <- list(profile.data = profile.data, location = c(lon[k], lat[k]), forecast.date = times,
+         variables = variables, levels = levels)
+   } 
+   return(profile)
 }
 
-ModelGrid <- function(model.data, resolution, grid.type = "latlon", levels = NULL, variables = NULL, model.domain = NULL, cartesian.nodes = NULL) {
+ModelGrid <- function(model.data, resolution, levels = NULL, variables = NULL, model.domain = NULL) {
     #Transform model data array into a grid with dimensions levels x variables x lon range x lat range
     #This should reduce the size of the returned data by removing redundant information
-    #This will perform interpolation as necessary to fit data to a regular grid - be aware of this!
     #INPUTS
     #    MODEL.DATA - Data returned by ReadGrib
     #    RESOLUTION - Resolution of grid, in degrees if TYPE = "LATLON", in kilometers if TYPE = CARTESIAN, as a 2 element vector c(East-West, North-South)
     #    VARIABLES - variables to include in grid, if NULL, include all of them
     #    LEVELS - levels to include in grid, if NULL, include all of them
     #    MODEL.DOMAIN - vector c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT) of region to include in output. If NULL, include everything.
-    #    GRID.TYPE - Whether the grid is in lat/lon or cartesian.  Options "latlon" or "cartesian."
-    #    CARTESIAN.NODES - If GRID.TYPE = cartesian, this is the list of x and y values that define the cartesian grid of the model
-    #        CARTESIAN.NODES$X - East-west values
-    #        CARTESIAN.NODES $Y - North-south values
     #OUTPUTS
     #   FCST.GRID - A list with elements:
     #       $Z An array of dimensions levels x variables x lon x lat; each level x variable contains the model grid of data from that variable and level
@@ -138,26 +164,16 @@ ModelGrid <- function(model.data, resolution, grid.type = "latlon", levels = NUL
         stop("\"resolution\" must be a 2 element vector: c(ZONAL RESOLUTION, MERIDIONAL RESOLUTION)")
     }
  
-    if(grid.type == "latlon") {
-
-        #Check to make sure the grid is not too fine
-        data.lat <- round(diff(model.data$lat), 11)
-        data.lon <- round(diff(model.data$lon), 11)
-        if(median(data.lon[data.lon != 0]) > resolution[1]) {
-             warning(paste("The resolution you've chosen appears to be finer than the resolution of the model.  You chose", resolution[1], "but the model longitude list suggests that", median(data.lon[data.lon != 0]), "is the actual resolution.  This could cause unexpected behavior."))
-        } 
-        if(median(data.lat[data.lat != 0]) > resolution[2]) {
-             warning(paste("The resolution you've chosen appears to be greater than the resolution of the model.  You chose", resolution[2], "but the model latitude list suggests that", median(data.lat[data.lat != 0]), "is the actual resolution.  This could cause unexpected behavior."))
-        } 
-        nodes.xy <- cbind(model.data$lon, model.data$lat)
-    } else if(grid.type == "cartesian") {
-        if(is.null(cartesian.nodes) | !(("x" %in% names(cartesian.nodes)) & ("y" %in% names(cartesian.nodes)))) {
-           stop("If grid.type = \"cartesian\", you must define the input cartesian.nodes$x=east-west values of your model grid, cartesian.nodes$y=north-south values of your model grid. See ModelGrid documentation.")
-        } 
-        nodes.xy <- cbind(cartesian.nodes$x, cartesian.nodes$y) 
-    } else {
-        stop(paste0("Did not recognize grid.type ", grid.type, ".  Available options are \"latlon\" and \"cartesian\""))
-    }
+    #Check to make sure the grid is not too fine
+    data.lat <- round(diff(model.data$lat), 11)
+    data.lon <- round(diff(model.data$lon), 11)
+    if(median(data.lon[data.lon != 0]) > resolution[1]) {
+         warning(paste("The resolution you've chosen appears to be finer than the resolution of the model.  You chose", resolution[1], "but the model longitude list suggests that", median(data.lon[data.lon != 0]), "is the actual resolution.  This could cause unexpected behavior."))
+    } 
+    if(median(data.lat[data.lat != 0]) > resolution[2]) {
+        warning(paste("The resolution you've chosen appears to be greater than the resolution of the model.  You chose", resolution[2], "but the model latitude list suggests that", median(data.lat[data.lat != 0]), "is the actual resolution.  This could cause unexpected behavior."))
+    } 
+    nodes.xy <- cbind(model.data$lon, model.data$lat)
 
     model.run.date <- unique(model.data$model.run.date)
     if(length(model.run.date) > 1) {
@@ -513,58 +529,3 @@ PlotWindProfile <- function(zonal.wind, meridional.wind, height, magnitude = NUL
        }
     }
 }     
-
- 
-RTModelProfile <- function(model.url, pred, levels, variables, lon, lat, resolution, grid.type, model.domain = NULL, spatial.average = FALSE, verbose = TRUE) {
-   #Get variables and levels for a list of points, utilizing nearest neighbor interpolation if requested
-   #INPUTS
-   #    MODEL.URL - Where the model is located, returned from CrawlModels
-   #    PRED - Which prediction to download
-   #    VARIABLES - Model variables to get for profile
-   #    LEVELS - Model levels to get for profile
-   #    LON - List of longitudes
-   #    LAT - List of latitudes
-   #    RESOLUTION - Resolution of model, in degrees if Lat/Lon, in kilometers if cartesian, as a 2 element vector (ZONAL, MERIDIONAL)
-   #    GRID.TYPE - If the horizontal part of the model is Lat/Lon or cartesian.
-   #       "latlon" if Lat/Lon, "cartesian" if cartesian.
-   #    MODEL.DOMAIN - a vector of latitudes and longitudes that specify the area to return a forecast for
-   #        If NULL, get 1 degree past limits of LON and LAT
-   #    SPATIAL.AVERAGE - Perform nearest neighbor interpolation for 4 grid nodes to get average profile at a specific point.  Default FALSE.  If FALSE, get data from nearest grid node.
-   #OUTPUTS
-   #    PROFILE.DATA - Table of pressures and requested variables
-   #    SPATIAL.AVERAGING - What kind of spatial interpolation was used, if any
-   #    PRED - is the exact model run you want, generally from ParseModelPage
-   #    VARIABLES - Model variables, in the order presented in PROFILE.DATA
-   #    LEVELS - Model levels, in the order presented in PROFILE.DATA
-   #    MODEL.DATE - When the model was run
-   #    DATE - What date was requested for the data
-
-
-
-   if(is.null(model.domain)) {
-       model.domain <- c(min(lon), max(lon), max(lat), min(lat)) + c(-1, 1, 1, -1)
-   }
-
-   if(spatial.average) {
-      spatial.average.method <- "Multilevel B-Splines using MBA::mba.points"
-   } else {
-      spatial.average.method <- "Nearest Node"
-   }
-
-
-   grib.info <- GribGrab(model.url, pred, levels, variables, model.domain = model.domain, verbose = verbose)
-   grib.data <- ReadGrib(file.path(grib.info$local.dir, grib.info$file.name), levels, variables)
-   gridded.data <- ModelGrid(grib.data, resolution, grid.type = grid.type)
-
-   l.i <- sort(as.numeric(unlist(stringr::str_extract_all(gridded.data$levels, "\\d+"))), index.return = TRUE, decreasing = TRUE)
-   profile.data <- NULL
-   for(k in seq_len(length(lat))) {
-       profile.data[[k]] <- BuildProfile(gridded.data, lon[k], lat[k], spatial.average)[l.i$ix,]
-   }
-   profile <- list(profile.data = profile.data, spatial.averaging = spatial.average.method,
-       variables = gridded.data$variables, lat = lat, lon = lon,
-       levels = gridded.data$levels[l.i$ix], model.date = gridded.data$model.run.date, forecast = pred, model.url = model.url,
-       forecast.date = gridded.data$forecast.date)
-   invisible(profile)
-}
-

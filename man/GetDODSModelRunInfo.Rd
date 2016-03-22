@@ -46,6 +46,7 @@ urls.out <- GetDODSDates(abbrev)
 model.url <- tail(urls.out$url, 1)
 model.runs <- GetDODSModelRuns(model.url)
 model.info <- GetDODSModelRunInfo(model.url, tail(model.runs$model.run, 1))
-print(model.info)}
+print(model.info)
+}
 }
 \keyword{ utilities }
