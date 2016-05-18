@@ -80,3 +80,7 @@ Removed RTModelProfile, since new improvements to BuildProfile make it obsolete.
 Removed the ability to construct non-regular grids using ModelGrid.
 These changes were made to preserve rNOMADS' purpose as a gateway to NOMADS rather than a geospatial analysis package (of which there are plenty in R)
 Thank you to Adam Simkowski and Ruben Kertesz for testing and bug reports.
+
+2-3.0
+Added ensemble model support for DODSGrab.
+Created a new function, SubsetNOMADS, that allows easy subsetting of GribRead and DODSGrab data products.

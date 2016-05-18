@@ -121,7 +121,7 @@ GetDODSModelRunInfo <- function(model.url, model.run) {
    return(model.info)
 }
 
-DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = NULL, display.url = TRUE, verbose = FALSE, request.sleep = 1) {
+DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = NULL, ensembles = NULL, display.url = TRUE, verbose = FALSE, request.sleep = 1) {
    #Get data from DODS.  Note that this is slower than GribGrab but will work on all operating systems.
    #The output of this function will be the same as the output of ReadGrib in order to maintain consistency across rNOMADS.
    #ALL INDICES START FROM ZERO 
@@ -134,6 +134,7 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
    #    LAT is an **index list** of latitudes per info from GetDODSModelRunInfo "c(x,y)"
    #    LEVELS is an **index list** of levels per info from GetDODSModelRunInfo "c(x,y)"
    #         if not NULL, try to request the variable at a certain level.  Will fail if the variable does not have associated levels.
+   #    ENSEMBLE is an **index list** of ensembles runs to pull, if available
    #    DISPLAY.URL asks whether to display the URL request for debugging purposes.
    #        You can paste it into your browser to check to make sure things are working correctly
    #    VERBOSE gives a very talkative description of the download process
@@ -151,6 +152,7 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
        forecast.date  = NULL,
        variables      = NULL,
        levels         = NULL,
+       ensembles       = NULL,
        lon            = NULL,
        lat            = NULL,
        value          = NULL,
@@ -167,10 +169,19 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
        } else {
            level.str <- ""
        }
+ 
+       e.ind <- !is.null(ensembles)
+    
+       if(e.ind) {
+           ensembles.str <- paste0("[", paste0(ensembles, collapse = ":"), "]")
+       } else {
+           ensembles.str <- ""
+       }
+
        lat.str <- paste0("[", paste0(lat, collapse = ":"), "]")
        lon.str <- paste0("[", paste0(lon, collapse = ":"), "]")
       
-       data.url <- paste0(preamble, time.str, level.str, lat.str, lon.str)  
+       data.url <- paste0(preamble, ensembles.str, time.str, level.str, lat.str, lon.str)  
        
        if(display.url) {
            print(data.url)
@@ -186,10 +197,16 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
        data.txt <- unlist(strsplit(data.txt.raw, split = "\\n"))
        lats <- as.numeric(unlist(strsplit(data.txt[grep("^lat,", data.txt) + 1], split = ",")))
        lons <- as.numeric(unlist(strsplit(data.txt[grep("^lon,", data.txt) + 1], split = ",")))
-     
        if(l.ind) {
            levels.out <- as.numeric(unlist(strsplit(data.txt[grep("^lev,", data.txt) + 1], split = ",")))
        }
+       if(e.ind) {
+           ens.out <- as.numeric(unlist(strsplit(data.txt[grep("^ens,", data.txt) + 1], split = ",")))
+           r.end <- grep("^ens,", data.txt)
+       } else {
+           r.end <- grep("^time,", data.txt)
+       }
+       
        t.ind <- grep("^time,", data.txt)
 
        prev.digits <- options("digits")
@@ -201,36 +218,42 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
        #Extract data values 
        
        val.dim <- unlist(stringr::str_extract_all(unlist(strsplit(data.txt[1], ","))[2], "\\d"))
-       val.txt <- data.txt[2:(t.ind - 1)]    
+       val.txt <- data.txt[2:(r.end - 1)]    
        val.txt <- val.txt[val.txt !=""] 
        val.txt <- stringr::str_replace_all(val.txt, "\\]\\[", ",")
        val.txt <- stringr::str_replace_all(val.txt, c("\\]|\\["), "")
     
        model.run.date <- paste0(stringr::str_extract(model.url, "[1-2]\\d{3}[0-1]\\d{1}[0-3]\\d{1}$"), model.run)
        
-       row.num <- (as.numeric(val.dim[2]) + l.ind) * length(val.txt)
-       model.data.tmp <- array("", dim = c(row.num, 7))
+       row.num <- (as.numeric(val.dim[2]) + l.ind + e.ind) * length(val.txt)
     
-       r.start <- 3 + l.ind #What row to start at
+       r.start <- 3 + l.ind + e.ind #What row to start at
        for(k in seq_len(length(val.txt))) {
            val.tmp <- sapply(strsplit(val.txt[k], split = ","), as.numeric)
            r.end <- length(val.tmp)
            get.rows <- r.end - r.start + 1
            model.data$model.run.date <- append(model.data$model.run.date, rep(model.run.date, get.rows))
-           model.data$forecast.date  <- append(model.data$forecast.date, rep(times[val.tmp[1] + 1], get.rows))
+           model.data$forecast.date  <- append(model.data$forecast.date, rep(times[val.tmp[1 + e.ind] + 1], get.rows))
            model.data$variables      <- append(model.data$variables, rep(variable, get.rows))
            if(l.ind) {
-               model.data$levels <- append(model.data$levels, rep(levels.out[val.tmp[2] + 1], get.rows))
+               model.data$levels <- append(model.data$levels, rep(levels.out[val.tmp[2 + e.ind] + 1], get.rows))
+           }
+           if(e.ind) {
+               model.data$ensembles <- append(model.data$ensembles, rep(ens.out[val.tmp[1] + 1], get.rows))
            }
            model.data$lon            <- append(model.data$lon, lons) 
-           model.data$lat            <- append(model.data$lat, rep(lats[val.tmp[2 + l.ind] + 1], get.rows))
+           model.data$lat            <- append(model.data$lat, rep(lats[val.tmp[2 + l.ind + e.ind] + 1], get.rows))
            model.data$value          <- append(model.data$value, val.tmp[r.start:r.end])
        }
        
        if(!l.ind) {
-           model.data$levels <- rep("level not defined", length(model.data$value))
+           model.data$levels <- rep("Level not defined", length(model.data$value))
        }
-    
+   
+       if(!e.ind) {
+           model.data$ensembles <- rep("Ensemble not defined", length(model.data$value))
+       }
+ 
        model.data$request.url <- append(model.data$request.url, data.url)
     
        if(length(variables) > 1) {

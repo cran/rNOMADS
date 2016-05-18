@@ -88,6 +88,11 @@ BuildProfile <- function(model.data, lon, lat, spatial.average = FALSE, points =
     #       $PROFILE.DATA - A date x levels x variables matrix with atmospheric data for given point
     #       $LOCATION - A two element vector the lat/lon coordinates of the locations
     #       $FORECAST.DATE - Date and time of forecast
+    if(!is.null(model.data$ensembles)) {
+       if(length(unique(model.data$ensembles)) > 1) {
+          stop("There appears to be more than one ensembles run in your data set!  BuildProfile can only handle one at a time.")
+       }
+    }
  
     profile   <- NULL
  
@@ -177,13 +182,19 @@ ModelGrid <- function(model.data, resolution, levels = NULL, variables = NULL, m
 
     model.run.date <- unique(model.data$model.run.date)
     if(length(model.run.date) > 1) {
-        warning("There appears to be more than one model run date in your model grid!")
+        stop("There appears to be more than one model run date in your data set! ModelGrid can only handle one at a time.")
+    }
+
+    if(!is.null(model.data$ensembles)) {
+       if(length(unique(model.data$ensembles)) > 1) {
+          stop("There appears to be more than one ensembles run in your data set!  ModelGrid can only handle one at a time.")
+       }
     }
 
     fcst.date <- as.POSIXlt(unique(model.data$forecast.date), tz = "GMT")
 
     if(length(fcst.date) > 1) {
-        warning("There appears to be more than one model run date in your model grid!")
+        stop("There appears to be more than one forecast in your data set! ModelGrid can only handle one at a time.")
     }
 
     if(is.null(variables)) {
@@ -529,3 +540,65 @@ PlotWindProfile <- function(zonal.wind, meridional.wind, height, magnitude = NUL
        }
     }
 }     
+
+SubsetNOMADS <- function(model.data, levels = NULL, variables = NULL, lon = NULL, lat = NULL,
+ensembles = NULL, forecast.date = NULL, model.run.date = NULL) {
+   
+   #Subset the output of DODSGrab or ReadGrib to include only those parameters you are interested in
+   #INPUTS
+   #    MODEL.DATA     - Output of DODSGrab or ReadGrib
+   #    LEVELS         - Which levels to keep, as vector
+   #    VARIABLES      - Which variables to keep, as vector
+   #    LON            - Which longitude points to keep, as vector, note this culd be very inefficient
+   #    LAT            - Which latitude points to keep, as vector, note this culd be very inefficient
+   #    ENSEMBLE       - Which ensembles runs to keep, as vector
+   #    FORECAST.DATE  - Which forecast dates to keep, as vector.
+   #    MODEL.RUN.DATE - Which model run dates to keep, as vector; not sure if this will ever be used 
+   #OUTPUTS
+   #    MODEL.DATA.SUB - Subsetted model.data per above criteria
+
+   d.i <- rep(1, length(model.data$value))
+ 
+   if(!is.null(levels)) { 
+      d.i <- d.i & model.data$levels %in% levels 
+   }
+
+   if(!is.null(variables)) {
+       d.i <- d.i & model.data$variables %in% variables
+   }
+
+   if(!is.null(lon)) {
+       d.i <- d.i & model.data$lon %in% lon
+   }
+
+   if(!is.null(lat)) {
+       d.i <- d.i & model.data$lat %in% lat
+   }
+
+   if(!is.null(ensembles)) {
+       d.i <- d.i & model.data$ensembles %in% ensembles
+   }
+
+   if(!is.null(forecast.date)) {
+       d.i <- d.i & model.data$forecast.date %in% forecast.date
+   }
+
+   if(!is.null(model.run.date)) {
+       d.i <- d.i & model.data$model.run.date %in% model.run.date
+   }
+
+   list.names <- names(model.data)
+   model.data.sub <- NULL
+
+   for(list.name in list.names) {
+      if(length(model.data[[list.name]]) == length(d.i)) {
+          model.data.sub[[list.name]] <- model.data[[list.name]][d.i]
+      } else {
+          model.data.sub[[list.name]] <- model.data[[list.name]]
+      }
+
+   }
+   return(model.data.sub)
+}
+
+          

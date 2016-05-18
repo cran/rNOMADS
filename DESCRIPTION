@@ -2,8 +2,8 @@ Package: rNOMADS
 Type: Package
 Title: An Interface to the NOAA Operational Model Archive and
         Distribution System
-Version: 2.2.0
-Date: 2016-03-21
+Version: 2.3.0
+Date: 2016-05-17
 Authors@R: c(person(given="Daniel C.",family="Bowman", role=c("aut", "cre"),
         email="danny.c.bowman@gmail.com"))
 Depends: R (>= 3.2.2), rvest (>= 0.3.0)
@@ -12,16 +12,10 @@ Imports: scrapeR (>= 0.1.6), stringr (>= 1.0.0), fields (>= 8.2.1),
         xml2 (>= 0.1.2)
 Description: An interface to the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS) that allows R users to quickly and efficiently download global and regional weather model data for processing.  rNOMADS currently supports a variety of models ranging from global weather data to an altitude of 40 km, to high resolution regional weather models, to wave and sea ice models. It can also retrieve archived NOMADS models.  rNOMADS can retrieve binary data in grib format as well as import ascii data directly into R by interfacing with the GrADS-DODS system.
 License: GPL (>= 3)
-URL: https://r-forge.r-project.org/projects/rnomads/ (subversion
-        repository)
-        http://www.unc.edu/~haksaeng/rNOMADS/rNOMADS_dods_examples.pdf
-        (GrADS-DODS examples)
-        http://www.unc.edu/~haksaeng/rNOMADS/rNOMADS_grib_examples.pdf
-        (grib examples)
-Packaged: 2016-03-21 01:37:10 UTC; dantayaga
 Maintainer: Daniel C. Bowman <danny.c.bowman@gmail.com>
 MailingList: rnomads-user@lists.r-forge.r-project.org
 NeedsCompilation: no
+Packaged: 2016-05-18 03:04:01 UTC; dantayaga
 Author: Daniel C. Bowman [aut, cre]
 Repository: CRAN
-Date/Publication: 2016-03-22 00:28:29
+Date/Publication: 2016-05-18 06:53:06

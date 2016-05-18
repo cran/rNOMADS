@@ -10,7 +10,8 @@ The data arrives in ascii format, so this function can be used to retrieve data 
 }
 \usage{
 DODSGrab(model.url, model.run, variables, time, lon, lat,
-    levels = NULL, display.url = TRUE, verbose = FALSE, request.sleep = 1)
+    levels = NULL, ensembles = NULL, display.url = TRUE, 
+    verbose = FALSE, request.sleep = 1)
 }
 \arguments{
   \item{model.url}{
@@ -23,17 +24,21 @@ DODSGrab(model.url, model.run, variables, time, lon, lat,
   A list of the data types to get.
 }
   \item{time}{
-  An two component vector denoting which time indices to get.
+  A two component vector denoting which time indices to get.
 }
   \item{lon}{
-  An two component vector denoting which longitude indices to get.
+  A two component vector denoting which longitude indices to get.
 }
   \item{lat}{
-  An two component vector denoting which latitude indices to get.
+  A two component vector denoting which latitude indices to get.
 }
   \item{levels}{
-  An two component vector denoting which levels to get, if applicable.
+  A two component vector denoting which levels to get, if applicable.
 }
+  \item{ensembles}{
+  A two component vector denoting which ensemble runs to get, if applicable.
+}
+
   \item{display.url}{
     If \code{TRUE}, print out the URL for the data request.
 } 
