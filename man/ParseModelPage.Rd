@@ -31,7 +31,6 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 \note{
 Many of the names for predictions, levels, and variables are somewhat cryptic.
-Future versions of \code{rNOMADS} may have a reference function similar to \code{\link{NOMADSRealTimeList}} to help users with this issue.
 }
 
 \seealso{

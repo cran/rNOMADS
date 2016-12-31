@@ -84,3 +84,10 @@ Thank you to Adam Simkowski and Ruben Kertesz for testing and bug reports.
 2-3.0
 Added ensemble model support for DODSGrab.
 Created a new function, SubsetNOMADS, that allows easy subsetting of GribRead and DODSGrab data products.
+
+2-3.1
+Put some warnings in BuildProfile to alert users about issues that could occur if they ask for points outside the model domain, or if not enough points for proper spatial interpolation are used.
+Now you can download multiple grib files from NOMADS in sequence, note the output from GribGrab is now a list with multiple elements.
+
+2-3.2
+Incremented version number due to CRAN resubmission, but this is essentially the same as 2-3.1

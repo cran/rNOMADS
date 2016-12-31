@@ -64,7 +64,7 @@ variables <- c("TMP", "RH") #Temperature and relative humidity
 grib.info <- GribGrab(urls.out[2], my.pred, levels, variables)
 
 #Print out the inventory - it should match the requested data
-grib.inv <- GribInfo(grib.info$file.name, "grib2")
+grib.inv <- GribInfo(grib.info[[1]]$file.name, "grib2")
 }
 }
 \keyword{ utilities }

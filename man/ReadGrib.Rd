@@ -1,7 +1,7 @@
 \name{ReadGrib}
 \alias{ReadGrib}
 \title{
-Extract data from grib file
+Extract data from grib files
 }
 \description{
 This function wraps \code{wgrib2} and \code{wgrib}, external grib file readers provided by the National Weather Service Climate Prediction Center (see \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/} and \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html}).
@@ -10,13 +10,13 @@ It does this by building an argument string, executing a system call to the appr
 Note that \code{wgrib2} must be installed for \code{ReadGrib} to work for current grib files, and \code{wgrib} may need to be installed when looking at archived data.
 }
 \usage{
-ReadGrib(file.name, levels, variables, 
+ReadGrib(file.names, levels, variables, 
     domain = NULL, file.type = "grib2", missing.data = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{file.name}{
-The path and file name of the grib file to read.
+  \item{file.names}{
+The path and file name of the grib files to read.
 }
   \item{levels}{
   The levels to extract.
@@ -46,7 +46,7 @@ A description of \code{wgrib2} and installation links are available at \url{http
 Also, rNOMADS is focused towards GRIB2 files; I have included GRIB1 format support as a convenience.
 }
 \value{
-\item{model.data}{A structure with a series of elements containing data extracted from the grib file.}
+\item{model.data}{A structure with a series of elements containing data extracted from the grib files.}
 }
 \references{
 Ebisuzaki, W, Bokhorst, R., Hyvatti, J., Jovic, D., Nilssen, K,  
@@ -90,7 +90,7 @@ variables <- c("TMP", "RH") #Temperature and relative humidity
 model.info <- GribGrab(urls.out[1], my.pred, levels, variables)
 
 #Extract the data
-model.data <- ReadGrib(model.info$file.name, levels, variables)
+model.data <- ReadGrib(model.info[[1]]$file.name, levels, variables)
 
 #Reformat it
 model.grid <- ModelGrid(model.data, c(0.5, 0.5))
@@ -98,21 +98,6 @@ model.grid <- ModelGrid(model.data, c(0.5, 0.5))
 #Show an image of world temperature at ground level
 image(model.grid$z[2, 1,,])
 
-
-#Archived Data Extraction
-#This is sometimes in GRIB1 format
-#This example is in GRIB1
-
-abbrev <- "gfsanl"
-model.date <- 20040302 #March 2, 2004
-model.run <- 18 #1800 GMT model run
-pred <- 0 #Analysis
-
-grib.info <- ArchiveGribGrab(abbrev, model.date, model.run,
-    pred, file.type = "grib1")
-
-model.data <- ReadGrib(grib.info$file.name, c("1000 mb"), c("TMP"), 
-    file.type = "grib1")
 }
 }
 \keyword{ file }

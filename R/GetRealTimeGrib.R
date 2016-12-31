@@ -3,8 +3,7 @@ CrawlModels <- function(abbrev = NULL, url = NULL, depth = NULL, verbose = TRUE)
    #See the NOMADSRealTimeList function for available models.
    #Alternatively, pass CrawlModels a URL to get a model that I have not included yet.
    #INPUTS
-   #    ABBREV - Model abbreviation as defined in NOMADSRealTimeList().  
-   #        If NULL, use the url you provided, if you did not provide one, throw error.
+   #    ABBREV - Model abbreviation as defined in NOMADSRealTimeList().  #        If NULL, use the url you provided, if you did not provide one, throw error.
    #    URL - Use your own URL and attempt to get model data from it.  
    #        This is in case NOMADS updates its system before I have a chance to update rNOMADS
    #    DEPTH - How many links to return; set this to 1 if you only want the latest model (this will speed things up significantly)
@@ -24,17 +23,17 @@ CrawlModels <- function(abbrev = NULL, url = NULL, depth = NULL, verbose = TRUE)
    urls.out <- unlist(WebCrawler(url, depth = depth, verbose = verbose), recursive = TRUE, use.names = FALSE) 
 }
 
-GribGrab <- function(model.url, pred, levels, variables, local.dir = ".", file.name = "fcst.grb", 
+GribGrab <- function(model.url, preds, levels, variables, local.dir = ".", file.names = NULL, 
     model.domain = NULL, tidy = FALSE, verbose = TRUE, check.url = TRUE, download.method = NULL)
 {
     #Get grib file from the GFS forecast repository
     #INPUTS
     #    MODEL.URL is the URL of the model, as one of the elements returned by CrawlModels
-    #    PRED is the exact model run you want, generally from ParseModelPage
+    #    PREDS is a vector of the exact model runs you want, generally from ParseModelPage
     #    LEVELS is the vertical region to return data for,  as vector, generally from ParseModelPage
     #    VARIABLES is the data to return, as vector, generally from ParseModelPage
     #    LOCAL.DIR is the directory to save the files in
-    #    FILE.NAME is the directory path and file name to save the grib file on disk, defaults to "fcst.grb" in current directory
+    #    FILE.NAMES is the file names to save the grib files on disk, defaults to each pred in the current directory
     #    MODEL.DOMAIN is a vector of latitudes and longitudes that specify the area to return a forecast for
     #    This is a rectangle with elements: west longitude, east longitude, north latitude, south latitude
     #    Defaults to entire planet
@@ -58,9 +57,13 @@ GribGrab <- function(model.url, pred, levels, variables, local.dir = ".", file.n
            stop("There is no prediction, level, or variable data present in the specified model URL.
                Perhaps the model has not been loaded yet; try using an earlier model run.")
        }
-       if(!(pred %in% test.scan$pred)) {
-           stop(paste0("The requested prediction \"", pred, "\" was not found on the model download website."))
+       
+       for(pred in preds) {
+           if(!(pred %in% test.scan$pred)) {
+               warning(paste0("The requested prediction \"", pred, "\" was not found on the model download website."))
+           }
        }
+ 
        for(lvl in levels) {
            if(!(stringr::str_replace_all(lvl, " ", "_")  %in% test.scan$levels)) {
                warning(paste0("Requested level \"", lvl, "\" was not found on the model download website."))
@@ -96,23 +99,34 @@ GribGrab <- function(model.url, pred, levels, variables, local.dir = ".", file.n
        subregion.str <- "=on&" 
     }
 
-   grb.url <- paste0(paste0(model.str[1], "file=", pred),
-       levels.str,
-       "&var_",
-       variables.str,
-       subregion.str,
-       paste0("dir=", model.str[2]))
+   grib.info <- NULL
 
-   #now write download logic
-   use.curl <- FALSE #May use this as an option in the future 
-   if(is.null(download.method) & !use.curl) {#Let R decide how to download the file 
-       download.file(grb.url, paste(local.dir,file.name, sep = "/"), mode = "wb", quiet = !verbose)
+   for(k in 1:length(preds)) {
+       pred <- preds[k]
+       if(is.null(file.names)) {
+           file.name <- paste0(pred, ".grb")
+       } else {
+           file.name <- file.names[k]
+       }
+    
+       grb.url <- paste0(paste0(model.str[1], "file=", pred),
+           levels.str,
+           "&var_",
+           variables.str,
+           subregion.str,
+           paste0("dir=", model.str[2]))
+    
+       #now write download logic
+       use.curl <- FALSE #May use this as an option in the future 
+       if(is.null(download.method) & !use.curl) {#Let R decide how to download the file 
+           download.file(grb.url, paste(local.dir,file.name, sep = "/"), mode = "wb", quiet = !verbose)
+       }
+       if(!is.null(download.method) & !use.curl) { #Download using specific method
+           download.file(grb.url, paste(local.dir,file.name, sep = "/"), download.method, mode = "wb", quiet = !verbose) 
+       }
+    
+       grib.info[[k]] <- list(local.dir = normalizePath(local.dir), file.name = file.name, url = grb.url) 
    }
-   if(!is.null(download.method) & !use.curl) { #Download using specific method
-       download.file(grb.url, paste(local.dir,file.name, sep = "/"), download.method, mode = "wb", quiet = !verbose) 
-   }
-
-   grib.info <- list(local.dir = normalizePath(local.dir), file.name = file.name, url = grb.url) 
    return(grib.info)
 }
 

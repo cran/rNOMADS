@@ -165,7 +165,7 @@ NOMADSArchiveList <- function(url.type, abbrev = NULL) {
             stop(paste("The model you searched for:\"", abbrev, "\"is not included in rNOMADS.  Sorry!"))
         } else {
             if(url.type == "grib") {
-                 url <- paste0("http://nomads.ncdc.noaa.gov/data/", abbrev, "/")
+                 url <- paste0("https://nomads.ncdc.noaa.gov/data/", abbrev, "/")
             } else {
                 url <- dods.urls[i]
             }
@@ -174,7 +174,7 @@ NOMADSArchiveList <- function(url.type, abbrev = NULL) {
     }
 
     if(url.type == "grib") {
-        url <- paste0("http://nomads.ncdc.noaa.gov/data/", abbrevs, "/")
+        url <- paste0("https://nomads.ncdc.noaa.gov/data/", abbrevs, "/")
     } else {
         url <- dods.urls
     }

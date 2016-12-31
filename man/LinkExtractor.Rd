@@ -34,7 +34,7 @@ This is because there is no protection against infinite recursion.
 }
 \examples{
 
-#Find the first 10 model runs for the 
+#Find model runs for the 
 #GFS 0.5x0.5 model
 
 \dontrun{

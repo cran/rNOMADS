@@ -69,7 +69,7 @@ variables <- c("TMP", "HGT")
 \dontrun{
 grib.info <- GribGrab(model.url, pred, levels, variables,
    model.domain = c(-85, -75, 37, 32))
-grib.data <- ReadGrib(grib.info$file.name, levels, variables)
+grib.data <- ReadGrib(grib.info[[1]]$file.name, levels, variables)
 
 profile <- BuildProfile(grib.data, lon, lat, TRUE, points = 8)
 plot(profile[[1]]$profile.data[,2, 1] - 272.15, 

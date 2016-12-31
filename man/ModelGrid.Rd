@@ -68,7 +68,7 @@ levels <- c("2 m above ground", "100 mb")
 variables <- c("TMP", "RH") #Temperature and relative humidity
 grib.info <- GribGrab(urls.out[1], model.parameters$pred[1], levels, variables)
 #Extract the data
-model.data <- ReadGrib(grib.info$file.name, levels, variables)
+model.data <- ReadGrib(grib.info[[1]]$file.name, levels, variables)
 
 #Make it into an array
 gfs.array <- ModelGrid(model.data, c(0.5, 0.5))

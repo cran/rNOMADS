@@ -18,7 +18,7 @@ GetClosestForecasts(abbrev, forecast.date, model.date = "latest",
 }
   \item{forecast.date}{
    What date you want a forecast for, as a date/time object.
-   It must be in the GMT time zone.
+   It must be in the UTC time zone.
 }
 \item{model.date}{
    Which model run to use, in YYYYMMDDHH, where HH is 00, 06, 12, 18. 
@@ -81,14 +81,11 @@ model.domain <- c(lon - 1, lon + 1, lat + 1, lat - 1)
 \dontrun{
 #Get the data for each
 grb.info <- GribGrab(forecasts$model.url, 
-   forecasts$back.forecast, levels, variables, 
+   c(forecasts$fore.forecast, forecasts$back.forecast), levels, variables, 
    model.domain = model.domain)
-back.data <- ReadGrib(grb.info$file.name, levels, variables)
 
-grb.info <- GribGrab(forecasts$model.url,        
-   forecasts$fore.forecast, levels, variables,
-   model.domain = model.domain)
-fore.data <- ReadGrib(grb.info$file.name, levels, variables) 
+fore.data <- ReadGrib(grb.info[[1]]$file.name, levels, variables) 
+back.data <- ReadGrib(grb.info[[2]]$file.name, levels, variables)
 
 back.profile <- BuildProfile(back.data, lon, lat,
    spatial.average = TRUE, points = 8)

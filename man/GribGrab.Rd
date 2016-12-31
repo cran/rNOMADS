@@ -9,8 +9,8 @@ The available models can be viewed by calling \code{\link{NOMADSRealTimeList}}.
 The data arrives in grib (gridded binary) format that can be read with \code{\link{ReadGrib}}.
 }
 \usage{
-GribGrab(model.url, pred, levels, variables, 
-    local.dir = ".", file.name = "fcst.grb",
+GribGrab(model.url, preds, levels, variables, 
+    local.dir = ".", file.names = NULL,
     model.domain = NULL, tidy = FALSE, verbose = TRUE,
     check.url = TRUE, download.method = NULL)
 }
@@ -18,8 +18,8 @@ GribGrab(model.url, pred, levels, variables,
   \item{model.url}{
       The address of a model download page, probably from \code{\link{CrawlModels}}.
 }
-  \item{pred}{
-      The list of predictions (or model times) determined by the specific model from \code{model.url}
+  \item{preds}{
+      A vector of predictions (or model times) determined by the specific model from \code{model.url}
 }
   \item{levels}{
   A list of model levels to download.
@@ -30,7 +30,7 @@ GribGrab(model.url, pred, levels, variables,
   \item{local.dir}{
   Where to save the grib file, defaults to the current directory.
 }
-  \item{file.name}{
+  \item{file.names}{
   What to name the grib file, defaults to \code{"fcst.grb"}.
 }
   \item{model.domain}{
@@ -64,8 +64,8 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }
 
 \note{
-This requires the external programs \code{wgrib2} and\\or \code{wgrib} to be installed (depending on whether the files are in GRIB2 or GRIB format).
-Currently, these routines are only available on Unix/Linux and MacOS systems.}
+This requires the external programs \code{wgrib2} and\\or \code{wgrib} to be installed (depending on whether the files are in GRIB2 or GRIB format).}
+
 \seealso{
 \code{\link{CrawlModels}}, \code{\link{ParseModelPage}}, \code{\link{ReadGrib}}
 }
@@ -96,7 +96,7 @@ variables <- c("TMP", "RH") #Temperature and relative humidity
 grib.info <- GribGrab(urls.out[1], my.pred, levels, variables)
 
 #Extract the data
-model.data <- ReadGrib(grib.info$file.name, levels, variables)
+model.data <- ReadGrib(grib.info[[1]]$file.name, levels, variables)
 
 #Reformat it
 model.grid <- ModelGrid(model.data, c(0.5, 0.5))

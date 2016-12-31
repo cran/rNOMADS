@@ -37,10 +37,12 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 \code{\link{NOMADSArchiveList}}, \code{\link{ArchiveGribGrab}}
 }
 \examples{
-#See what is available for January 1 2014
+#See what is available for January 1 of this year
 
 abbrev <- "gfs4"
-model.date <- 20150101
-\dontrun{gfs.available.models <- CheckNOMADSArchive(abbrev, model.date)}
+model.date <- paste0(format(Sys.time(), "\%Y"), "0101")
+\dontrun{
+gfs.available.models <- CheckNOMADSArchive(abbrev, model.date)
+}
 }
 \keyword{ utilities }

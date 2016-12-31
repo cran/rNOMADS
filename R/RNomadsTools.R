@@ -93,7 +93,16 @@ BuildProfile <- function(model.data, lon, lat, spatial.average = FALSE, points =
           stop("There appears to be more than one ensembles run in your data set!  BuildProfile can only handle one at a time.")
        }
     }
- 
+    
+    #Make sure profiles are in the model domain, if not: warn
+    if((min(lon) <= min(model.data$lon) | 
+        max(lon) >= max(model.data$lon) |
+        min(lat) <= min(model.data$lat) |
+        max(lat) >= max(model.data$lat))) {
+        
+        warning(paste0("At least one profile point is outside of the model domain.\nModel latitude range: ", paste(range(model.data$lat), collapse = " "), "\nModel longitude range: ", paste(range(model.data$lon), collapse = " ")))
+     }
+
     profile   <- NULL
  
     variables <- unique(model.data$variables)
@@ -106,6 +115,7 @@ BuildProfile <- function(model.data, lon, lat, spatial.average = FALSE, points =
     ll.tmp <- as.numeric(unlist(strsplit(ll.u, " ")))
     ll.arr <- t(array(ll.tmp, dim = c(2, length(ll.tmp)/2)))[, 2:1]
 
+    profile.warning <- FALSE
     for(k in 1:length(lon)) { 
         dist <- fields::rdist.earth(ll.arr, cbind(lon[k], lat[k]))
         profile.data <- array(NA,
@@ -126,6 +136,13 @@ BuildProfile <- function(model.data, lon, lat, spatial.average = FALSE, points =
                         val.vl <- model.data$value[vl.i]
                         d.i <- match(ll.u[s.i], ll.vl)             
                         layer.img <- cbind(cart.pts$x, cart.pts$y, val.vl[d.i])
+                        if((all(layer.img[, 1] > 0) | all(layer.img[, 1] < 0)) | 
+                           (all(layer.img[, 2] > 0) | all(layer.img[, 2] < 0)))
+                        {
+                            
+                            profile.warning <- TRUE
+                        }
+
                         profile.data[l, m, j] <- MBA::mba.points(layer.img, cbind(0, 0))[[1]][3]
                     }
                 }
@@ -140,9 +157,16 @@ BuildProfile <- function(model.data, lon, lat, spatial.average = FALSE, points =
                  }
              }
          }
+
          profile[[k]] <- list(profile.data = profile.data, location = c(lon[k], lat[k]), forecast.date = times,
          variables = variables, levels = levels)
    } 
+
+   if(profile.warning) {
+       warning("A profile point fell outside of the model subset defined by the POINTS argument. 
+           Increase POINTS to make sure you're interpolating rather than extrapolating.")
+   }
+
    return(profile)
 }
 

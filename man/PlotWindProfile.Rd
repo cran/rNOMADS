@@ -117,7 +117,7 @@ model.data <- DODSGrab(latest.model, latest.model.run,
    c(min(lat.ind), max(lat.ind)), levels)
 
 #Build profiles
-profile <- BuildProfile(model.data, myTA$lon, myTA$lat, 
+profile <- BuildProfile(model.data, myTA$lon + 360, myTA$lat, 
     spatial.average = FALSE)
 
 #Build profiles

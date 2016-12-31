@@ -37,10 +37,10 @@ GribInfo <- function(grib.file, file.type = "grib2") {
     return(list(inventory = inv, grid = grid))
 }
 
-ReadGrib <- function(file.name, levels, variables, domain = NULL, file.type = "grib2", missing.data = NULL) {
-    #This is a function to read forecast data from a Grib file
+ReadGrib <- function(file.names, levels, variables, domain = NULL, file.type = "grib2", missing.data = NULL) {
+    #This is a function to read forecast data from Grib files
     #INPUTS
-    #    FILE.NAME - Grib file name
+    #    FILE.NAMES - Vector of grib file names
     #    VARIABLES - data to extract
     #    LEVELS - which levels to extract data from
     #    DOMAIN - Region to extract data from, in c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT), west negative
@@ -54,6 +54,10 @@ ReadGrib <- function(file.name, levels, variables, domain = NULL, file.type = "g
     #    MODEL.DATA - the grib model as an array, with columns for the model run date (when the model was run)
     #       the forecast (when the model was for), the variable (what kind of data), the level (where in the atmosphere or the Earth, vertically)
     #       the longitude, the latitude, and the value of the variable.
+
+    if(sum(sapply(file.names, file.exists)) == 0) {
+        stop("The specified grib file(s) were not found.")
+    }
 
     #Get specified data from grib file
 
@@ -98,48 +102,80 @@ ReadGrib <- function(file.name, levels, variables, domain = NULL, file.type = "g
             missing.data.str <- ""
         }
 
-        #Write out a grib file with a smaller domain, then read it in
-        if(!is.null(domain)) {
-           if(!length(domain) == 4 | any(!is.numeric(domain))) {
-              stop("Input \"domain\" is the wrong length and/or consists of something other than numbers.
-                  It should be a 4 element vector: c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT)")
-           } else {
-               wg2.pre <- paste0('wgrib2 ',
-                   file.name,
-                   " -small_grib ", 
-                   domain[1], ":", domain[2], " ", domain[4], ":", domain[3],
-                   " - | wgrib2 - ")
-           }
-        } else {
-           wg2.pre <- paste0('wgrib2 ',  file.name)
-        }
-        
-        wg2.str <- paste(wg2.pre,
-            ' -inv my.inv',
-            missing.data.str,
-            ' -csv - -no_header', 
-            match.str, sep = "")
-        
-        #Get the data from the grib file in CSV format
-        if(Sys.info()[["sysname"]] == "Windows") {
-            csv.str <- shell(wg2.str, intern = TRUE)        
-        } else {
-            csv.str <- system(wg2.str, intern = TRUE)
-        } 
+        #Declare vectors
+        model.run.date <- c()
+        forecast.date  <- c()
+        variables      <- c()
+        levels         <- c()
+        lon            <- c()
+        lat            <- c()
+        value          <- c()
 
-        #HERE IS THE EXTRACTION
-        model.data.vector <- strsplit(paste(gsub("\"", "", csv.str), collapse = ","), split = ",")[[1]]
-        chunk.inds <- seq(1, length(model.data.vector) - 6, by = 7)
-        model.data <- list(model.run.date = model.data.vector[chunk.inds],
-            forecast.date = model.data.vector[chunk.inds + 1],
-            variables = model.data.vector[chunk.inds + 2],
-            levels = model.data.vector[chunk.inds + 3],
-            lon = as.numeric(model.data.vector[chunk.inds + 4]),
-            lat = as.numeric(model.data.vector[chunk.inds + 5]),
-            value = model.data.vector[chunk.inds + 6],
-            meta.data = "None - this field is used for grib1 files",
-            grib.type = file.type
-            )
+        #Loop through files
+        for(file.name in file.names) {
+            if(!file.exists(file.name)) {
+                warning(paste("Grib file", file.name, "was not found.")) 
+                next
+            }
+            #Write out a grib file with a smaller domain, then read it in
+            if(!is.null(domain)) {
+               if(!length(domain) == 4 | any(!is.numeric(domain))) {
+                  stop("Input \"domain\" is the wrong length and/or consists of something other than numbers.
+                      It should be a 4 element vector: c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT)")
+               } else {
+                   wg2.pre <- paste0('wgrib2 ',
+                       file.name,
+                       " -small_grib ", 
+                       domain[1], ":", domain[2], " ", domain[4], ":", domain[3],
+                       " - | wgrib2 - ")
+               }
+            } else {
+               wg2.pre <- paste0('wgrib2 ',  file.name)
+            }
+            
+            wg2.str <- paste(wg2.pre,
+                ' -inv my.inv',
+                missing.data.str,
+                ' -csv - -no_header', 
+                match.str, sep = "")
+            
+            #Get the data from the grib file in CSV format
+            if(Sys.info()[["sysname"]] == "Windows") {
+                csv.str <- shell(wg2.str, intern = TRUE)        
+            } else {
+                csv.str <- system(wg2.str, intern = TRUE)
+            } 
+    
+            #HERE IS THE EXTRACTION
+            model.data.vector <- strsplit(paste(gsub("\"", "", csv.str), collapse = ","), split = ",")[[1]]
+    
+            if(length(model.data.vector) == 0) {  #Something went wrong: no data were returned
+                warning(paste0("No combinations of variables ", paste(variables, collapse = " "), " and levels ", paste(levels, collapse = " "), " yielded any data for the specified model and model domain in grib file ", file.name))
+            } else { #Report data
+                chunk.inds <- seq(1, length(model.data.vector) - 6, by = 7)
+                model.run.date <- c(model.run.date, model.data.vector[chunk.inds])
+                forecast.date  <- c(forecast.date, model.data.vector[chunk.inds + 1])
+                variables      <- c(variables, model.data.vector[chunk.inds + 2])
+                levels         <- c(levels, model.data.vector[chunk.inds + 3])
+                lon            <- c(lon, as.numeric(model.data.vector[chunk.inds + 4]))
+                lat            <- c(lat, as.numeric(model.data.vector[chunk.inds + 5]))
+                value          <- c(value, model.data.vector[chunk.inds + 6])
+    
+            }
+      }
+
+      model.data <- list(
+          model.run.date = model.run.date,
+          forecast.date  = forecast.date,
+          variables      = variables,
+          levels         = levels,
+          lon            = lon,
+          lat            = lat,
+          value          = value,
+          meta.data = "None - this field is used for grib1 files",
+          grib.type = file.type
+          )
+
       } else if (file.type == "grib1") {
          op <- options("warn")
          options(warn = -1)
@@ -154,21 +190,37 @@ ReadGrib <- function(file.name, levels, variables, domain = NULL, file.type = "g
            # wgrib -s fcst.grb1 | grep ":TMP:1000 mb:" | wgrib -i -text fcst.grb1 -o asciifile.txt
            #This is inelegant - but I think it will work
             
-           model.data <- list(meta.data = NULL, value = NULL, variables = NULL, levels = NULL)
+           meta.data <- NULL
+           value     <- c() 
+           variables <- c() 
+           levels    <- c() 
+
            c <- 1
-           for(var in variables) {
-               for(lvl in levels) {
-                   wg.str <- paste0("wgrib -s ", file.name, " | grep \":", 
-                       var, ":", lvl, ":\" | wgrib -V -i -text ", file.name, " -o tmp.txt")
-                   #The meta.data variable contains info on the lat/lon grid
-                   model.data$meta.data[[c]] <- system(wg.str, ignore.stderr = TRUE)
-                   model.data$value[[c]] <- scan("tmp.txt", skip = 1, quiet = TRUE) 
-                   model.data$variables[c] <- var
-                   model.data$levels[c] <- lvl 
-                   c <- c + 1
+           for(file.name in file.names) {
+               if(!file.exists(file.name)) {
+                   warning(paste("Grib file", file.name, "was not found."))
+                   next
+               }
+               for(var in variables) {
+                   for(lvl in levels) {
+                       wg.str <- paste0("wgrib -s ", file.name, " | grep \":", 
+                           var, ":", lvl, ":\" | wgrib -V -i -text ", file.name, " -o tmp.txt")
+                       #The meta.data variable contains info on the lat/lon grid
+                       model.data$meta.data[[c]] <- system(wg.str, ignore.stderr = TRUE)
+                       model.data$value[[c]] <- scan("tmp.txt", skip = 1, quiet = TRUE) 
+                       model.data$variables[c] <- var
+                       model.data$levels[c] <- lvl 
+                       c <- c + 1
+                   }
                }
            }
-           model.data$grib.type <- file.type    
+           model.data <- list(
+               meta.data = meta.data, 
+               value     = value, 
+               variables = variables, 
+               levels    = levels, 
+               grib.type = file.type)
     }
+
     return(model.data)
 }

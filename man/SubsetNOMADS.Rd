@@ -86,7 +86,7 @@ height     <- NULL
 for(k in ((ensembles[1]:ensembles[2] + 1))) {
     model.data.sub <- SubsetNOMADS(model.data, ensembles = c(k), 
     variables = c("hgtprs", "ugrdprs", "vgrdprs"))
-    profile <- BuildProfile(model.data.sub, lon, lat)
+    profile <- BuildProfile(model.data.sub, lon + 360, lat)
     hgt     <- profile[[1]]$profile.data[, which(profile[[1]]$variables == "hgtprs"),]
     ugrd    <- profile[[1]]$profile.data[, which(profile[[1]]$variables == "ugrdprs"),]
     vgrd    <- profile[[1]]$profile.data[, which(profile[[1]]$variables == "vgrdprs"),]

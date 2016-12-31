@@ -10,8 +10,8 @@ The data arrives in grib (gridded binary) format that can be read with \code{\li
 Some of these files are in GRIB format, others are in GRIB2 format; select the appropriate file type when calling \code{\link{ReadGrib}}.
 }
 \usage{
-ArchiveGribGrab(abbrev, model.date, model.run, pred,
-    local.dir = ".", file.name = "fcst.grb", tidy = FALSE,
+ArchiveGribGrab(abbrev, model.date, model.run, preds,
+    local.dir = ".", file.names = NULL, tidy = FALSE,
     verbose = TRUE, download.method = NULL, file.type = "grib2")
 }
 \arguments{
@@ -24,14 +24,16 @@ ArchiveGribGrab(abbrev, model.date, model.run, pred,
    \item{model.run}{
        Which hour the model was run (i.e. 00, 06, 12, 18 for GFS)
 }
-  \item{pred}{
-      Which prediction to get (analysis is 00)
+  \item{preds}{
+      A scalar or vector of prediction to get (analysis is 00)
   }
   \item{local.dir}{
   Where to save the grib file, defaults to the current directory.
 }
-  \item{file.name}{
-  What to name the grib file, defaults to \code{"fcst.grb"}.
+  \item{file.names}{
+  A list of length \code{length(preds)} of file names to which the 
+  downloaded GRIB files are directed to.  
+  Default \code{NULL}, meaning files will be named per their model date and time.
 }
   \item{tidy}{
   If \code{TRUE}, remove all files with the suffix ".grb" from \code{local.dir} prior to downloading a new grib file.
@@ -73,12 +75,12 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 abbrev <- "gfsanl"
 model.date <- 20140101
 model.run <- 06
-pred <- 3
+preds <- 3
 
 \dontrun{
 model.info <- ArchiveGribGrab(abbrev, model.date, 
-    model.run, pred, file.type = "grib2")
-model.data <- ReadGrib(model.info$file.name, c("2 m above ground"), c("TMP"))
+    model.run, preds, file.type = "grib2")
+model.data <- ReadGrib(model.info[[1]]$file.name, c("2 m above ground"), c("TMP"))
 
 #Get surface temperature in Chapel Hill, NC
 lat <- 35.907605
