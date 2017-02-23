@@ -147,16 +147,16 @@ NOMADSArchiveList <- function(url.type, abbrev = NULL) {
          )
 
     dods.urls <- c(
-        "http://nomads.ncdc.noaa.gov/dods/NCEP_RUC/",
+        "https://nomads.ncdc.noaa.gov/dods/NCEP_RUC/",
         "NONE",
-        "http://nomads.ncdc.noaa.gov/dods/NCEP_NAM/",
-        "http://nomads.ncdc.noaa.gov/dods/NCEP_GFS/",
+        "https://nomads.ncdc.noaa.gov/dods/NCEP_NAM/",
+        "https://nomads.ncdc.noaa.gov/dods/NCEP_GFS/",
         "NONE",
-        "http://nomads.ncdc.noaa.gov/dods/NCEP_RUC/",
+        "https://nomads.ncdc.noaa.gov/dods/NCEP_RUC/",
         "NONE",
-        "http://nomads.ncdc.noaa.gov/dods/NCEP_GFS_ANALYSIS/",
+        "https://nomads.ncdc.noaa.gov/dods/NCEP_GFS_ANALYSIS/",
         "NONE",
-        "http://nomads.ncdc.noaa.gov/dods/NCEP_NAM_ANALYSIS/"        
+        "https://nomads.ncdc.noaa.gov/dods/NCEP_NAM_ANALYSIS/"        
     )
 
     if(!is.null(abbrev)) {

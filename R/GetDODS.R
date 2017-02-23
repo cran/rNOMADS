@@ -77,7 +77,7 @@ GetDODSModelRuns <- function(model.url) {
           "Details:  Attempted to access ", model.url, " but did not succeed..."))
    }
 
-   html.tmp <- XML::htmlParse(model.url)
+   html.tmp <- XML::htmlParse(RCurl::getURL(model.url))
    model.runs <- XML::xpathSApply(html.tmp, '//b', XML::xmlValue) 
    XML::free(html.tmp)
    html.txt <- readLines(model.url)
