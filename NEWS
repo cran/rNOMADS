@@ -95,3 +95,12 @@ Incremented version number due to CRAN resubmission, but this is essentially the
 2-3.3
 Fixed issue with https transition for archived DODS models.
 This will crop up every time NOMADS switches part of their site.
+
+2-3.4
+Fixed a few small bugs here and there (ensured that BuildProfile returned numeric values, made sure that wgrib2 match strings had properly escaped regex metacharacters, made sure ReadGrib only returns the variables and levels the user asked for).
+
+2-3.5
+
+CRAN resubmittal due to broken example.
+Had to remove the regex escape mechanism as it breaks on Windows.
+Will post to StackOverflow and implement solution in a future upgrade since it's low priority.

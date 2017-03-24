@@ -153,7 +153,7 @@ BuildProfile <- function(model.data, lon, lat, spatial.average = FALSE, points =
                  val.tmp <- model.data$value[d.i]
                  for(l in 1:length(variables)) {
                      v.i <- which(var.tmp == variables[l])
-                     profile.data[match(lev.tmp[v.i], levels), l, j]  <- val.tmp[v.i]
+                     profile.data[match(lev.tmp[v.i], levels), l, j]  <- as.numeric(val.tmp[v.i])
                  }
              }
          }
@@ -604,11 +604,13 @@ ensembles = NULL, forecast.date = NULL, model.run.date = NULL) {
    }
 
    if(!is.null(forecast.date)) {
-       d.i <- d.i & model.data$forecast.date %in% forecast.date
+       d.i <- d.i & as.numeric(model.data$forecast.date) %in% as.numeric(as.POSIXct(forecast.date))
    }
 
    if(!is.null(model.run.date)) {
-       d.i <- d.i & model.data$model.run.date %in% model.run.date
+       for(date.tmp in model.run.date) {
+           d.i <- d.i & (date.tmp == model.run.date)
+       }
    }
 
    list.names <- names(model.data)
@@ -624,5 +626,3 @@ ensembles = NULL, forecast.date = NULL, model.run.date = NULL) {
    }
    return(model.data.sub)
 }
-
-          

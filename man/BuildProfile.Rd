@@ -51,9 +51,11 @@ Daniel C. Bowman \email{daniel.bowman@unc.edu}
 lon <- -79.052094
 lat <- 35.907562
 
-#Get latest GFS 0.5 model, use analysis forecast
+#Get second to latest GFS 0.5 model, use analysis forecast
+#(this ensures the data's fully up on NOMADS)
+
 \dontrun{
-model.url <- CrawlModels(abbrev = "gfs_0p50", depth = 1)[1]
+model.url <- CrawlModels(abbrev = "gfs_0p50", depth = 2)[2]
 pred <- ParseModelPage(model.url)$pred[1]
 }
 

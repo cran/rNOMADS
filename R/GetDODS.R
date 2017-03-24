@@ -94,11 +94,13 @@ GetDODSModelRuns <- function(model.url) {
    return(list(model.run = model.run.str, model.run.info = model.info.str))
 }
 
-GetDODSModelRunInfo <- function(model.url, model.run) {
+GetDODSModelRunInfo <- function(model.url, model.run, download.file = TRUE) {
    #Get description of the model run,  documentation (if present), longitude and latitude covered, time span, levels (if present), and variable list
    #INPUTS
    #    MODEL.URL is a URL pointing to a certain model date, probably from GetDODSDates.
    #    MODEL.RUN is a specified model run, probably from GetDODSModelRuns.
+   #    DOWNLOAD.FILE - If TRUE, download the file and read it in rather than using the XML package to grab it directly.
+   #    This prevents some https problems experienced by the XML package
    #OUTPUTS
    #    MODEL.PARAMETERS - List of variables and model coverage information
 
@@ -108,8 +110,13 @@ GetDODSModelRunInfo <- function(model.url, model.run) {
        stop(paste0("The specified URL does not exist!  Make sure your model information is correct.  It is also possible the NOMADS server is down.\n",
           "Details:  Attempted to access ", info.url, " but did not succeed..."))
    }
-            
-   info.table <- XML::readHTMLTable(info.url)[[2]]
+   
+   if(download.file) {
+       download.file(info.url, "dods.info")
+       info.table <- XML::readHTMLTable("dods.info")[[2]] 
+   } else {
+       info.table <- XML::readHTMLTable(info.url)[[2]]
+   }
    info.arr <- cbind(
        as.vector(info.table[,1]),
        as.vector(info.table[,2]),
