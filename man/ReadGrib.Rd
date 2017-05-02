@@ -11,8 +11,10 @@ Note that \code{wgrib2} must be installed for \code{ReadGrib} to work for curren
 }
 \usage{
 ReadGrib(file.names, levels, variables, 
-    domain = NULL, file.type = "grib2", missing.data = NULL)
+    domain = NULL, domain.type = "latlon", 
+file.type = "grib2", missing.data = NULL)
 }
+
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{file.names}{
@@ -29,6 +31,12 @@ The path and file name of the grib files to read.
   If \code{NULL}, include everything.
   This argument works for GRIB2 only.
 }
+  \item{domain.type}{
+  Either \code{\"latlon\"} 
+  (the \code{domain} argument is a latitude/longitude quadruplet) 
+  or \code{\"index\"} (the \code{domain} argument is a model node index quadruplet; 
+  much faster but requires you to know the model setup)
+  }
   \item{file.type}{
   Whether the file is in GRIB (\code{"grib1"}) or GRIB2 (\code{"grib2"}) format.
   Default is \code{"grib2"}.

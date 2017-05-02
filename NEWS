@@ -104,3 +104,14 @@ Fixed a few small bugs here and there (ensured that BuildProfile returned numeri
 CRAN resubmittal due to broken example.
 Had to remove the regex escape mechanism as it breaks on Windows.
 Will post to StackOverflow and implement solution in a future upgrade since it's low priority.
+
+2-3.6
+
+A variety of minor bug fixes and improvements:
+-Improved BuildProfile stability across 180 degrees longitude line
+-Fixed regex escape mechanism on windows (I hope)
+-Fixed an issue with reserved characters appearing in GribGrab URL calls
+-Added option to pre-subset grib files by model node index in ReadGrib: way faster
+-Thought I fixed an issue with pre-subsetting grib files via lat/lon using wgrib2 on windows machines, but one user is still having issues.
+Decided to release anyway but keep looking into the problem (can't reproduce it on my Windows machine, which now works fine)
+

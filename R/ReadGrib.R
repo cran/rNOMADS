@@ -37,13 +37,14 @@ GribInfo <- function(grib.file, file.type = "grib2") {
     return(list(inventory = inv, grid = grid))
 }
 
-ReadGrib <- function(file.names, levels, variables, domain = NULL, file.type = "grib2", missing.data = NULL) {
+ReadGrib <- function(file.names, levels, variables, domain = NULL, domain.type = "latlon", file.type = "grib2", missing.data = NULL) {
     #This is a function to read forecast data from Grib files
     #INPUTS
     #    FILE.NAMES - Vector of grib file names
     #    VARIABLES - data to extract
     #    LEVELS - which levels to extract data from
     #    DOMAIN - Region to extract data from, in c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT), west negative
+    #    DOMAIN.TYPE - Either "latlon" (default), where the domain is a latitude/longitude box, or "index", where the model is subsetted based on the node index
     #    FILE.TYPE - whether this is a grib1 or a grib2 file
     #        If grib1, you must have the wgrib program installed
     #        If grib2, you must have the wgrib2 program installed
@@ -59,6 +60,10 @@ ReadGrib <- function(file.names, levels, variables, domain = NULL, file.type = "
         stop("The specified grib file(s) were not found.")
     }
 
+    if(!(domain.type %in% c("latlon", "index"))) {
+       stop(paste("domain.type must be either \"latlon\" or \"index\""))
+    }
+
     #Get specified data from grib file
 
     if(file.type == "grib2") {
@@ -71,8 +76,8 @@ ReadGrib <- function(file.names, levels, variables, domain = NULL, file.type = "
                 You can find wgrib2 here: http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/.
                 If the binaries don't work, try compiling from source.")
         }
-        #variables <- SanitizeWGrib2Inputs(variables)
-        #levels <- SanitizeWGrib2Inputs(levels)
+        variables <- stringr::str_replace_all(variables, "[{\\[()|?$^*+.\\\\]", "\\$0") 
+        levels    <- stringr::str_replace_all(levels, "[{\\[()|?$^*+.\\\\]", "\\$0") 
         match.str <- ' -match "('
         for(var in variables) {
             match.str <- paste(match.str, var, "|", sep = "")
@@ -125,11 +130,20 @@ ReadGrib <- function(file.names, levels, variables, domain = NULL, file.type = "
                   stop("Input \"domain\" is the wrong length and/or consists of something other than numbers.
                       It should be a 4 element vector: c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT)")
                } else {
+                   if(domain.type == "latlon") {
+                       wg2.pre <- paste0("wgrib2 ",
+                           file.name,
+                           " -inv my.inv ",
+                           " -small_grib ",
+                           domain[1], ":", domain[2], " ", domain[4], ":", domain[3],
+                      " tmp.grb && wgrib2 tmp.grb")
+                   } else {
                    wg2.pre <- paste0('wgrib2 ',
                        file.name,
-                       " -small_grib ", 
-                       domain[1], ":", domain[2], " ", domain[4], ":", domain[3],
-                       " - | wgrib2 - ")
+                       " -ijundefine out-box ",
+                       domain[1], ":", domain[2], " ", domain[4], ":", domain[3])
+                   }
+                        
                }
             } else {
                wg2.pre <- paste0('wgrib2 ',  file.name)
@@ -241,23 +255,3 @@ ReadGrib <- function(file.names, levels, variables, domain = NULL, file.type = "
 
     return(model.data)
 }
-
-#SanitizeWGrib2Inputs <- function(check.strs) {
-#   #Escape regex characters before inputting to wgrib2
-#   #INPUTS
-#   #    CHECK.STRS - Strings possibly containing regex metacharacters
-#   #OUTPUTS
-#   #    CHECKED.STRS - Strings with metacharacters appropriately escaped
-#
-#   meta.chars <- paste0("\\", c("(", ")", ".", "+", "*", "^", "$", "?", "[", "]", "|"))
-#
-#   for(k in 1:length(meta.chars)) {
-#      check.strs <- stringr::str_replace(check.strs, meta.chars[k], paste0("\\\\", meta.chars[k]))
-#   }
-#
-#   checked.strs <- check.strs
-#
-#   return(checked.strs)
-#}
-#
-#

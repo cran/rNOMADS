@@ -23,7 +23,7 @@ CrawlModels <- function(abbrev = NULL, url = NULL, depth = NULL, verbose = TRUE)
    urls.out <- unlist(WebCrawler(url, depth = depth, verbose = verbose), recursive = TRUE, use.names = FALSE) 
 }
 
-GribGrab <- function(model.url, preds, levels, variables, local.dir = ".", file.names = NULL, 
+GribGrab <- function(model.url, preds, levels, variables, local.dir = NULL, file.names = NULL, 
     model.domain = NULL, tidy = FALSE, verbose = TRUE, check.url = TRUE, download.method = NULL)
 {
     #Get grib file from the GFS forecast repository
@@ -32,7 +32,7 @@ GribGrab <- function(model.url, preds, levels, variables, local.dir = ".", file.
     #    PREDS is a vector of the exact model runs you want, generally from ParseModelPage
     #    LEVELS is the vertical region to return data for,  as vector, generally from ParseModelPage
     #    VARIABLES is the data to return, as vector, generally from ParseModelPage
-    #    LOCAL.DIR is the directory to save the files in
+    #    LOCAL.DIR is the directory to save the files in, current directory if NULL
     #    FILE.NAMES is the file names to save the grib files on disk, defaults to each pred in the current directory
     #    MODEL.DOMAIN is a vector of latitudes and longitudes that specify the area to return a forecast for
     #    This is a rectangle with elements: west longitude, east longitude, north latitude, south latitude
@@ -47,9 +47,12 @@ GribGrab <- function(model.url, preds, levels, variables, local.dir = ".", file.
     #    DOWNLOAD.METHOD allows the user to set how download.file accesses the Grib file (e. g. using "internal", "wget", "curl", or "lynx"), defaults to NULL (let R decide)
     #OUTPUTS
     #    GRIB.INFO contains information about the downloaded file
-    #        $LOCAL.DIR is the directory where the grib file is saved
-    #        $FILE.NAME is the local file name where the data is stored
+    #        $FILE.NAME is the full path and file name where the data is stored
     #        $URL is the url used to retrieve the data 
+
+   if(is.null(local.dir)) {
+      local.dir <- getwd()
+   }
 
    if(check.url) {
        test.scan <- ParseModelPage(model.url)
@@ -76,7 +79,7 @@ GribGrab <- function(model.url, preds, levels, variables, local.dir = ".", file.
        }
    }
    if(tidy) {
-        unlink(list.files(local.dir, pattern = "*\\.grb$"))
+        unlink(list.files(local.dir, pattern = "*\\.grb[2]?$", full.names = TRUE))
    }
 
 
@@ -125,7 +128,7 @@ GribGrab <- function(model.url, preds, levels, variables, local.dir = ".", file.
            download.file(grb.url, paste(local.dir,file.name, sep = "/"), download.method, mode = "wb", quiet = !verbose) 
        }
     
-       grib.info[[k]] <- list(local.dir = normalizePath(local.dir), file.name = file.name, url = grb.url) 
+       grib.info[[k]] <- list(file.name = paste(normalizePath(local.dir), file.name, sep = "/"), url = grb.url) 
    }
    return(grib.info)
 }
@@ -158,8 +161,8 @@ SanitizeURL <- function(bad.strs) {
 #        GOOD.STRS - A vector of strings with illegal characters replaced by URL codes
 
    good.strs <- stringr::str_replace_all(bad.strs,  "\\^", "%5E")
-   good.strs <- stringr::str_replace_all(good.strs,  "\\\\\\(", "%5C%28")
-   good.strs <- stringr::str_replace_all(good.strs,  "\\\\\\)", "%5C%29")
+   good.strs <- stringr::str_replace_all(good.strs,  "\\(", "%5C%28")
+   good.strs <- stringr::str_replace_all(good.strs,  "\\)", "%5C%29")
    good.strs <- stringr::str_replace_all(good.strs,  "\\\\", "%5C")
    good.strs <- stringr::str_replace_all(good.strs, "=","%3D")
    good.strs <- stringr::str_replace_all(good.strs, "/", "%2F")

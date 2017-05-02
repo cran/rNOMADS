@@ -1,4 +1,4 @@
-ArchiveGribGrab <- function(abbrev, model.date, model.run, preds, local.dir = ".", file.names = NULL,
+ArchiveGribGrab <- function(abbrev, model.date, model.run, preds, local.dir = NULL, file.names = NULL,
     tidy = FALSE, verbose = TRUE, download.method = NULL, file.type = "grib2") {
     #Get archived grib file
     #INPUTS
@@ -6,7 +6,7 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, preds, local.dir = ".
     #    MODEL.DATE - The year. month, and day of the model run, in YYYYMMDD format
     #    MODEL.RUN - Which hour the model was run (i.e. 00, 06, 12, 18 for GFS)
     #    PREDS - Which prediction to get (analysis is 00), a vector
-    #    LOCAL.DIR is the directory to save the files in
+    #    LOCAL.DIR is the directory to save the files in, current directory if NULL
     #    FILE.NAMES is the directory path and file names to save the grib files on disk, defaults to "fcst.grb" in current directory
     #    TIDY asks whether to delete all grib files in the directory specified in FILE.NAME, default FALSE.
     #    This is useful to clear out previous model runs.
@@ -17,9 +17,12 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, preds, local.dir = ".
     #       grib1 for GRIB1, grib2 for GRIB2
     #OUTPUTS
     #    GRIB.INFO contains information about the downloaded file
-    #        $LOCAL.DIR is the directory where the grib file is saved
-    #        $FILE.NAME is the local file name where the data is stored
+    #        $FILE.NAME is the full path and file name where the data is stored
     #        $URL is the URL from which the file was downloaded
+
+   if(is.null(local.dir)) {
+      local.dir <- getwd()
+   }
 
    if(!is.null(file.names)) {
       if(length(file.names) != length(preds)) {
@@ -29,7 +32,7 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, preds, local.dir = ".
    }
 
    if(tidy) {
-        unlink(list.files(local.dir, pattern = "*\\.grb$"))
+        unlink(list.files(local.dir, pattern = "*\\.grb[2]?$", full.names = TRUE))
    }
 
     model.date <- as.numeric(strsplit(as.character(model.date), split = "")[[1]])
@@ -93,12 +96,13 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, preds, local.dir = ".
             if(!is.null(download.method) & !use.curl) { #Download using specific method
                 download.file(grb.url, paste(local.dir,file.name.tmp, sep = "/"), download.method, mode = "wb", quiet = !verbose)
             }
-            file.names <- append(file.names, file.name.tmp)
+            file.names <- append(file.names, paste(normalizePath(local.dir), file.name.tmp, sep = "/"))
+            print(file.names)
             if(c != "") {
                 c <- c + 1
             }
         }
-        grib.info[[k]] <- list(local.dir = normalizePath(local.dir), file.name = file.names, url = grb.urls)
+        grib.info[[k]] <- list(file.name = file.names, url = grb.urls)
     }
     return(grib.info)
 } 

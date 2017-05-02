@@ -88,20 +88,12 @@ BuildProfile <- function(model.data, lon, lat, spatial.average = FALSE, points =
     #       $PROFILE.DATA - A date x levels x variables matrix with atmospheric data for given point
     #       $LOCATION - A two element vector the lat/lon coordinates of the locations
     #       $FORECAST.DATE - Date and time of forecast
+
     if(!is.null(model.data$ensembles)) {
        if(length(unique(model.data$ensembles)) > 1) {
-          stop("There appears to be more than one ensembles run in your data set!  BuildProfile can only handle one at a time.")
+          stop("There appears to be more than one ensembles run in your data set!  BuildProfile can only handle one at a time.  Use SubsetNOMADS to split them up.")
        }
     }
-    
-    #Make sure profiles are in the model domain, if not: warn
-    if((min(lon) <= min(model.data$lon) | 
-        max(lon) >= max(model.data$lon) |
-        min(lat) <= min(model.data$lat) |
-        max(lat) >= max(model.data$lat))) {
-        
-        warning(paste0("At least one profile point is outside of the model domain.\nModel latitude range: ", paste(range(model.data$lat), collapse = " "), "\nModel longitude range: ", paste(range(model.data$lon), collapse = " ")))
-     }
 
     profile   <- NULL
  
@@ -115,8 +107,29 @@ BuildProfile <- function(model.data, lon, lat, spatial.average = FALSE, points =
     ll.tmp <- as.numeric(unlist(strsplit(ll.u, " ")))
     ll.arr <- t(array(ll.tmp, dim = c(2, length(ll.tmp)/2)))[, 2:1]
 
+    #Standardize longitudes to permit model domain checks
+    lon.tmp.point <- lon
+    lon.tmp.model <- unique(model.data$lon)
+    if(any(lon.tmp.model < 0)) {
+        lon.tmp.point[lon.tmp.point < 0] <- lon.tmp.point[lon.tmp.point < 0] + 360
+        lon.tmp.model[lon.tmp.model < 0] <- lon.tmp.model[lon.tmp.model < 0] + 360
+    }
+    lon.span <- range(lon.tmp.model)
+    lat.tmp.point <- lat #Pedantic, but I'm human after all
+    lat.span <- range(model.data$lat)
+ 
     profile.warning <- FALSE
     for(k in 1:length(lon)) { 
+   
+        if((lon.tmp.point[k] < min(lon.span)) | 
+           (lon.tmp.point[k] > max(lon.span)) | 
+           (lat.tmp.point[k] > max(lat.span)) | 
+           (lat.tmp.point[k] < min(lat.span))) {
+ 
+           warning(paste0("Profile point ", k, " of ", length(lon), " may be outside of the model domain, or it's simply close to (the antipode of) the prime meridian.\n", 
+           "See GetProfile documentation for details."))
+        }
+
         dist <- fields::rdist.earth(ll.arr, cbind(lon[k], lat[k]))
         profile.data <- array(NA,
             dim = c(length(levels), length(variables), length(times)))

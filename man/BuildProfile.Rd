@@ -37,6 +37,11 @@ It is much more efficient to download a large chunk of data and extract profile 
 \item{profile$variables}{The variables the profile contains}
 \item{profile$levels}{The levels the profile contains}
 }
+\note{
+The ``outside of model domain'' warning may occur if the profile point is very close to the prime meridian (in the case of a 0-360 longitude definition) or the antipode of the prime meridian (+/- 180 degrees longitude in the case of -180 to 180 degrees definition).
+For a full download of a global model (e. g. the GFS), this does not mean the point is actually outside of the model domain.
+For example, the 0.5 degree GFS has nodes from 0 to 359.5 degrees longitude; a profile point requested at 359.9 degrees longitude will cause this warning even though it is within the global GFS model domain.
+}
 \author{
 Daniel C. Bowman \email{daniel.bowman@unc.edu}
 }

@@ -11,7 +11,7 @@ Some of these files are in GRIB format, others are in GRIB2 format; select the a
 }
 \usage{
 ArchiveGribGrab(abbrev, model.date, model.run, preds,
-    local.dir = ".", file.names = NULL, tidy = FALSE,
+    local.dir = NULL, file.names = NULL, tidy = FALSE,
     verbose = TRUE, download.method = NULL, file.type = "grib2")
 }
 \arguments{
@@ -51,8 +51,7 @@ ArchiveGribGrab(abbrev, model.date, model.run, preds,
 }
 }
 \value{
-\item{grib.info$local.dir}{The absolute path to the grib file that was downloaded.}
-\item{grib.info$file.name}{The name of the grib file that was downloaded.}
+\item{grib.info$file.name}{The path and file name of the grib file that was downloaded.}
 \item{grib.info$url}{The URL that the grib file was downloaded from}
 }
 \references{

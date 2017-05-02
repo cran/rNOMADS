@@ -10,7 +10,7 @@ The data arrives in grib (gridded binary) format that can be read with \code{\li
 }
 \usage{
 GribGrab(model.url, preds, levels, variables, 
-    local.dir = ".", file.names = NULL,
+    local.dir = NULL, file.names = NULL,
     model.domain = NULL, tidy = FALSE, verbose = TRUE,
     check.url = TRUE, download.method = NULL)
 }
@@ -52,8 +52,7 @@ GribGrab(model.url, preds, levels, variables,
 }
 }
 \value{
-\item{grib.info$local.dir}{The absolute path to the grib file that was downloaded.}
-\item{grib.info$file.name}{The name of the grib file that was downloaded.}
+\item{grib.info$file.name}{The path and file name of the grib file that was downloaded.}
 \item{grib.info$url}{The URL that the grib file was downloaded from}
 }
 \references{
