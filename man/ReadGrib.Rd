@@ -11,7 +11,7 @@ Note that \code{wgrib2} must be installed for \code{ReadGrib} to work for curren
 }
 \usage{
 ReadGrib(file.names, levels, variables, 
-    domain = NULL, domain.type = "latlon", 
+    forecasts = NULL, domain = NULL, domain.type = "latlon", 
 file.type = "grib2", missing.data = NULL)
 }
 
@@ -25,6 +25,10 @@ The path and file name of the grib files to read.
 }
   \item{variables}{
   The variables to extract.
+}
+  \item{forecasts}{
+  Names of forecasts to extract.  
+  If \code{NULL}, include everything.
 }
   \item{domain}{
   Include model nodes in the specified region: \code{c(LEFT LON, RIGHT LON, NORTH LAT, SOUTH LAT)}.

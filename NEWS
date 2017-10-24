@@ -115,3 +115,6 @@ A variety of minor bug fixes and improvements:
 -Thought I fixed an issue with pre-subsetting grib files via lat/lon using wgrib2 on windows machines, but one user is still having issues.
 Decided to release anyway but keep looking into the problem (can't reproduce it on my Windows machine, which now works fine)
 
+2-3.7
+Added an option to choose which forecast to read in using ReadGrib.
+This makes reading historic wave watch grib2 files a lot faster, for example.
