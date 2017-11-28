@@ -118,3 +118,8 @@ Decided to release anyway but keep looking into the problem (can't reproduce it 
 2-3.7
 Added an option to choose which forecast to read in using ReadGrib.
 This makes reading historic wave watch grib2 files a lot faster, for example.
+
+2-3.8
+Fixed issues with ReadGrib, such as difficulty using level names with special characters and problems reading grib2 files on windows.
+I am planning a major revamp to ReadGrib soon, so this is an interim release.
+I expect the next release to be 2-4.1

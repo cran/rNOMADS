@@ -19,7 +19,15 @@ GribInfo <- function(grib.file, file.type = "grib2") {
                 If the binaries don't work, try compiling from source.")
         }
         inv <- system(paste0("wgrib2 ", grib.file, " -inv -"), intern = TRUE)
+        cygwin.warning <- FALSE
+        if(any(grepl("cygwin warning", inv))) {
+            inv <- inv[7:length(inv)]
+         }
         grid <- system(paste0("wgrib2 ", grib.file, " -grid"), intern = TRUE) 
+        if(any(grepl("cygwin warning", grid))) {
+            grid <- grid[7:length(grid)]
+        }
+
     } else if (file.type == "grib1") {
          op <- options("warn")
          options(warn = -1)
@@ -113,7 +121,6 @@ ReadGrib <- function(file.names, levels, variables, forecasts = NULL, domain = N
         match.str <- paste(match.str.lst[1:(length(match.str.lst) - 1)], collapse = "")
         match.str <- paste(match.str, ")\"", sep = "")
   
-        print(match.str) 
         if(!is.null(missing.data) & !is.numeric(missing.data)) {
             warning(paste("Your value", missing.data, " for missing data does not appear to be a number!"))
         }
@@ -171,7 +178,11 @@ ReadGrib <- function(file.names, levels, variables, forecasts = NULL, domain = N
             
             #Get the data from the grib file in CSV format
             if(Sys.info()[["sysname"]] == "Windows") {
-                csv.str <- shell(wg2.str, intern = TRUE)        
+                csv.str <- shell(wg2.str, intern = TRUE) 
+                #Thank you for this one, Windows
+                if(csv.str[1] == "cygwin warning:") {
+                     csv.str <- csv.str[7:length(csv.str)]
+                }
             } else {
                 csv.str <- system(wg2.str, intern = TRUE)
             } 
@@ -204,7 +215,7 @@ ReadGrib <- function(file.names, levels, variables, forecasts = NULL, domain = N
       }
 
       for(k in 1:length(levels)) {
-          l.i <- l.i + (levels.tmp == levels[k])
+          l.i <- l.i + (levels.tmp == stringr::str_replace_all(levels[k],  "\\\\", ""))
       }
 
       k.i <- which(v.i & l.i)
@@ -266,6 +277,7 @@ ReadGrib <- function(file.names, levels, variables, forecasts = NULL, domain = N
                levels    = levels, 
                grib.type = file.type)
     }
-
+    
+    model.data$value <- as.numeric(model.data$value)
     return(model.data)
 }
