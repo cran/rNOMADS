@@ -37,7 +37,7 @@ GribInfo <- function(grib.file, file.type = "grib2") {
               stop("wgrib does not appear to be installed, or it is not on the PATH variable.
                   You can find wgrib here: http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html.")
            }
-        inv <- system(paste0("wgrib ", grib.file), " -s", intern = TRUE)
+        inv <- system(paste0("wgrib ", grib.file, " -s"), intern = TRUE)
         grid <- NULL
     } else {
         stop(paste0("Did not recognise file type ", file.type, ".  Please use \"grib2\" or \"grib1\"."))

@@ -123,3 +123,6 @@ This makes reading historic wave watch grib2 files a lot faster, for example.
 Fixed issues with ReadGrib, such as difficulty using level names with special characters and problems reading grib2 files on windows.
 I am planning a major revamp to ReadGrib soon, so this is an interim release.
 I expect the next release to be 2-4.1
+
+2-3.9
+Big plans for 2-4.1 have been deferred; this is a release to fix a bug in wgrib inventory reading requests
