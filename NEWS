@@ -125,4 +125,4 @@ I am planning a major revamp to ReadGrib soon, so this is an interim release.
 I expect the next release to be 2-4.1
 
 2-3.9
-Big plans for 2-4.1 have been deferred; this is a release to fix a bug in wgrib inventory reading requests
+Big plans for 2-4.1 have been deferred; this is a release to fix a bug in wgrib inventory reading requests and race conditions when running ReadGrib in parallel

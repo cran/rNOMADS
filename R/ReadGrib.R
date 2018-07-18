@@ -152,12 +152,11 @@ ReadGrib <- function(file.names, levels, variables, forecasts = NULL, domain = N
                       It should be a 4 element vector: c(LEFT LON, RIGHT LON, TOP LAT, BOTTOM LAT)")
                } else {
                    if(domain.type == "latlon") {
-                       wg2.pre <- paste0("wgrib2 ",
-                           file.name,
-                           " -inv my.inv ",
-                           " -small_grib ",
-                           domain[1], ":", domain[2], " ", domain[4], ":", domain[3],
-                      " tmp.grb && wgrib2 tmp.grb")
+                      uuid <- uuid::UUIDgenerate(use.time = T)
+                      wg2.pre <- paste0("wgrib2 ", file.name,
+                              " -inv my.inv ", " -small_grib ", domain[1],
+                              ":", domain[2], " ", domain[4], ":", domain[3],
+                              " tmp.grb.",uuid," && wgrib2 tmp.grb.",uuid)
                    } else {
                    wg2.pre <- paste0('wgrib2 ',
                        file.name,
@@ -186,7 +185,11 @@ ReadGrib <- function(file.names, levels, variables, forecasts = NULL, domain = N
             } else {
                 csv.str <- system(wg2.str, intern = TRUE)
             } 
-    
+   
+            if(domain.type == "latlon" & !is.null(domain)) {
+                 file.remove(paste0("tmp.grb.",uuid))
+            }
+     
             #HERE IS THE EXTRACTION
             model.data.vector <- strsplit(paste(gsub("\"", "", csv.str), collapse = ","), split = ",")[[1]]
     
