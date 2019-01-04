@@ -7,7 +7,7 @@ Find available model run dates for data on the GrADS - DODS system.
 This function checks the GrADS data server to see what dates and model subsets are available for model specified by ABBREV
 }
 \usage{
-GetDODSDates(abbrev, archive=FALSE, request.sleep=1)
+GetDODSDates(abbrev, archive=FALSE, request.sleep=1, https = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,6 +20,9 @@ GetDODSDates(abbrev, archive=FALSE, request.sleep=1)
   \item{request.sleep}{
   Seconds to pause between HTTP requests when scanning model pages - this prevents timeouts. Default \code{1}.
   }
+  \item{https}{
+  Whether to use HTTP or HTTPS.  Default FALSE (use HTTPS)
+  } 
 }
 \details{
 This function determines which dates are available for download for a particular model through the GrADS - DODS system.

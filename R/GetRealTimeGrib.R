@@ -1,4 +1,4 @@
-CrawlModels <- function(abbrev = NULL, url = NULL, depth = NULL, verbose = TRUE) {
+CrawlModels <- function(abbrev = NULL, model.url = NULL, depth = NULL, verbose = TRUE) {
    #A simple web crawler that looks at the specified model directory online and gets information on all runs of the specified model.
    #See the NOMADSRealTimeList function for available models.
    #Alternatively, pass CrawlModels a URL to get a model that I have not included yet.
@@ -15,12 +15,12 @@ CrawlModels <- function(abbrev = NULL, url = NULL, depth = NULL, verbose = TRUE)
        stop("No models specified.")
    }
    
-   if(is.null(url)) {
+   if(is.null(model.url)) {
        model.info <- NOMADSRealTimeList("grib", abbrev=abbrev) 
-       url <- model.info$url[1]
+       model.url <- model.info$url[1]
    }   
 
-   urls.out <- unlist(WebCrawler(url, depth = depth, verbose = verbose), recursive = TRUE, use.names = FALSE) 
+   urls.out <- unlist(WebCrawler(model.url, depth = depth, verbose = verbose), recursive = TRUE, use.names = FALSE) 
 }
 
 GribGrab <- function(model.url, preds, levels, variables, local.dir = NULL, file.names = NULL, 
@@ -144,12 +144,35 @@ ParseModelPage <- function(model.url) {
 #            MODEL.PARAMETERS$LEVELS - the model levels
 #            MODEL.PARAMETERS$VARIABLES - the types of data provided by the models
 
-    html.code <- scrapeR::scrape(model.url, parse = FALSE)
-    model.parameters <- list()
-    model.parameters$pred <- gsub("option value=\"", "", stringr::str_extract_all(html.code[[1]], "option value=\"[^\"]+")[[1]])
-    model.parameters$levels <- gsub("lev_", "", stringr::str_extract_all(html.code[[1]], "lev_[^\"]+")[[1]], fixed = TRUE)
-    model.parameters$variables <- gsub("var_", "", stringr::str_extract_all(html.code[[1]], "var_[^\"]+")[[1]], fixed = TRUE)
-     
+    html <- readLines(model.url, warn = FALSE)
+
+    f.i <- which(grepl("<option value", html))
+    pred <- stringr::str_replace_all(
+        stringr::str_extract(html[f.i], "\".*\""), "\"", "")
+
+    checkboxes <- html[grepl("type=\"checkbox\"", html)]
+
+    v.i <- which(grepl("\"var_", checkboxes))
+    vars.tmp <- unlist(strsplit(checkboxes[v.i], "<input type=\"checkbox\"")) 
+    variables <- stringr::str_replace_all(
+        stringr::str_replace_all(
+        stringr::str_extract(vars.tmp, "\"var_.*\""),
+        "var_", ""),
+        "\"", "")
+
+    l.i <- which(grepl("\"lev_", checkboxes))
+    levs.tmp <- unlist(strsplit(checkboxes[l.i], "<input type=\"checkbox\""))
+    levels <- stringr::str_replace_all(
+        stringr::str_replace_all(
+        stringr::str_extract(levs.tmp, "\"lev_.*\""),
+        "lev_", ""),
+        "\"", "")
+
+    model.parameters <- list(
+        pred      = pred,
+        variables = variables[which(!is.na(variables))],
+        levels    = levels[which(!is.na(levels))])
+
     return(model.parameters)
 }
 
@@ -174,7 +197,7 @@ WebCrawler <- function(url, depth = NULL, verbose = TRUE) {
 #    This function recursively searches for links in the given url and follows every single link.
 #    It returns a list of the final (dead end) URLs.
 #    Many thanks to users David F and Adam Smith on stackoverflow for the link parser:
-#    http://stackoverflow.com/questions/3746256/extract-links-from-webpage-using-r/3746290#3746290
+#    https://stackoverflow.com/questions/3746256/extract-links-from-webpage-using-r/3746290#3746290
 #    INPUTS
 #        URL is the url to start looking in
 #    OUTPUTS

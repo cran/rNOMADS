@@ -309,9 +309,16 @@ LinkExtractor <- function(url) {
     #OUTPUTS
     #    LINKS - A list of all the links on the page
 
-    html.tmp <- xml2::read_html(url)
-    links <-  html.tmp %>% html_nodes("a") %>% html_attr("href")
+    html.tmp <- readLines(url, warn = FALSE)
 
+    hrefs    <- unlist(strsplit(html.tmp[which(grepl("href", html.tmp))],
+       "</tr><tr><td>"))
+
+    meat     <- stringr::str_extract(hrefs, "href=\".*\"")
+
+    links <-  stringr::str_replace_all(
+        stringr::str_replace(meat, "href=", ""), "\"", "")
+        
     return(links)
 }
 

@@ -8,7 +8,7 @@ Scans the NOMADS Real Time web site to generate a list of available model produc
 Users can refer to this list to find out more information about the available models, and rNOMADS uses the abbreviations to determine which URLs to scan and download.
 }
 \usage{
-NOMADSRealTimeList(url.type, abbrev = NULL)
+NOMADSRealTimeList(url.type, abbrev = NULL, https = TRUE) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,9 +16,12 @@ NOMADSRealTimeList(url.type, abbrev = NULL)
   Determine whether to return a URL for extracting GRIB files (\code{"grib"}) or for getting ascii format data directly from the server (\code{"dods"}).}
   \item{abbrev}{
    Return information about the model that this abbreviation refers to.
-   Defaults to \code{NULL}, in which case information about all the models available through \code{rNOMADS}.
+   Defaults to \code{NULL}, in which case information about all the models available through \code{rNOMADS}.}
+  \item{https}{
+  Whether to use http or https.  Default TRUE, though DODS may not work. 
+  If that's the case, use https=FALSE.}
 }
-}
+
 \value{
     \item{abbrevs}{An abbreviation for each model}
     \item{names}{A full name for each model}

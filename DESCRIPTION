@@ -1,9 +1,9 @@
 Package: rNOMADS
 Type: Package
-Title: An Interface to the NOAA Operational Model Archive and
+Title: An R Interface to the NOAA Operational Model Archive and
         Distribution System
-Version: 2.3.10
-Date: 2018-7-17
+Version: 2.4.0
+Date: 2019-12-3
 Authors@R: c(person(given="Daniel C.",family="Bowman", role=c("aut", "cre"),
         email="danny.c.bowman@gmail.com"))
 Depends: R (>= 3.4.0), rvest (>= 0.3.2)
@@ -18,7 +18,7 @@ URL: <https://bovineaerospace.wordpress.com/category/r/ >,
         <https://r-forge.r-project.org/projects/rnomads/ >,
         <https://www.r-project.org >
 NeedsCompilation: no
-Packaged: 2018-07-18 02:46:22 UTC; dantayaga
+Packaged: 2019-01-04 05:45:07 UTC; dantayaga
 Author: Daniel C. Bowman [aut, cre]
 Repository: CRAN
-Date/Publication: 2018-07-18 04:20:03 UTC
+Date/Publication: 2019-01-04 12:50:03 UTC

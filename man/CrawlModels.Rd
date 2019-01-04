@@ -7,7 +7,7 @@ Get Available Model Runs
 This function determine which instances of a given model are available for download.
 }
 \usage{
-CrawlModels(abbrev = NULL, url = NULL, depth = NULL, verbose = TRUE)
+CrawlModels(abbrev = NULL, model.url = NULL, depth = NULL, verbose = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -15,7 +15,7 @@ CrawlModels(abbrev = NULL, url = NULL, depth = NULL, verbose = TRUE)
    The model abbreviation, see \code{\link{NOMADSRealTimeList}}.
    Defaults to \code{NULL}.
 }
-  \item{url}{
+  \item{model.url}{
    A URL to use instead of using the abbreviations in \code{\link{NOMADSRealTimeList}}.
    Defaults to \code{NULL}.
 }

@@ -1,18 +1,14 @@
 #Descriptions of real time and archived models
-NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
+NOMADSRealTimeList <- function(url.type, abbrev = NULL, https = TRUE) {
     #Returns a list of model abbreviations for real time models, a short description, and URL for each model offered by the NOMADS server
     #If a specific model abbreviation is requested, the abbreviation is checked against the model list.
     #If a match is found, information is returned about that model; otherwise an error occurs
-    #
-    #
-    #A big shout out to user hrbrmstr on Stack Overflow for providing the table parsing code in this function
-    #http://stackoverflow.com/questions/27592575/dropped-rows-using-readhtmltable-in-r
-    #http://stackoverflow.com/users/1457051/hrbrmstr
     #
     #INPUTS
     #    URL.TYPE determines which URL to return: one for downloading GRIB files (grib) or one for downloading dods data via DODS (dods)
     #    ABBREV is the model abbreviation that rNOMADS uses to figure out which model you want.
     #        if NULL, returns information on all models
+    #    HTTPS if TRUE, use https, if FALSE, use http
     #OUTPUTS
     #    MODEL.LIST - a list of model metadata with elements
     #        $ABBREV - the abbrevation used to call the model in rNOMADS
@@ -23,37 +19,56 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
         stop("URL type must be either \"grib\" or \"dods\"!")
     }
 
-    base.url <- "http://nomads.ncep.noaa.gov/"
-    trim <- function(x) gsub("^[[:space:]]+|[[:space:]]+$", "", x)
-
-    doc <- xml2::read_html(base.url)
-    ds <- doc %>% html_nodes(xpath="//table/descendant::th[@class='nomads'][1]/../../
-                                            descendant::td[contains(., 'http')]/
-                                            preceding-sibling::td[3]")
-    data.set <- ds %>% html_text() %>% trim()
-
-    grib.filter <- doc %>% html_nodes(xpath="//table/descendant::th[@class='nomads'][1]/../../
-                                  descendant::td[contains(., 'http')]/preceding-sibling::td[1]") %>%
-   sapply(function(x) {
-     ifelse(grepl("href", as.character(x)),
-           x %>% html_node("a") %>% html_attr("href"),
-           NA)
-    })
-
-   http.link <- doc %>% html_nodes("a[href^='/pub/data/']") %>% html_attr("href")
-
-   gds.alt <- doc %>% html_nodes(xpath="//table/descendant::th[@class='nomads'][1]/../../
-                              descendant::td[contains(., 'http')]/following-sibling::td[1]") %>%
-   sapply(function(x) {
-     ifelse(grepl("href", as.character(x)),
-           x %>% html_node("a") %>% html_attr("href"),
-           NA)
-    })
+   if(https) {
+       prefix <- "https"
+   } else {
+       prefix <- "http"
+   }
 
  
+   base.url <- paste0(prefix, "://nomads.ncep.noaa.gov/")
+
+   oldlocale <- Sys.setlocale()
+   foo <- Sys.setlocale('LC_ALL','C')
+
+   #Grab table rows
+   row.regex <- "^\\s*<td.*center.*href.*txt_descriptions"
+
+   #Read the website code
+   ncep.html <- readLines(base.url, warn = FALSE)
+
+   #Rows of interest
+   r.i <- which(grepl(row.regex, ncep.html))
+
+   #Get grib and dods models
+   data.set <- rep(NA, length(r.i))
+   grib.filter <- data.set
+   gds.alt <- data.set
+
+   for(k in 1:length(r.i)) {
+      ds.tmp <-   stringr::str_extract(
+         stringr::str_extract(ncep.html[r.i[k]], "<a.*</a>"),
+         ">.*<")
+       data.set[k] <- substr(ds.tmp, 2, nchar(ds.tmp) - 1)
+
+       grib.filter.tmp <- ncep.html[r.i[k] + 1]
+       gds.alt.tmp <- ncep.html[r.i[k] + 3]
+
+       if(grepl("grib filter", grib.filter.tmp)) {
+           grib.filter[k] <- stringr::str_extract(grib.filter.tmp, "cgi-bin.*\\.pl")
+       }
+
+       if(grepl("OpenDAP-alt", gds.alt.tmp)) {
+          gds.alt[k] <- stringr::str_replace_all(
+              stringr::str_extract(gds.alt.tmp, "\"dods.*\""),
+              "\"", "")
+       }
+   }
+
+    
    grib.abbrevs <- stringr::str_replace(stringr::str_replace(basename(grib.filter), "filter_", ""), ".pl", "")
    dods.abbrevs <- basename(gds.alt)
-   dods.base.url <- "http://nomads.ncep.noaa.gov:9090/dods/"
+   dods.base.url <- paste0(prefix, "://nomads.ncep.noaa.gov:9090/dods/")
    if(is.null(abbrev)) {
        if(url.type == "grib") {
           good.abbrevs <- which(!is.na(grib.abbrevs))
