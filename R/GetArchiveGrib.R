@@ -69,14 +69,18 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, preds, local.dir = NU
         link.list <- unique(LinkExtractor(download.url))
     
         #Check if the requested file is where we think it is
-        if(sum(grepl(paste0(".*", file.part, "$"), link.list)) < 1) {
+        if(!any(grepl(file.part, link.list))) {
             warning(paste("The requested data file ending in", file.part, "does not appear to be in the archive. 
                 Try opening", download.url, "in a web browser to verify that it's missing."))
             next
         }
     
         #Set up URL to file
-        grb.urls <- paste0(download.url, link.list[grepl(paste0(".*", file.part, "$"), link.list)])
+        grb.urls <- stringr::str_replace(
+            stringr::str_extract(
+            paste0(download.url, link.list[grepl(file.part, link.list)]), 
+            paste0("^.*", file.part, "><")),
+            "><", "")
     
         #Download the file
         if(length(grb.urls) > 1) {

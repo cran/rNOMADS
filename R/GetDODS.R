@@ -1,13 +1,12 @@
 #use the GrADS-DODS capability of NOMADS to get ascii data
 
-GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1, https = FALSE) {
+GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1) {
     #Checks the GrADS data server to see what dates and model subsets are available for model specified by ABBREV.
     #INPUTS
     #    ABBREV - Model abbreviation
     #    ARCHIVE - If you're looking in the model archives (TRUE) or the real time NOMADS system (FALSE)
     #    REQUEST.SLEEP - Sometimes hammering the NOMADS server with a zillion HTTP requests is not a good idea.
     #    REQUEST.SLEEP pauses X seconds between requests to prevent timeouts.
-    #    HTTPS - Whether to use https (TRUE) or http (FALSE)
     #OUTPUTS
     #    AVAILABLE.DATES - A list of model URLS and dates
     #        $ABBREV - Model abbreviation
@@ -17,7 +16,7 @@ GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1, https = FAL
     date.pattern <- "[1-2]\\d{3}[0-1]\\d{1}[0-3]\\d{1}$"
     
     if(!archive) {
-        top.url <- unique(NOMADSRealTimeList("dods", abbrev, https = https)$url)
+        top.url <- unique(NOMADSRealTimeList("dods", abbrev)$url)
     } else {
         if(grepl("anl$", abbrev)) {
             stop(paste("Archived analysis models are not stored by date.",

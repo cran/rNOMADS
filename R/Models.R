@@ -1,5 +1,5 @@
 #Descriptions of real time and archived models
-NOMADSRealTimeList <- function(url.type, abbrev = NULL, https = TRUE) {
+NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     #Returns a list of model abbreviations for real time models, a short description, and URL for each model offered by the NOMADS server
     #If a specific model abbreviation is requested, the abbreviation is checked against the model list.
     #If a match is found, information is returned about that model; otherwise an error occurs
@@ -8,7 +8,6 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL, https = TRUE) {
     #    URL.TYPE determines which URL to return: one for downloading GRIB files (grib) or one for downloading dods data via DODS (dods)
     #    ABBREV is the model abbreviation that rNOMADS uses to figure out which model you want.
     #        if NULL, returns information on all models
-    #    HTTPS if TRUE, use https, if FALSE, use http
     #OUTPUTS
     #    MODEL.LIST - a list of model metadata with elements
     #        $ABBREV - the abbrevation used to call the model in rNOMADS
@@ -19,11 +18,7 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL, https = TRUE) {
         stop("URL type must be either \"grib\" or \"dods\"!")
     }
 
-   if(https) {
-       prefix <- "https"
-   } else {
-       prefix <- "http"
-   }
+   prefix <- "https"
 
  
    base.url <- paste0(prefix, "://nomads.ncep.noaa.gov/")
