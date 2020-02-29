@@ -134,3 +134,6 @@ DODS (openDAP-alt) remains nonfunctioning, but decided to release a new version 
 2-4.1
 DODS functionality is restored (on the NOMADS side, not my doing).
 This release fixes an issue with ArchiveGribGrab.
+
+2-4.2
+Adjusted DODS to make sure it is compatible with the upcoming NOMADS port change

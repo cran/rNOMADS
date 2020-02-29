@@ -63,7 +63,7 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
     
    grib.abbrevs <- stringr::str_replace(stringr::str_replace(basename(grib.filter), "filter_", ""), ".pl", "")
    dods.abbrevs <- basename(gds.alt)
-   dods.base.url <- paste0(prefix, "://nomads.ncep.noaa.gov:9090/dods/")
+   dods.base.url <- paste0(prefix, "://nomads.ncep.noaa.gov:443/dods/")
    if(is.null(abbrev)) {
        if(url.type == "grib") {
           good.abbrevs <- which(!is.na(grib.abbrevs))

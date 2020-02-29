@@ -316,9 +316,14 @@ LinkExtractor <- function(url) {
 
     meat     <- stringr::str_extract(hrefs, "href=\".*\"")
 
-    links <-  stringr::str_replace_all(
-        stringr::str_replace(meat, "href=", ""), "\"", "")
-        
+    links <- stringr::str_replace_all(
+        stringr::str_replace(meat, "href=", ""), 
+        "\"", "")
+
+    links <- stringr::str_replace_all(links, "http:", "https:")        
+
+    links <- stringr::str_replace_all(links, ":80", ":443")
+
     return(links)
 }
 

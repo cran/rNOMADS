@@ -2,13 +2,13 @@ Package: rNOMADS
 Type: Package
 Title: An R Interface to the NOAA Operational Model Archive and
         Distribution System
-Version: 2.4.1
-Date: 2019-3-2
+Version: 2.4.2
+Date: 2020-2-29
 Authors@R: c(person(given="Daniel C.",family="Bowman", role=c("aut", "cre"),
         email="danny.c.bowman@gmail.com"))
 Depends: R (>= 3.4.0), rvest (>= 0.3.2)
 Imports: stringr (>= 1.2.0), fields (>= 9.0), GEOmap (>= 2.3-5), MBA,
-        RCurl (>= 1.95-4.7), XML (>= 3.98.1.9), uuid (>= 0.1-2)
+        RCurl (>= 1.95-4.7), XML (>= 3.99-0.3), uuid (>= 0.1-2)
 Description: An interface to the National Oceanic and Atmospheric Administration's Operational Model Archive and Distribution System (NOMADS, see <http://nomads.ncep.noaa.gov/> for more information) that allows R users to quickly and efficiently download global and regional weather model data for processing.  rNOMADS currently supports a variety of models ranging from global weather data to an altitude of over 40 km, to high resolution regional weather models, to wave and sea ice models. It can also retrieve archived NOMADS models.  rNOMADS can retrieve binary data in grib format as well as import ascii data directly into R by interfacing with the GrADS-DODS system.
 License: GPL (>= 3)
 Maintainer: Daniel C. Bowman <danny.c.bowman@gmail.com>
@@ -17,7 +17,7 @@ URL: <https://bovineaerospace.wordpress.com/category/r/ >,
         <https://r-forge.r-project.org/projects/rnomads/ >,
         <https://www.r-project.org >
 NeedsCompilation: no
-Packaged: 2019-03-02 05:37:58 UTC; dantayaga
+Packaged: 2020-02-29 04:09:10 UTC; dantayaga
 Author: Daniel C. Bowman [aut, cre]
 Repository: CRAN
-Date/Publication: 2019-03-04 08:00:03 UTC
+Date/Publication: 2020-02-29 05:30:03 UTC
