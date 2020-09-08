@@ -43,7 +43,7 @@ For a full download of a global model (e. g. the GFS), this does not mean the po
 For example, the 0.5 degree GFS has nodes from 0 to 359.5 degrees longitude; a profile point requested at 359.9 degrees longitude will cause this warning even though it is within the global GFS model domain.
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \seealso{
 \code{\link{ReadGrib}}, \code{\link{DODSGrab}}

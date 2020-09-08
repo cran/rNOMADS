@@ -53,7 +53,7 @@ Consider yourself warned!
 }
 
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 
 \seealso{

@@ -24,7 +24,7 @@ Once the user determines which dates are available, the output of this function 
 \item{model.run.info}{Information provided by the GrADS - DODS system about each model run.}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \note{
 To get model run information for archived analysis models, pass URLs directly from \code{\link{NOMADSArchiveList}} directly to \code{GetDODSModelRuns}.
@@ -44,13 +44,6 @@ urls.out <- GetDODSDates(abbrev)
 model.url <- tail(urls.out$url, 1)
 model.runs <- GetDODSModelRuns(model.url)
 print(paste("Latest model run", tail(model.runs$model.run.info, 1)))
-}
-#Get model dates from the GFS analysis archive
-abbrev <- "gfsanl"
-model.url <- NOMADSArchiveList("dods", abbrev = abbrev)$url
-\dontrun{
-model.runs <- GetDODSModelRuns(model.url)
-print(model.runs$model.run.info)
 }
 }
 \keyword{ utilities }

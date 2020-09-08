@@ -32,7 +32,7 @@ WebCrawler(url, depth = NULL, verbose = TRUE)
 \item{urls.out}{A list of web page addresses, each of which corresponds to a model instance.}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \note{
 While it might be fun to try \code{WebCrawler} on a large website such as Google, the results will be unpredictable and perhaps disastrous if \code{depth} is not set.

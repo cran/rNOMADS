@@ -28,7 +28,7 @@ If the input is in grib2 format, you also get the grid definition.
 }
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \note{
 In order to use this function, you need to have installed \code{wgrib2} (for grib2 files) or \code{wgrib} (for grib files).

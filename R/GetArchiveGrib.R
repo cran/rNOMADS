@@ -51,7 +51,7 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, preds, local.dir = NU
     }
 
     #Get model info and set up URL to archive
-    model.url <- NOMADSArchiveList("grib", abbrev=abbrev)$url
+    model.url <- NOMADSArchiveList(abbrev)$url
     download.url <- paste0(model.url, paste(model.date[1:6], collapse = ""), "/", paste(model.date, collapse = ""), "/") 
 
     grib.info <- NULL
@@ -79,8 +79,8 @@ ArchiveGribGrab <- function(abbrev, model.date, model.run, preds, local.dir = NU
         grb.urls <- stringr::str_replace(
             stringr::str_extract(
             paste0(download.url, link.list[grepl(file.part, link.list)]), 
-            paste0("^.*", file.part, "><")),
-            "><", "")
+            paste0("^.*", file.part, ">")),
+            ">", "")
     
         #Download the file
         if(length(grb.urls) > 1) {
@@ -125,7 +125,7 @@ CheckNOMADSArchive <- function(abbrev, model.date = NULL) {
     #        $PRED - What predictions are available
     #        $FILE.NAME - The grib file with model data for the date, model run, and prediction
 
-    model.url <- NOMADSArchiveList("grib", abbrev=abbrev)$url
+    model.url <- NOMADSArchiveList(abbrev=abbrev)$url
     model.list <- c()
     if(is.null(model.date)) { #Check all available dates
         #Find out which months are available
@@ -148,9 +148,11 @@ CheckNOMADSArchive <- function(abbrev, model.date = NULL) {
             if(RCurl::url.exists(check.url)) {
                 model.list <- append(
                     model.list, 
-                    grep("grb\\d?$", 
-                    LinkExtractor(check.url),
-                   value = TRUE))       
+                    stringr::str_replace(
+                    unlist(stringr::str_extract_all(LinkExtractor(check.url), 
+                    "^.*grb\\d?>")), ">", "")
+                )
+
             }
      }
 

@@ -27,20 +27,20 @@ CheckNOMADSArchive(abbrev, model.date = NULL)
 \item{available.models$file.name}{List of file names for available model dates, runs, and predictions}
 }
 \references{
-\url{http://nomads.ncdc.noaa.gov/}
+\url{https://www.ncei.noaa.gov/data/}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 
 \seealso{
 \code{\link{NOMADSArchiveList}}, \code{\link{ArchiveGribGrab}}
 }
 \examples{
-#See what is available for January 1 of this year
+#See what is available 365 days before today
 
-abbrev <- "gfs4"
-model.date <- paste0(format(Sys.time(), "\%Y"), "0101")
+abbrev <- "gfsanl"
+model.date <- paste0(format(Sys.time() - 24 * 60 * 60 * 365, "\%Y\%m\%d"))
 \dontrun{
 gfs.available.models <- CheckNOMADSArchive(abbrev, model.date)
 }

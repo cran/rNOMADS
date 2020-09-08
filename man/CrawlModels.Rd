@@ -39,7 +39,7 @@ For the model pages on the NOMADS web site, each dead end is a model instance th
 \item{urls.out}{A list of web page addresses, each of which corresponds to a model instance.}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \note{
 It is a good idea to set \code{depth} to a small number rather than leave it at the default value.

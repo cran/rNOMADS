@@ -86,13 +86,13 @@ PlotWindProfile(zonal.wind, meridional.wind, height, magnitude = NULL,
 
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 
 \examples{
 
 \dontrun{
-download.file("http://www.unc.edu/~haksaeng/rNOMADS/myTA.RDATA", 
+download.file("http://www.gmail.com/~haksaeng/rNOMADS/myTA.RDATA", 
    destfile = "myTA.RDATA")
 load("myTA.RDATA")
 #Find the latest Global Forecast System model run

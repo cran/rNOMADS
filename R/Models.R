@@ -53,7 +53,7 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
            grib.filter[k] <- stringr::str_extract(grib.filter.tmp, "cgi-bin.*\\.pl")
        }
 
-       if(grepl("OpenDAP-alt", gds.alt.tmp)) {
+       if(grepl("OpenDAP", gds.alt.tmp)) {
           gds.alt[k] <- stringr::str_replace_all(
               stringr::str_extract(gds.alt.tmp, "\"dods.*\""),
               "\"", "")
@@ -111,12 +111,13 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
    return(model.list)
 }
    
-NOMADSArchiveList <- function(url.type, abbrev = NULL) {
-    #Returns a list of model abbreviations for archived models, a short description, and URL for each model offered by the NOMADS server
+NOMADSArchiveList <- function(abbrev = NULL) {
+    #Returns a list of model abbreviations for archived models, a short description, and URL for each model offered by the server.
+    #This is a legacy function meant to provide the models that used to exist on nomads.ncdc.noaa.gov.
+    #They are now at ncei.noaa.gov. 
     #If a specific model abbreviation is requested, the abbreviation is checked against the model list.
     #If a match is found, information is returned about that model; otherwise an error occurs
     #INPUTS
-    #    URL.TYPE determines which URL to return: one for downloading GRIB files (grib) or one for downloading dods data via DODS (dods)
     #    ABBREV is the model abbreviation that rNOMADS uses to figure out which model you want.
     #        If NULL, returns information on all models
     #OUTPUTS
@@ -125,69 +126,31 @@ NOMADSArchiveList <- function(url.type, abbrev = NULL) {
     #        $NAME - the name of the model
     #        $URL - the location of the model on the NOMADS website
 
-   if (!(url.type %in% c("grib", "dods"))) {
-        stop("URL type must be either \"grib\" or \"dods\"!")
-    }
-
-
     abbrevs <- c(
-        "ruc",
-        "ruc13",
-        "meso-eta-hi",
-        "gfs-avn-hi",
-        "gfs4",
-        "rap252",
-        "rap130",
-        "gfsanl",
-        "rucanl",
-        "namanl"
+        "gfsanl", 
+        "namanl",
+        "rapidrefresh"
        )
 
     names <- c(
-        "Rapid Update Cycle 20 km grid",
-        "Rapid Update Cycle 13 km grid",
-        "North American Mesoscale, Near Real Time",
-        "Global Forecast System, Near Real Time, 1 degree grid",
-        "Global Forecast System, Near Real Time, 0.5 degree grid",
-        "Rapid Refresh Weather Prediction System - Near Real Time, 20 km grid",
-        "Rapid Refresh Weather Prediction System - Near Real Time, 13 km grid",
         "Global Forecast System, Analysis",
-        "Rapid Update Cycle, Analysis",
-        "North American Mesoscale, Analysis"
+        "North American Mesoscale, Analysis",
+        "Rapid Refresh Model, Analysis" 
          )
 
-    dods.urls <- c(
-        "https://nomads.ncdc.noaa.gov/dods/NCEP_RUC/",
-        "NONE",
-        "https://nomads.ncdc.noaa.gov/dods/NCEP_NAM/",
-        "https://nomads.ncdc.noaa.gov/dods/NCEP_GFS/",
-        "NONE",
-        "https://nomads.ncdc.noaa.gov/dods/NCEP_RUC/",
-        "NONE",
-        "https://nomads.ncdc.noaa.gov/dods/NCEP_GFS_ANALYSIS/",
-        "NONE",
-        "https://nomads.ncdc.noaa.gov/dods/NCEP_NAM_ANALYSIS/"        
-    )
+    urls <- c( 
+        "https://www.ncei.noaa.gov/data/global-forecast-system/access/historical/analysis/",
+        "https://www.ncei.noaa.gov/data/north-american-mesoscale-model/access/historical/analysis/",
+        "https://www.ncei.noaa.gov/data/rapid-refresh/access/historical/analysis/")
 
     if(!is.null(abbrev)) {
         i <- which(abbrevs == abbrev)
         if(length(i) == 0) {
             stop(paste("The model you searched for:\"", abbrev, "\"is not included in rNOMADS.  Sorry!"))
         } else {
-            if(url.type == "grib") {
-                 url <- paste0("https://nomads.ncdc.noaa.gov/data/", abbrev, "/")
-            } else {
-                url <- dods.urls[i]
-            }
-             return(list(abbrev = abbrev, name = names[i], url = url))
+            return(list(abbrev = abbrev, name = names[i], url = urls[i]))
         }
     }
 
-    if(url.type == "grib") {
-        url <- paste0("https://nomads.ncdc.noaa.gov/data/", abbrevs, "/")
-    } else {
-        url <- dods.urls
-    }
-
-    return(list(abbrevs = abbrevs, names = names, url = url))
+    return(list(abbrevs = abbrevs, names = names, url = urls))
 }

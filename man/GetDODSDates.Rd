@@ -7,15 +7,12 @@ Find available model run dates for data on the GrADS - DODS system.
 This function checks the GrADS data server to see what dates and model subsets are available for model specified by ABBREV
 }
 \usage{
-GetDODSDates(abbrev, archive=FALSE, request.sleep=1)
+GetDODSDates(abbrev, request.sleep=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{abbrev}{
   A model abbreviation as specified in \code{\link{NOMADSRealTimeList}} or \code{\link{NOMADSArchiveList}}.
-}
-  \item{archive}{
-  Whether the model is on the NCEP real time server (\code{FALSE}) or on the NCDC model archive server (\code{TRUE}).
 }
   \item{request.sleep}{
   Seconds to pause between HTTP requests when scanning model pages - this prevents timeouts. Default \code{1}.
@@ -31,7 +28,7 @@ Once the user determines which dates are available, the output of this function 
 \item{url}{A list of URLs corresponding to the model run dates.}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \note{
 Sometimes, sending lots of HTTP requests in rapid succession can cause errors.
@@ -51,10 +48,6 @@ abbrev <- "gfs_0p50"
 \dontrun{
 urls.out <- GetDODSDates(abbrev)
 print(paste("Most recent model run:",tail(urls.out$date, 1)))
-
-#Get model dates from the GFS archive
-abbrev <- "gfs-avn-hi"
-urls.out <- GetDODSDates(abbrev, archive = TRUE, request.sleep = 1)
 }
 
 }

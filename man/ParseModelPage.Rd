@@ -27,7 +27,7 @@ Variables are types of data (temperature, for example).
 \item{variables}{Data types}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \note{
 Many of the names for predictions, levels, and variables are somewhat cryptic.

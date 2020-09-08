@@ -32,7 +32,7 @@ lat = NULL, ensembles = NULL, forecast.date = NULL, model.run.date = NULL)
     \item{model.data.sub}{A subset of \code{model.data}.}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 
 \note{

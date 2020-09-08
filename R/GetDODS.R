@@ -1,10 +1,9 @@
 #use the GrADS-DODS capability of NOMADS to get ascii data
 
-GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1) {
+GetDODSDates <- function(abbrev, request.sleep = 1) {
     #Checks the GrADS data server to see what dates and model subsets are available for model specified by ABBREV.
     #INPUTS
     #    ABBREV - Model abbreviation
-    #    ARCHIVE - If you're looking in the model archives (TRUE) or the real time NOMADS system (FALSE)
     #    REQUEST.SLEEP - Sometimes hammering the NOMADS server with a zillion HTTP requests is not a good idea.
     #    REQUEST.SLEEP pauses X seconds between requests to prevent timeouts.
     #OUTPUTS
@@ -15,22 +14,7 @@ GetDODSDates <- function(abbrev, archive = FALSE, request.sleep = 1) {
 
     date.pattern <- "[1-2]\\d{3}[0-1]\\d{1}[0-3]\\d{1}$"
     
-    if(!archive) {
-        top.url <- unique(NOMADSRealTimeList("dods", abbrev)$url)
-    } else {
-        if(grepl("anl$", abbrev)) {
-            stop(paste("Archived analysis models are not stored by date.",
-                  "To find out the available model runs, get the model URL from NOMADSArchiveList and pass it to GetDODSModelRuns.",
-                  "Then use GETDODSModelRunInfo to find out what coverage the models have, and use DODSGrab to grab the data, where the first argument is the URL from NOMADSArchiveList",
-                  "and the second is the model run from GetDODSModelRuns.")
-                  )
-        } else {
-            top.url <- unique(NOMADSArchiveList("dods",abbrev)$url)
-            if(top.url == "NONE") {
-                stop("The archived model you requested is not available on the NCEP DODS system.")
-            }
-        }
-    } 
+    top.url <- unique(NOMADSRealTimeList("dods", abbrev)$url)
      
    if(!RCurl::url.exists(top.url)) {
        stop(paste0("The specified URL does not exist!  Make sure your model information is correct.  It is also possible the NOMADS server is down.\n",

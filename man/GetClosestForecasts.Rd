@@ -46,7 +46,7 @@ GetClosestForecasts(abbrev, forecast.date, model.date = "latest",
 \item{forecasts$fore.hr}{How many hours the fore forecast is in front of the requested date.}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \seealso{
 \code{\link{BuildProfile}}, \code{\link{GribGrab}}

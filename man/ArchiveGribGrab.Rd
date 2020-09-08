@@ -4,10 +4,12 @@
 Download archived model data from the NOMADS server.
 }
 \description{
-This function interfaces with the programming API at \url{http://nomads.ncdc.noaa.gov/} to download archived NOMADS model data.
+This function gives access to archived NOMADS model data.
 The available models can be viewed by calling \code{\link{NOMADSArchiveList}} without arguments.
 The data arrives in grib (gridded binary) format that can be read with \code{\link{ReadGrib}}.
 Some of these files are in GRIB format, others are in GRIB2 format; select the appropriate file type when calling \code{\link{ReadGrib}}.
+Note that this is a legacy function that emulates the archive data retrieval capability when NOMADS NCEP used to host past data sets.  
+At present the data are hosted on NCEI.  
 }
 \usage{
 ArchiveGribGrab(abbrev, model.date, model.run, preds,
@@ -55,10 +57,10 @@ ArchiveGribGrab(abbrev, model.date, model.run, preds,
 \item{grib.info$url}{The URL that the grib file was downloaded from}
 }
 \references{
-\url{http://nomads.ncdc.noaa.gov/}
+\url{https://www.ncei.noaa.gov/data/}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 
 \seealso{

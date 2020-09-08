@@ -22,7 +22,7 @@ This is an internal routine used by several functions in the package.
 \item{links}{A vector of link URLs}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \note{
 While it might be fun to try \code{LinkExtractor} on a large website such as Google, the results will be unpredictable and perhaps disastrous if \code{depth} is not set.

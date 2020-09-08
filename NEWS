@@ -137,3 +137,10 @@ This release fixes an issue with ArchiveGribGrab.
 
 2-4.2
 Adjusted DODS to make sure it is compatible with the upcoming NOMADS port change
+
+2-5.0
+Changed archive grib retrieval service to reflect new storage at NCEI.
+This will be a "legacy" capability because, technically, NCEI is not NOMADS.
+I am preserving the rNOMADS functionality for historic reasons while I consider if I can
+put together an R package specifically to handle NCEI.
+Also, fixed an issue with DODS urls.

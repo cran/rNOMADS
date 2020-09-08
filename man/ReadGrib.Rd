@@ -67,7 +67,7 @@ Ebisuzaki, W, Bokhorst, R., Hyvatti, J., Jovic, D., Nilssen, K,
     \url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 
 \seealso{

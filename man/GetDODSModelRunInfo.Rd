@@ -31,7 +31,7 @@ Note that the \code{XML} package has trouble interpreting https from time to tim
 \item{model.info}{Information provided by the GrADS - DODS system about the given model instance.}
 }
 \author{
-Daniel C. Bowman \email{daniel.bowman@unc.edu}
+Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }
 \note{
 This function is very helpful in figuring out what's inside poorly documented models.
