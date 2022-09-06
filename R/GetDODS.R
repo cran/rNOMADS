@@ -16,7 +16,7 @@ GetDODSDates <- function(abbrev, request.sleep = 1) {
     
     top.url <- unique(NOMADSRealTimeList("dods", abbrev)$url)
      
-   if(!RCurl::url.exists(top.url)) {
+    if (httr::http_error(httr::GET(top.url))) {
        stop(paste0("The specified URL does not exist!  Make sure your model information is correct.  It is also possible the NOMADS server is down.\n",
           "Details:  Attempted to access ", top.url, " but did not succeed..."))
    }
@@ -28,7 +28,7 @@ GetDODSDates <- function(abbrev, request.sleep = 1) {
     if(sum(date.links.lind) == 0) { #If there do not appear to be dates here, go down one more directory level
         urls.tmp <- c()
         for(k in seq(4, length(top.links) - 3)) {
-               if(!RCurl::url.exists(top.links[k])) {
+               if(httr::http_error(httr::GET(top.links[k]))) { 
                    stop(paste0("The specified URL does not exist!  Make sure your model information is correct.  It is also possible the NOMADS server is down.\n",
                        "Details:  Attempted to access ", top.links[k], " but did not succeed..."))
                 }
@@ -56,12 +56,13 @@ GetDODSModelRuns <- function(model.url) {
    #        $MODEL.RUN - The model run
    #        $MODEL.RUN.INFO - Info about the model run, hence the name
 
-      if(!RCurl::url.exists(model.url)) {
+      if(httr::http_error(httr::GET(model.url))) {
        stop(paste0("The specified URL does not exist!  Make sure your model information is correct.  It is also possible the NOMADS server is down.\n",
           "Details:  Attempted to access ", model.url, " but did not succeed..."))
    }
 
-   html.tmp <- XML::htmlParse(RCurl::getURL(model.url))
+   #html.tmp <- XML::htmlParse(RCurl::getURL(model.url))
+   html.tmp <- XML::htmlParse(httr::content(httr::GET(model.url), "text"))
    model.runs <- XML::xpathSApply(html.tmp, '//b', XML::xmlValue) 
    XML::free(html.tmp)
    html.txt <- readLines(model.url)
@@ -90,7 +91,7 @@ GetDODSModelRunInfo <- function(model.url, model.run, download.file = TRUE) {
 
    info.url <- paste0(model.url, "/", model.run, ".info")
 
-   if(!RCurl::url.exists(info.url)) {
+   if(httr::http_error(httr::GET(info.url))) {
        stop(paste0("The specified URL does not exist!  Make sure your model information is correct.  It is also possible the NOMADS server is down.\n",
           "Details:  Attempted to access ", info.url, " but did not succeed..."))
    }
@@ -180,7 +181,8 @@ DODSGrab <- function(model.url, model.run, variables, time, lon, lat, levels = N
     
        #RCurl needs to be loaded for this to work I think
        #data.txt <- readLines(data.url)
-       data.txt.raw <- RCurl::getURL(data.url, .opts = list(verbose = verbose)) #Read in data
+       #data.txt.raw <- RCurl::getURL(data.url, .opts = list(verbose = verbose)) #Read in data
+       data.txt.raw <- httr::content(httr::GET(data.url, )) #Read in data
        if(grepl("[eE][rR][rR][oO][rR]", data.txt.raw)) {
            warning(paste0("There may have been an error retrieving data from the NOMADS server.  HTML text is as follows\n", data.txt.raw
            ))

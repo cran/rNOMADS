@@ -1,14 +1,19 @@
-NEWS for rNOMADS
+\name{NEWS}
+\title{NEWS for rNOMADS}
+\encoding(UTF-8}
 
-1.0-1
-Fixed bug in GetModelRunHour and GribGrab that resulted in the wrong forecast times being returned.
+\section{1.0-1}
+\itemize{
+\item Fixed bug in GetModelRunHour and GribGrab that resulted in the wrong forecast times being returned.
 GribGrab now returns file name, model run date, and forecast date for the GRIB file generated
 GetModelRunHour now returns the model date in addition to the other things it already returned
 You can now specify whether you want the previous forecast or the next forecast in GribGrab
 Any code that worked with rNOMADS 1.0-0 should run with rNOMADS 1.0-1 without any trouble.
+}
 
-1.2-0
-A major update that provides access to all NOMADS models with the "grib filter" option on the NOMADS web site 
+\section{1.2-0}
+\itemize{
+\item A major update that provides access to all NOMADS models with the "grib filter" option on the NOMADS web site 
 (http://nomads.ncep.noaa.gov/).
 This adds up to 54 models in all.
 rNOMADS now scrapes the model pages to determine the variables, levels and forecasts available for each.
@@ -16,131 +21,191 @@ This has necessitated major changes to some functions.
 See the supplied vignette link on the rNOMADS page on CRAN for examples of how the new rNOMADS code works.
 The lack of a good GRIB file format reader in R is still vexing, and I plan to write a small package to take care of this.
 A future version of rNOMADS will call this package to remove the necessity of installing third party software.
+}
 
-1.3-0
-Added support for archived model data, and the ability to read in GRIB1 files using the external "wgrib" series of codes.
+\section{1.3-0}
+\itemize{
+\item Added support for archived model data, and the ability to read in GRIB1 files using the external "wgrib" series of codes.
 Also added some nice tools to quickly generate atmospheric profiles and so forth.
+}
 
-2.0-0
-Implemented support for the GrADS-DODS data retrieval system.
+\section{2.0-0}
+\itemize{
+\item{Implemented support for the GrADS-DODS data retrieval system.
 rNOMADS can now import data directly into R for all operating systems, not just Linux.
 Since this is a very major change, I have incremented the version accordingly.
 EXISTING USERS SHOULD NOTE THAT MODEL ABBREVIATIONS HAVE CHANGED.
 I am sorry for this necessity but I had to conform with the existing NOMADS URL structure.
+}
 
-2.0-1
-Fixed some bugs, including a problem with ModelGrid caused by an update in the "fields" package.
-Added two new global models.
+\section{2.0-1}
+\itemize{
+\item Fixed some bugs, including a problem with ModelGrid caused by an update in the "fields" package.
+\item Added two new global models.
+}
 
-2.0-2
-Fixed typos in model names.
-Added an option to put in a value for missing data for a wgrib2 call.
-Added PlotWindProfile, a function to make altitude/azimuth/magnitude wind plots.
-Added GribInfo, a function that returns the inventory of a grib file.
-Modified ModelGrid to explicitly require an xy grid definition for the "cartesian" option.
+\section{2.0-2}
+\itemize{
+\item Fixed typos in model names.
+\item Added an option to put in a value for missing data for a wgrib2 call.
+\item Added PlotWindProfile, a function to make altitude/azimuth/magnitude wind plots.
+\item Added GribInfo, a function that returns the inventory of a grib file.
+\item Modified ModelGrid to explicitly require an xy grid definition for the "cartesian" option.
 This is still experimental and may not work well.
+}
 
-2.0.3
-Added the High Resolution Rapid Refresh model.
-Fixed some model abbreviation and title mismatches in existing models, removed models no longer on NCEP.
-Made it possible for GetDODS to accept multiple variables
+\section{2.0.3}
+\itemize{
+\item Added the High Resolution Rapid Refresh model.
+\item Fixed some model abbreviation and title mismatches in existing models, removed models no longer on NCEP.
+\item Made it possible for GetDODS to accept multiple variables
+}
 
-2.0.4
-Fixed date handing in DODSGrab.
+\section{2.0.4}
+\itemize{
+\item Fixed date handing in DODSGrab.
 It now returns actual forecast dates instead of numbers.
-Fixed an insidious bug in BuildProfile that constructed profiles located over places not specified by the user.
+\item Fixed an insidious bug in BuildProfile that constructed profiles located over places not specified by the user.
+}
 
-2.1.0
-Changed NOMADSRealTimeList() so that it scans the NOMADS Real Time model repository web site instead of depending on a hard-coded model list.
+\section{2.1.0}
+\itemize{
+\item Changed NOMADSRealTimeList() so that it scans the NOMADS Real Time model repository web site instead of depending on a hard-coded model list.
 This means the rNOMADS real time model list will always be up to date.
 I have not yet made the change for NOMADSArchiveList(); that will come in a future version.
+}
 
-2.1.1
-Fixed an issue where the previous release broke North American Mesoscale model retrieval using DODS.  Also fixed warnings during CRAN checks because of rvest/XML collisions.
+\section{2.1.1}
+\itemize{
+\item Fixed an issue where the previous release broke North American Mesoscale model retrieval using DODS.  Also fixed warnings during CRAN checks because of rvest/XML collisions.
+}
 
-2.1.2
-Changed the function "GetClosestGFSForecasts" to "GetClosestForecasts," and added an argument to specify model product.
+\section{2.1.2}
+\itemize{
+\item Changed the function "GetClosestGFSForecasts" to "GetClosestForecasts," and added an argument to specify model product.
+}
 
-2.1.4
-Quick fix to bring rNOMADS in compliance with Hadley Wickham's new version of stringr
+\section{2.1.4}
+\itemize{
+\item Quick fix to bring rNOMADS in compliance with Hadley Wickham's new version of stringr
+}
 
-2-1.5
-Updated HTML/XML parsing code to comply with new rvest APIA
+\section{2-1.5}
+\itemize{
+\item Updated HTML/XML parsing code to comply with new rvest APIA
+}
 
-2-1.6 
-Added ability to subset large grib2 files in ReadGrib, this can speed up archived data processing by orders of magnitude.
+\section{2-1.6} 
+\itemize{
+\item Added ability to subset large grib2 files in ReadGrib, this can speed up archived data processing by orders of magnitude.
+}
 
-2-1.7
-Fixed bug in which Windows users were unable to subset grib files without error.
+\section{2-1.7}
+\itemize{
+\item Fixed bug in which Windows users were unable to subset grib files without error.
 Thank you to Panos for noticing the problem and proposing a solution.
+}
 
-2-2.0
-Made it so that BuildProfile does not require ModelGrid to be run first.
-Removed RTModelProfile, since new improvements to BuildProfile make it obsolete.
-Removed the ability to construct non-regular grids using ModelGrid.
+\section{2-2.0}
+\itemize{
+\item Made it so that BuildProfile does not require ModelGrid to be run first.
+\item Removed RTModelProfile, since new improvements to BuildProfile make it obsolete.
+\item Removed the ability to construct non-regular grids using ModelGrid.
 These changes were made to preserve rNOMADS' purpose as a gateway to NOMADS rather than a geospatial analysis package (of which there are plenty in R)
 Thank you to Adam Simkowski and Ruben Kertesz for testing and bug reports.
+}
 
-2-3.0
-Added ensemble model support for DODSGrab.
-Created a new function, SubsetNOMADS, that allows easy subsetting of GribRead and DODSGrab data products.
+\section{2-3.0}
+\itemize{
+\item Added ensemble model support for DODSGrab.
+\item Created a new function, SubsetNOMADS, that allows easy subsetting of GribRead and DODSGrab data products.
+}
 
-2-3.1
-Put some warnings in BuildProfile to alert users about issues that could occur if they ask for points outside the model domain, or if not enough points for proper spatial interpolation are used.
-Now you can download multiple grib files from NOMADS in sequence, note the output from GribGrab is now a list with multiple elements.
+\section{2-3.1}
+\itemize{
+\item Put some warnings in BuildProfile to alert users about issues that could occur if they ask for points outside the model domain, or if not enough points for proper spatial interpolation are used.
+\item Now you can download multiple grib files from NOMADS in sequence, note the output from GribGrab is now a list with multiple elements.
+}
 
-2-3.2
-Incremented version number due to CRAN resubmission, but this is essentially the same as 2-3.1
+\section{2-3.2}
+\itemize{
+\item Incremented version number due to CRAN resubmission, but this is essentially the same as 2-3.1
+}
 
-2-3.3
-Fixed issue with https transition for archived DODS models.
+\section{2-3.3}
+\itemize{
+\item Fixed issue with https transition for archived DODS models.
 This will crop up every time NOMADS switches part of their site.
+}
 
-2-3.4
-Fixed a few small bugs here and there (ensured that BuildProfile returned numeric values, made sure that wgrib2 match strings had properly escaped regex metacharacters, made sure ReadGrib only returns the variables and levels the user asked for).
+\section{2-3.4}
+\itemize{
+\item Fixed a few small bugs here and there (ensured that BuildProfile returned numeric values, made sure that wgrib2 match strings had properly escaped regex metacharacters, made sure ReadGrib only returns the variables and levels the user asked for).
+}
 
-2-3.5
-
-CRAN resubmittal due to broken example.
+\section{2-3.5}
+\itemize{
+\item CRAN resubmittal due to broken example.
 Had to remove the regex escape mechanism as it breaks on Windows.
 Will post to StackOverflow and implement solution in a future upgrade since it's low priority.
+}
 
-2-3.6
-
-A variety of minor bug fixes and improvements:
--Improved BuildProfile stability across 180 degrees longitude line
--Fixed regex escape mechanism on windows (I hope)
--Fixed an issue with reserved characters appearing in GribGrab URL calls
--Added option to pre-subset grib files by model node index in ReadGrib: way faster
--Thought I fixed an issue with pre-subsetting grib files via lat/lon using wgrib2 on windows machines, but one user is still having issues.
+\section{2-3.6}
+\itemize{
+\item Improved BuildProfile stability across 180 degrees longitude line
+\item Fixed regex escape mechanism on windows (I hope)
+\item Fixed an issue with reserved characters appearing in GribGrab URL calls
+\item Added option to pre-subset grib files by model node index in ReadGrib: way faster
+\item Thought I fixed an issue with pre-subsetting grib files via lat/lon using wgrib2 on windows machines, but one user is still having issues.
 Decided to release anyway but keep looking into the problem (can't reproduce it on my Windows machine, which now works fine)
+}
 
-2-3.7
-Added an option to choose which forecast to read in using ReadGrib.
+\section{2-3.7}
+\itemize{
+\item Added an option to choose which forecast to read in using ReadGrib.
 This makes reading historic wave watch grib2 files a lot faster, for example.
+}
 
-2-3.8
-Fixed issues with ReadGrib, such as difficulty using level names with special characters and problems reading grib2 files on windows.
+\section{2-3.8}
+\itemize{
+\item Fixed issues with ReadGrib, such as difficulty using level names with special characters and problems reading grib2 files on windows.
 I am planning a major revamp to ReadGrib soon, so this is an interim release.
 I expect the next release to be 2-4.1
+}
 
-2-3.9
-Big plans for 2-4.1 have been deferred; this is a release to fix a bug in wgrib inventory reading requests and race conditions when running ReadGrib in parallel
+\section{2-3.9}
+\itemize{
+\item Big plans for 2-4.1 have been deferred; this is a release to fix a bug in wgrib inventory reading requests and race conditions when running ReadGrib in parallel
+}
 
-2-4.0
-Fixed real time grib download issues related to NCEP switching to https.
+\section{2-4.0}
+\itemize{
+\item Fixed real time grib download issues related to NCEP switching to https.
 DODS (openDAP-alt) remains nonfunctioning, but decided to release a new version ASAP to help those who depend on it to run websites, etv.
+}
 
-2-4.1
-DODS functionality is restored (on the NOMADS side, not my doing).
+\section{2-4.1}
+\itemize{
+\item DODS functionality is restored (on the NOMADS side, not my doing).
 This release fixes an issue with ArchiveGribGrab.
+}
 
-2-4.2
-Adjusted DODS to make sure it is compatible with the upcoming NOMADS port change
+\section{2-4.2}
+\itemize{
+\item Adjusted DODS to make sure it is compatible with the upcoming NOMADS port change
+}
 
-2-5.0
-Changed archive grib retrieval service to reflect new storage at NCEI.
+\section{2-5.0}
+\itemize{
+\item Changed archive grib retrieval service to reflect new storage at NCEI.
 This will be a "legacy" capability because, technically, NCEI is not NOMADS.
 I am preserving the rNOMADS functionality for historic reasons while I consider if I can
 put together an R package specifically to handle NCEI.
-Also, fixed an issue with DODS urls.
+\item Fixed an issue with DODS urls.
+}
+
+\section{2.5.1}
+\itemize{
+\item Implemented Bill Morris' fix to openDAP functionality (swapped RCurl to httr).
+Thanks Bill!
+}

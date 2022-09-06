@@ -54,7 +54,7 @@ DODSGrab(model.url, model.run, variables, time, lon, lat,
 \item{model.data}{A structure with a series of elements containing data extracted from GrADS-DODS system.}
 }
 \references{
-\url{http://nomads.ncep.noaa.gov/}
+\url{https://nomads.ncep.noaa.gov/}
 }
 \author{
 Daniel C. Bowman \email{danny.c.bowman@gmail.com}

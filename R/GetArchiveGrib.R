@@ -132,11 +132,11 @@ CheckNOMADSArchive <- function(abbrev, model.date = NULL) {
         month.list <- grep("\\d{6}/", LinkExtractor(model.url), value = TRUE)
         for(month in month.list) {
             month.url <- paste0(model.url, month)
-            if(RCurl::url.exists(month.url)) {
+            if(!httr::http_error(httr::GET(month.url))) {
                 date.list <- grep("\\d{8}/", LinkExtractor(month.url), value = TRUE)
                 for(day in date.list) {
                     day.url <- paste0(model.url, month, day)
-                    if(RCurl::url.exists(day.url)) {
+                    if(!httr::http_error(httr::GET(day.url))) {
                         model.list <- append(model.list, grep("grb\\d?$", LinkExtractor(day.url), value = TRUE))
                     }
                 }
@@ -145,7 +145,7 @@ CheckNOMADSArchive <- function(abbrev, model.date = NULL) {
      } else {
             model.date <- as.numeric(strsplit(as.character(model.date), split = "")[[1]])
             check.url <- paste0(model.url, paste(model.date[1:6], collapse = ""), "/", paste(model.date, collapse = ""), "/")
-            if(RCurl::url.exists(check.url)) {
+            if(!httr::http_error(httr::GET(check.url))) {
                 model.list <- append(
                     model.list, 
                     stringr::str_replace(

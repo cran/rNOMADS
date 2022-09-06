@@ -4,7 +4,7 @@
 Download grib file from the NOMADS server.
 }
 \description{
-This function interfaces with the programming API at \url{http://nomads.ncep.noaa.gov/} to download NOMADS model data.
+This function interfaces with the programming API at \url{https://nomads.ncep.noaa.gov/} to download NOMADS model data.
 The available models can be viewed by calling \code{\link{NOMADSRealTimeList}}.
 The data arrives in grib (gridded binary) format that can be read with \code{\link{ReadGrib}}.
 }
@@ -56,7 +56,7 @@ GribGrab(model.url, preds, levels, variables,
 \item{grib.info$url}{The URL that the grib file was downloaded from}
 }
 \references{
-\url{http://nomads.ncep.noaa.gov/}
+\url{https://nomads.ncep.noaa.gov/}
 }
 \author{
 Daniel C. Bowman \email{danny.c.bowman@gmail.com}

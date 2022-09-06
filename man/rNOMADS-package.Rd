@@ -25,11 +25,11 @@ Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 \references{
 Bowman, D. C. and Lees, J. M. (2015).
 Near real time weather and ocean model data access with rNOMADS.
-\emph{Computers \& Geosciences} 78, pp. 88-95.\cr 
+\emph{Computers & Geosciences} 78, pp. 88-95.\cr 
 NOMADS website: \cr
-\url{http://nomads.ncep.noaa.gov/} \cr
+\url{https://nomads.ncep.noaa.gov/} \cr
 wgrib2 download page:\cr
-\url{http://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/} \cr
+\url{https://www.cpc.ncep.noaa.gov/products/wesley/wgrib2/} \cr
 wgrib2 reference: \cr
 Ebisuzaki, W, Bokhorst, R., Hyvatti, J., Jovic, D., Nilssen, K,
     Pfeiffer, K.,  Romero, P.,  Schwarb, M., da Silva, A., Sondell, N., and Varlamov, S. (2011).
