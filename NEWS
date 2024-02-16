@@ -209,3 +209,13 @@ put together an R package specifically to handle NCEI.
 \item Implemented Bill Morris' fix to openDAP functionality (swapped RCurl to httr).
 Thanks Bill!
 }
+
+\section{2.5.2}
+\itemize{
+\item Revised rNOMADS to account for new NCEP NOMADS website design.
+}
+
+\section{2.5.3}
+\itemize{
+\item Fixed issues with documentation syntax.
+}

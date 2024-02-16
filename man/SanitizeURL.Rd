@@ -11,7 +11,7 @@ SanitizeURL(bad.strs)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{bad.str}{
+  \item{bad.strs}{
     A vector of strings destined for concatenation into a URL.
     They may have characters that are not allowed in URLs.
 }

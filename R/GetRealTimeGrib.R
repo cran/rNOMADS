@@ -133,19 +133,34 @@ GribGrab <- function(model.url, preds, levels, variables, local.dir = NULL, file
    return(grib.info)
 }
 
-ParseModelPage <- function(model.url) {
-#    This function determines the available predictions, levels, and variables for a given model page.
+ParseModelPage <- function(abbrev) {
+#    This function determines the available predictions, levels, and variables for a given model.
 #    It returns a list of these predictions, levels, and variables so that a call to the model can be constructed.
 #    INPUTS
-#        MODEL.URL is one of the model pages returned by CrawlModels
+#        ABBREV - The abbreviation for the model of interest, find this using NOMADSRealTimeList
 #    OUTPUTS
 #        MODEL.PARAMETERS - a list with elements
-#            MODEL.PARAMETERS$PRED - Individual "predictions" - i. e. individual outputs for each model instance
+#            MODEL.PARAMETERS$MODEL.DATE - When the forecast was calculated
+#            MODEL.PARAMETERS$PRED.HOUR - Model prediction hours past model run date
+#            MODEL.PARAMETERS$PRED.DATE - Prediction hour converted to date
 #            MODEL.PARAMETERS$LEVELS - the model levels
 #            MODEL.PARAMETERS$VARIABLES - the types of data provided by the models
+   
+    #Read the model output page 
+    html <- readLines(abbrev, warn = FALSE)
 
-    html <- readLines(model.url, warn = FALSE)
+    #Get the model run dates
+    d.i <- which(grepl("Available Data Dates", html))
 
+    date.pred.line <- html[d.i]
+
+    model.ymd <- as.POSIXct(
+        unlist(stringr::str_extract_all(
+            unlist(stringr::str_extract_all(date.pred.line, ">gfs\\.\\d{8}")),
+            "\\d+")),
+        format = "%Y%m%d", tz = "UTC")
+    
+    model.hour <-             
     f.i <- which(grepl("<option value", html))
     pred <- stringr::str_replace_all(
         stringr::str_extract(html[f.i], "\".*\""), "\"", "")

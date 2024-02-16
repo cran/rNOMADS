@@ -7,12 +7,12 @@ Extract predictions, levels, and variables
 This function parses the model download pages on NOMADS, and extracts information on predictions, levels, and variables available for each.
 }
 \usage{
-ParseModelPage(model.url)
+ParseModelPage(abbrev)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{model.url}{
-   The URL of the model to extract information from, probably returned by \code{\link{NOMADSRealTimeList}}.
+  \item{abbrev}{
+   The abbreviation of the model you are trying to examine, found using NOMADSRealTimeList
 }
 }
 \details{

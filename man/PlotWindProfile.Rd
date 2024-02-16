@@ -64,27 +64,30 @@ PlotWindProfile(zonal.wind, meridional.wind, height, magnitude = NULL,
    \item{invert}{
       Reverses the edge and the center of the plot, making elevations decrease towards the center.  Defaults to \code{FALSE}.
 }
-   \item{\dots}{This function supports some optional parameters as well:
-   \itemize{
-      \item{r.axis}{ - radius of plot axis}
-      \item{tick.len}{ - length of azimuth ticks}
-      \item{r.axis.ticks}{ - Whether or not to put tick marks on the outer axis}
-      \item{max.az}{ - If plotting lines and the difference between two segments is greater than this value, interpolate between them to make things smooth}
-      \item{color.map}{ - A list of colors to use, defaults to \code{rainbow(n.cols, start=0, end=5/6)}}
-      \item{n.cols}{ - Number of color bins in color map}
-      \item{sub.col}{ - Color of internal (elevation and azimuth) axes as a vector of length 2}
-      \item{sub.lty}{ - Type of internal axes, as a vector of length 2}
-      \item{sub.lwd}{ - Width of internal axes, as a vector of length 2}
-      \item{elev.labels.az}{ - Which azimuth to plot elevation labels on} 
-      \item{point.cex}{ - size of points, if plotted}
-      \item{pch}{ - Plot character of points, if plotted}
-      \item{lty}{ - Line style, if lines are selected}
-      \item{lwd}{ - Line thickness, if lines are selected}
-      \item{colorbar.tick}{ - Where to put labels on colorbar}
-   }
-   }
-
+   \item{...}{
+      Additional optional arguments described below.
 }
+}
+
+\details{
+This function supports some optional arguments as well:
+      r.axis - radius of plot axis \\
+      tick.len - length of azimuth ticks \\
+      r.axis.ticks - Whether or not to put tick marks on the outer axis \\
+      max.az - If plotting lines and the difference between two segments is greater than this value, interpolate between them to make things smooth \\
+      color.map - A list of colors to use, defaults to ## rainbow(n.cols, start=0, end=5/6) ## \\
+      n.cols - Number of color bins in color map \\
+      sub.col - Color of internal (elevation and azimuth) axes as a vector of length 2 \\
+      sub.lty - Type of internal axes, as a vector of length 2 \\
+      sub.lwd - Width of internal axes, as a vector of length 2 \\
+      elev.labels.az - Which azimuth to plot elevation labels on \\
+      point.cex - size of points, if plotted \\
+      pch - Plot character of points, if plotted \\
+      lty - Line style, if lines are selected \\
+      lwd - Line thickness, if lines are selected \\
+      colorbar.tick - Where to put labels on colorbar
+}
+
 \author{
 Daniel C. Bowman \email{danny.c.bowman@gmail.com}
 }

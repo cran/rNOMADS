@@ -28,62 +28,77 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
 
    #Grab table rows
    row.regex <- "^\\s*<td.*center.*href.*txt_descriptions"
+   row.regex <- "^\\s*<tr.*onClick.*</tr"
 
-   #Read the website code
-   ncep.html <- readLines(base.url, warn = FALSE)
+   #Read the website code...this is crude, sue me
+   ncep.html <- paste(readLines(base.url, warn = FALSE), collapse = "")
 
-   #Rows of interest
-   r.i <- which(grepl(row.regex, ncep.html))
+   ncep.rows <- unlist(strsplit(ncep.html, "<tr>"))
+   model.rows <- ncep.rows[which(grepl("onClick", ncep.rows))]
 
    #Get grib and dods models
-   data.set <- rep(NA, length(r.i))
-   grib.filter <- data.set
-   gds.alt <- data.set
+   grib.filter <- c()
+   grib.title  <- c()
+   gds.alt     <- c()
+   gds.title   <- c()
 
-   for(k in 1:length(r.i)) {
-      ds.tmp <-   stringr::str_extract(
-         stringr::str_extract(ncep.html[r.i[k]], "<a.*</a>"),
-         ">.*<")
-       data.set[k] <- substr(ds.tmp, 2, nchar(ds.tmp) - 1)
+   for(k in 1:length(model.rows)) {
 
-       grib.filter.tmp <- ncep.html[r.i[k] + 1]
-       gds.alt.tmp <- ncep.html[r.i[k] + 3]
+       grib.filter.tmp <- stringr::str_replace_all(
+           stringr::str_extract(
+              stringr::str_extract(model.rows[k], "\"gribfilter.*grib filter</a></td>"), 
+            "\".*\""), 
+         "\"", 
+        "")
 
-       if(grepl("grib filter", grib.filter.tmp)) {
-           grib.filter[k] <- stringr::str_extract(grib.filter.tmp, "cgi-bin.*\\.pl")
+       gds.alt.tmp <- stringr::str_replace_all(
+           stringr::str_extract(
+               stringr::str_extract(model.rows[k],  "\"dods.*\">OpenDAP"), 
+            "\".*\""), 
+         "\"", 
+        "")
+
+       model.title <- stringr::str_replace(
+              stringr::str_replace(
+                      stringr::str_extract(model.rows[k], "\">.*</span"),
+                   "\">", ""),
+              "</span", "")
+ 
+
+       if(!is.na(grib.filter.tmp)) {
+          grib.title  <- c(grib.title, model.title)
+          grib.filter <- c(grib.filter, grib.filter.tmp)
        }
 
-       if(grepl("OpenDAP", gds.alt.tmp)) {
-          gds.alt[k] <- stringr::str_replace_all(
-              stringr::str_extract(gds.alt.tmp, "\"dods.*\""),
-              "\"", "")
+       if(!is.na(gds.alt.tmp)) {
+           gds.title <- c(gds.title, model.title)
+           gds.alt <- c(gds.alt, gds.alt.tmp)
        }
+
    }
 
     
-   grib.abbrevs <- stringr::str_replace(stringr::str_replace(basename(grib.filter), "filter_", ""), ".pl", "")
-   dods.abbrevs <- basename(gds.alt)
+   grib.abbrevs <- stringr::str_replace(stringr::str_extract(grib.filter, "=.*$"), "=", "")
+   dods.abbrevs <- stringr::str_replace(stringr::str_extract(gds.alt, "/.*$"), "/", "")
    dods.base.url <- paste0(prefix, "://nomads.ncep.noaa.gov:443/dods/")
    if(is.null(abbrev)) {
        if(url.type == "grib") {
-          good.abbrevs <- which(!is.na(grib.abbrevs))
-          model.list <- list(abbrev = grib.abbrevs[good.abbrevs], 
-               name = data.set[good.abbrevs], 
+          model.list <- list(abbrev = grib.abbrevs, 
+               name = grib.title,
                url = paste0(base.url, 
-               grib.filter[good.abbrevs]))
+               grib.filter))
        } else {
-          good.abbrevs <- which(!is.na(dods.abbrevs))
-          model.list <- list(abbrev = dods.abbrevs[good.abbrevs], 
-              name = data.set[good.abbrevs], 
+          model.list <- list(abbrev = dods.abbrevs,
+              name = gds.title,
               url = paste0(dods.base.url, 
-              basename(gds.alt[good.abbrevs]), "/"))
+              basename(gds.alt), "/"))
        }
   } else {
       if(url.type == "grib") {
            abbrev.ind <- which(abbrev == grib.abbrevs)
            if(length(abbrev.ind) > 0) {
                model.list <- list(abbrev = grib.abbrevs[abbrev.ind], 
-                   name = data.set[abbrev.ind], 
+                   name = grib.title[abbrev.ind], 
                    url = paste0(base.url, grib.filter[abbrev.ind]))
            } else {
                 stop(paste0("The model you searched for: \"", 
@@ -96,7 +111,7 @@ NOMADSRealTimeList <- function(url.type, abbrev = NULL) {
            abbrev.ind <- which(abbrev == dods.abbrevs)
            if(length(abbrev.ind) > 0) {
                model.list <- list(abbrev = dods.abbrevs[abbrev.ind], 
-                   name = data.set[abbrev.ind], 
+                   name = gds.title[abbrev.ind], 
                    url = paste0(dods.base.url, basename(gds.alt[abbrev.ind]), "/"))
            } else {
                 stop(paste0("The model you searched for: \"", 
